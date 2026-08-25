@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PREOS Control Assessment",
+  "type": "object",
+  "required": [
+    "control_no",
+    "applicability",
+    "result",
+    "evidence_ids"
+  ],
+  "properties": {
+    "control_no": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 75
+    },
+    "applicability": {
+      "enum": [
+        "APPLICABLE",
+        "NOT_APPLICABLE",
+        "UNKNOWN"
+      ]
+    },
+    "not_applicable_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "result": {
+      "enum": [
+        "GREEN",
+        "AMBER",
+        "RED",
+        "HUMAN REVIEW",
+        "UNKNOWN",
+        "NOT_APPLICABLE"
+      ]
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "owner": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PREOS Project Contract",
+  "type": "object",
+  "required": [
+    "project_id",
+    "generated_at",
+    "source_hashes",
+    "classification",
+    "maturity_stage",
+    "authority",
+    "unknowns"
+  ],
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "source_hashes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "artifact",
+          "sha256"
+        ],
+        "properties": {
+          "artifact": {
+            "type": "string"
+          },
+          "version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "classification": {
+      "type": "object"
+    },
+    "maturity_stage": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "threat_stage": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "authority": {
+      "type": "object"
+    },
+    "roles": {
+      "type": "array"
+    },
+    "vendors": {
+      "type": "array"
+    },
+    "assumptions": {
+      "type": "array"
+    },
+    "unknowns": {
+      "type": "array"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "project_id": "PROJECT-ID",
+  "generated_at": "ISO-8601",
+  "source_hashes": [],
+  "classification": {
+    "profiles": [],
+    "production_assurance": "standard"
+  },
+  "maturity_stage": 1,
+  "threat_stage": "UNKNOWN",
+  "authority": {
+    "production_release_authority": "ROLE GAP",
+    "risk_acceptance_authority": "ROLE GAP"
+  },
+  "roles": [],
+  "vendors": [],
+  "assumptions": [],
+  "unknowns": []
+}

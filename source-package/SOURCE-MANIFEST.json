@@ -1,0 +1,150 @@
+{
+  "preos_source_package_date": "2026-08-24",
+  "preos_repository_version": "1.0.0",
+  "original_zip": {
+    "name": "production_risk_economics_evolution_operating_system_package.zip",
+    "bytes": 488918,
+    "sha256": "8e5612bb9ee4bca3dfe9aeb31252275c6a915ff5a67eddc6f1a7e721eaa621ed"
+  },
+  "expected_counts": {
+    "baseline_controls": 75,
+    "atomic_risks": 1130,
+    "risk_domains": 52,
+    "readiness_questions": 1300
+  },
+  "observed_counts": {
+    "baseline_controls": 75,
+    "atomic_risks": 1130,
+    "risk_domains": 52,
+    "readiness_questions": 1300
+  },
+  "risk_domains": [
+    "Product and Business Rules",
+    "Data Semantics and Data Types",
+    "Database Design",
+    "Frontend Engineering",
+    "Mobile Engineering",
+    "API Engineering",
+    "Authentication",
+    "Authorization and Tenant Isolation",
+    "Verification, Trust, and Reputation",
+    "Trade Assurance and Protected Transactions",
+    "Money and Financial Correctness",
+    "Billing and Subscription",
+    "Files and Object Storage",
+    "Queues, Events, and Background Work",
+    "Caching",
+    "Search",
+    "Notifications",
+    "Networking",
+    "Cloud and Compute",
+    "Scaling and Capacity",
+    "Adaptive Complexity",
+    "Cost and FinOps",
+    "Security",
+    "Privacy and Data Lifecycle",
+    "CI, CD, and Version Control",
+    "Observability",
+    "Reliability and Availability",
+    "Backup, Recovery, and Disaster Recovery",
+    "Human Error and Insider Risk",
+    "Support and Operations",
+    "Legal, Contractual, and Evidence Exposure",
+    "AI Specific Risks",
+    "Configuration and Feature-State Engineering",
+    "Software Supply Chain and Build Provenance",
+    "Feature Lifecycle and Product Debt",
+    "Change Impact Engineering",
+    "Compatibility and Version Evolution",
+    "Time and Temporal Correctness",
+    "Data Lineage and Provenance",
+    "Data Quality Engineering",
+    "Decision Automation Risk",
+    "Economic Abuse Surface",
+    "Organizational Knowledge and Bus-Factor Risk",
+    "Vendor Viability and Concentration Risk",
+    "Critical Account and Domain Ownership",
+    "Multidimensional Capacity Vectors",
+    "Evidence Freshness and Validity",
+    "Control Dependency Graph",
+    "Risk Aggregation and Release Risk",
+    "Risk Acceptance Lifecycle",
+    "Human Authority and Decision Rights",
+    "AI Coding Agent Authority Boundary"
+  ],
+  "files": [
+    {
+      "name": "README.md",
+      "bytes": 1025,
+      "sha256": "d24c273a8a9952c93147df71c6b4ec12359b8e0356c3645bc4614f2d8121b7e2"
+    },
+    {
+      "name": "atomic_risk_catalogue.csv",
+      "bytes": 6863676,
+      "sha256": "f1900fc9f736a62a33c772363f16015fc314b89a8b03d116b11608ff81af1dfb"
+    },
+    {
+      "name": "atomic_risk_catalogue.jsonl",
+      "bytes": 8195137,
+      "sha256": "0e46260f194e824e1d347a003d237226fa4f23e7b860b17de8898aaea591acd6"
+    },
+    {
+      "name": "atomic_risk_record.schema.json",
+      "bytes": 4955,
+      "sha256": "e32887600478148ebe01b1ab9d41726f3417362c5eb46fefd8bd089063fe8f80"
+    },
+    {
+      "name": "baseline_75_controls.json",
+      "bytes": 43240,
+      "sha256": "db4c900348ed824a26c7ff043759daba913d286ccb08fd7c3e2e98192a0f0edb"
+    },
+    {
+      "name": "baseline_75_controls.md",
+      "bytes": 31008,
+      "sha256": "4f149139fc0f00a8884eefe619da8d83166cf608e7ea79ea61cab3bdfef98f3b"
+    },
+    {
+      "name": "codex_gstack_skill_architecture.md",
+      "bytes": 6297,
+      "sha256": "bc8114e727fcdb2d9aee689d84b703f66b1481464852429cb0ed453e0566e872"
+    },
+    {
+      "name": "master_production_readiness_questions.md",
+      "bytes": 204104,
+      "sha256": "92edfd532c0ede1cbba30389600dbde3dbf607340f4bda28922d55337d4838c1"
+    },
+    {
+      "name": "production_risk_economics_evolution_operating_system.docx",
+      "bytes": 64250,
+      "sha256": "cc3991a40666bd278fb743eb31d2cdcd3652660519eae7570f084cb59315118f"
+    },
+    {
+      "name": "production_risk_economics_evolution_operating_system.md",
+      "bytes": 146912,
+      "sha256": "615843f70a47ac3470b084e07bff337975a153c2d82209d8e3deb42ccac4298a"
+    },
+    {
+      "name": "virtual_team_ownership_matrix.md",
+      "bytes": 9575,
+      "sha256": "7b8fa832db1da4f9a2373fb5b424e78e106d6418a521fc2679419598640e89ef"
+    }
+  ],
+  "active_canonical_mapping": {
+    "atomic_risk_record.schema.json": "references/risks/atomic-risk-record.schema.json",
+    "virtual_team_ownership_matrix.md": "references/ownership/virtual-team-ownership-matrix.md",
+    "codex_gstack_skill_architecture.md": "references/integration/original-codex-gstack-skill-architecture.md"
+  },
+  "source_package_access_mapping": {
+    "production_risk_economics_evolution_operating_system.md": "references/operating-system/PREOS.md",
+    "baseline_75_controls.md": "references/baseline/baseline-75-controls.md",
+    "master_production_readiness_questions.md": "references/readiness/master-production-readiness-questions.md",
+    "baseline_75_controls.json": "references/baseline/baseline-75-controls.json"
+  },
+  "storage": {
+    "format": "ordered base64 text chunks",
+    "chunk_manifest": "source-package/PACKAGE-CHUNKS.json",
+    "chunks_directory": "source-package/package-chunks",
+    "reconstruction_script": "scripts/reconstruct-source-package.py",
+    "reason": "GitHub connector text payload limits require chunking; reconstruction is byte-identical and checksum-verified."
+  }
+}

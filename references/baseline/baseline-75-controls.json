@@ -1,6 +1,6 @@
 {
-  "canonical_source": "source-package/original-package.zip::baseline_75_controls.json",
+  "canonical_source": "source-package/package-chunks/ -> reconstructed original package::baseline_75_controls.json",
   "count": 75,
   "role": "machine-readable deterministic minimum",
-  "rule": "Read the exact baseline from the preserved ZIP through scripts/preos_common.py load_source_json; do not maintain a second editable copy."
+  "rule": "Read the exact baseline through scripts/preos_common.py load_source_json; do not maintain a second editable copy."
 }

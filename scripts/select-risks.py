@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from preos_common import iter_risks
-import argparse, json
+import argparse, json, re
 ap=argparse.ArgumentParser(); ap.add_argument('--domain',action='append',default=[]); ap.add_argument('--keyword',action='append',default=[]); ap.add_argument('--ids',nargs='*',default=[]); ap.add_argument('--limit',type=int,default=250)
 a=ap.parse_args(); domains={x.lower() for x in a.domain}; ids=set(a.ids); kws=[k.lower() for k in a.keyword]
 out=[]

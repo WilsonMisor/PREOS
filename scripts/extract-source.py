@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
-from preos_common import preos_root
-from pathlib import Path
-import argparse, sys, zipfile
-
-ap=argparse.ArgumentParser(description='Extract one exact member from the preserved PREOS source package.')
-ap.add_argument('member', help='Exact ZIP member name, for example baseline_75_controls.json')
-ap.add_argument('--output')
+from preos_common import open_source_zip
+import argparse,sys
+ap=argparse.ArgumentParser(description='Extract or print an exact member of the checksum-verified PREOS source package.')
+ap.add_argument('name'); ap.add_argument('--output')
 a=ap.parse_args()
-zip_path=preos_root()/'source-package'/'original-package.zip'
-with zipfile.ZipFile(zip_path) as zf:
-    if a.member not in zf.namelist():
-        raise SystemExit(f'unknown source member: {a.member}')
-    data=zf.read(a.member)
+with open_source_zip() as zf:
+    if a.name not in zf.namelist():
+        print(f'unknown source member: {a.name}',file=sys.stderr); sys.exit(2)
+    data=zf.read(a.name)
 if a.output:
-    out=Path(a.output); out.parent.mkdir(parents=True,exist_ok=True); out.write_bytes(data)
+    from pathlib import Path
+    p=Path(a.output); p.write_bytes(data); print(p)
 else:
-    sys.stdout.buffer.write(data)
+    try: sys.stdout.write(data.decode('utf-8'))
+    except UnicodeDecodeError:
+        print('binary source member requires --output',file=sys.stderr); sys.exit(2)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
 import subprocess,sys,json,hashlib
+from preos_common import source_package_bytes
 ROOT=Path(__file__).resolve().parents[1]
 checks=['validate-source-package.py','validate-baseline.py','validate-risk-catalogue.py','validate-readiness.py','validate-integration.py']
 for script in checks:
@@ -11,9 +12,9 @@ required=manifest['required_paths']
 miss=[p for p in required if not (ROOT/p).exists()]
 if miss: raise SystemExit('Missing PREOS files from MANIFEST.json:\n'+'\n'.join(miss))
 if len(required)!=len(set(required)): raise SystemExit('MANIFEST.json contains duplicate required paths')
-canonical=ROOT/manifest['canonical_source']['path']
-if canonical.stat().st_size!=manifest['canonical_source']['bytes']: raise SystemExit('canonical source ZIP byte count mismatch')
-if hashlib.sha256(canonical.read_bytes()).hexdigest()!=manifest['canonical_source']['sha256']: raise SystemExit('canonical source ZIP hash mismatch')
+canonical=source_package_bytes(ROOT)
+if len(canonical)!=manifest['canonical_source']['bytes']: raise SystemExit('canonical reconstructed source ZIP byte count mismatch')
+if hashlib.sha256(canonical).hexdigest()!=manifest['canonical_source']['sha256']: raise SystemExit('canonical reconstructed source ZIP hash mismatch')
 text=(ROOT/'SKILL.md').read_text(encoding='utf-8')
 anchors=['UNKNOWN never silently becomes GREEN','75','1,130','1,300','PREOS_STATE_ROOT','.ai-product-delivery/preos','gstack-plan-eng-review','AI Task Packet','G0','G11']
 for a in anchors:

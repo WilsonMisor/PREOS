@@ -1,3 +1,82 @@
 {
-  "$schema":"https://json-schema.org/draft/2020-12/schema","title":"PREOS Risk Register","type":"object","required":["project_id","generated_at","risks"],"properties":{"project_id":{"type":"string"},"generated_at":{"type":"string"},"risks":{"type":"array","items":{"type":"object","required":["risk_id","source","status"],"properties":{"risk_id":{"type":"string"},"source":{"enum":["baseline","catalogue","context-generated","incident"]},"catalogue_check_id":{"type":["string","null"]},"status":{"enum":["OPEN","MITIGATED","ACCEPTED","DEFERRED","CLOSED","UNKNOWN"]},"requirement_ids":{"type":"array","items":{"type":"string"}},"control_ids":{"type":"array","items":{"type":"string"}},"owner":{"type":["string","null"]},"evidence_ids":{"type":"array","items":{"type":"string"}}}}}}
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PREOS Risk Register",
+  "type": "object",
+  "required": [
+    "project_id",
+    "generated_at",
+    "risks"
+  ],
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "risk_id",
+          "source",
+          "status"
+        ],
+        "properties": {
+          "risk_id": {
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "baseline",
+              "catalogue",
+              "context-generated",
+              "incident"
+            ]
+          },
+          "catalogue_check_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "MITIGATED",
+              "ACCEPTED",
+              "DEFERRED",
+              "CLOSED",
+              "UNKNOWN"
+            ]
+          },
+          "requirement_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "control_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "owner": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
 }

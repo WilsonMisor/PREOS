@@ -1,8 +1,8 @@
 # Baseline 75 Controls
 
-The single machine-readable canonical baseline is `source-package/original-package.zip::baseline_75_controls.json` and contains exactly controls 1 through 75. `references/baseline/baseline-75-controls.json` is a stable repository pointer to that source, not a duplicate control definition.
+The single machine-readable canonical baseline is the source-package member `baseline_75_controls.json`. The exact original package is stored as checksum-verified base64 chunks under `source-package/package-chunks/` and reconstructed byte-for-byte by PREOS. `references/baseline/baseline-75-controls.json` is a stable repository pointer, not a duplicate control definition.
 
-The original human-readable rendering is preserved byte-for-byte in the same ZIP as `baseline_75_controls.md`.
+The original human-readable rendering is the source-package member `baseline_75_controls.md`.
 
 Use:
 

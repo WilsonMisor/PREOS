@@ -1,3 +1,96 @@
 {
-  "$schema":"https://json-schema.org/draft/2020-12/schema","title":"PREOS AI Task Packet Extension","description":"PREOS extension fields attached to the AI Product Delivery Blueprint AI Task Packet; not a competing implementation unit.","type":"object","required":["packet_id","requirement_ids","risk_ids","control_ids","tests","evidence_requirements","human_approver"],"properties":{"packet_id":{"type":"string"},"requirement_ids":{"type":"array","items":{"type":"string"}},"risk_ids":{"type":"array","items":{"type":"string"}},"control_ids":{"type":"array","items":{"type":"string"}},"adr_ids":{"type":"array","items":{"type":"string"}},"deferred_complexity_ids":{"type":"array","items":{"type":"string"}},"tests":{"type":"array","items":{"type":"string"}},"evidence_requirements":{"type":"array","items":{"type":"string"}},"monitoring_requirements":{"type":"array","items":{"type":"string"}},"recovery_requirements":{"type":"array","items":{"type":"string"}},"reconciliation_requirements":{"type":"array","items":{"type":"string"}},"economic_impact":{"type":["object","null"]},"gstack_routes":{"type":"array","items":{"type":"string"}},"human_approver":{"type":"string","minLength":1}}
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PREOS AI Task Packet Extension",
+  "description": "PREOS extension fields attached to the AI Product Delivery Blueprint AI Task Packet; not a competing implementation unit.",
+  "type": "object",
+  "required": [
+    "packet_id",
+    "requirement_ids",
+    "risk_ids",
+    "control_ids",
+    "tests",
+    "evidence_requirements",
+    "human_approver"
+  ],
+  "properties": {
+    "packet_id": {
+      "type": "string"
+    },
+    "requirement_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "risk_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "control_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "adr_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "deferred_complexity_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "monitoring_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "recovery_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reconciliation_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "economic_impact": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "gstack_routes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "human_approver": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
 }

@@ -25,7 +25,7 @@ The repository directly preserves and validates the source package:
 - Production risk/economics/evolution operating-system document.
 - Virtual team ownership and decision-authority matrix.
 - Original Codex + gstack PREOS architecture proposal.
-- The exact original ZIP and its individual source files with SHA-256 provenance.
+- The exact original ZIP, stored as checksum-verified repository chunks and reconstructed byte-for-byte, plus individual source-file SHA-256 provenance.
 
 The 75 controls remain the deterministic minimum. Context-generated risks supplement them; they do not replace them.
 

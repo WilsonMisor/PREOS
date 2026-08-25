@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from preos_common import load_json
+from pathlib import Path
 import argparse,datetime,sys,re
 ap=argparse.ArgumentParser(); ap.add_argument('evidence',nargs='+')
 a=ap.parse_args(); errs=[]; now=datetime.datetime.now(datetime.timezone.utc)

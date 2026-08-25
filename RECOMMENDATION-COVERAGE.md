@@ -38,7 +38,7 @@ This ledger prevents semantic omissions. A recommendation is complete only when 
 | I32 | Let PREOS determine assurance needed and gstack determine specialist execution. | `gstack integration reference` | REQUIRED |
 | I33 | Preserve clean human/Blueprint/PREOS/gstack/Codex/application authority layering. | `ARCHITECTURE.md` | REQUIRED |
 | I34 | Add machine integrity checks for controls, risks, evidence, dependencies, authority, acceptance and state. | `scripts/tests` | REQUIRED |
-| I35 | Preserve original package provenance with hashes and counts. | `source-package` | REQUIRED |
+| I35 | Preserve original package provenance with hashes and counts. | `source-package/PACKAGE-CHUNKS.json`, `source-package/package-chunks/`, `scripts/reconstruct-source-package.py` | REQUIRED |
 | I36 | Use safe stacked/isolated branches and draft PR review before integration. | `GitHub integration strategy and docs` | REQUIRED |
 | I37 | Keep PREOS installable beside namespaced gstack Codex skills. | `install-codex scripts; agents` | REQUIRED |
 | I38 | Treat all three as one operational software production system whose goal is production-ready software resilient to good and malicious users. | `README.md; SKILL.md` | REQUIRED |

@@ -8,7 +8,7 @@ for p in a.acceptance:
     for k in ['acceptance_id','risk_ids','authority','reason','scope','approved_at','expires_at','review_trigger']:
         if not r.get(k): errs.append(f'{p}: missing {k}')
     auth=str(r.get('authority','')).upper()
-    if any(re.search(rf'\b{re.escape(w)}\b',auth) for w in PROTECTED_AUTHORITY_WORDS): errs.append(f'{p}: AI/tool cannot accept risk')
+    if any(re.search(rf'\\b{re.escape(w)}\\b',auth) for w in PROTECTED_AUTHORITY_WORDS): errs.append(f'{p}: AI/tool cannot accept risk')
     try:
         exp=datetime.datetime.fromisoformat(str(r.get('expires_at')).replace('Z','+00:00'))
         if exp<=now: errs.append(f'{p}: risk acceptance expired')

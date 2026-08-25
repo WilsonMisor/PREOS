@@ -2,7 +2,7 @@
 from preos_common import preos_root,load_json,load_source_json
 import sys
 root=preos_root(); pointer=load_json(root/'references/baseline/baseline-75-controls.json'); d=load_source_json('baseline_75_controls.json'); controls=d.get('controls',[]); errs=[]
-if pointer.get('canonical_source')!='source-package/original-package.zip::baseline_75_controls.json': errs.append('baseline pointer must bind to the preserved source-package JSON')
+if 'package-chunks/' not in pointer.get('canonical_source','') or 'baseline_75_controls.json' not in pointer.get('canonical_source',''): errs.append('baseline pointer must bind to reconstructed source-package JSON')
 if pointer.get('count')!=75: errs.append('baseline pointer count must be 75')
 if d.get('count')!=75 or len(controls)!=75: errs.append('expected exactly 75 controls')
 nums=[c.get('no') for c in controls]

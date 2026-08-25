@@ -2,8 +2,112 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "PREOS Evidence Record",
   "type": "object",
-  "required": ["evidence_id","produced_at","producer","environment","artifact_location","validity","bindings"],
+  "required": [
+    "evidence_id",
+    "produced_at",
+    "producer",
+    "environment",
+    "artifact_location",
+    "validity",
+    "bindings"
+  ],
   "properties": {
-    "evidence_id":{"type":"string"},"requirement_ids":{"type":"array","items":{"type":"string"}},"risk_ids":{"type":"array","items":{"type":"string"}},"control_ids":{"type":"array","items":{"type":"string"}},"produced_at":{"type":"string"},"producer":{"type":"string"},"environment":{"type":"string"},"commit_sha":{"type":["string","null"]},"configuration_hash":{"type":["string","null"]},"dependency_versions":{"type":"object"},"test_or_command":{"type":["string","null"]},"result":{"type":["string","object","array","null"]},"artifact_location":{"type":"string"},"validity":{"enum":["CURRENT","STALE","EXPIRED","UNKNOWN"]},"valid_until":{"type":["string","null"]},"bindings":{"type":"object"},"invalidation_conditions":{"type":"array","items":{"type":"string"}},"revalidation_trigger":{"type":["string","null"]},"required_human_approval":{"type":["string","null"]}
+    "evidence_id": {
+      "type": "string"
+    },
+    "requirement_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "risk_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "control_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "produced_at": {
+      "type": "string"
+    },
+    "producer": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "string"
+    },
+    "commit_sha": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "configuration_hash": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "dependency_versions": {
+      "type": "object"
+    },
+    "test_or_command": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "result": {
+      "type": [
+        "string",
+        "object",
+        "array",
+        "null"
+      ]
+    },
+    "artifact_location": {
+      "type": "string"
+    },
+    "validity": {
+      "enum": [
+        "CURRENT",
+        "STALE",
+        "EXPIRED",
+        "UNKNOWN"
+      ]
+    },
+    "valid_until": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "bindings": {
+      "type": "object"
+    },
+    "invalidation_conditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "revalidation_trigger": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "required_human_approval": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
   }
 }

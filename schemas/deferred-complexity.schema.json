@@ -1,9 +1,71 @@
 {
-  "$schema":"https://json-schema.org/draft/2020-12/schema",
-  "title":"PREOS Deferred Complexity Decision",
-  "type":"object",
-  "required":["decision_id","item","why_not_now","current_solution","risk_of_deferral","activation_trigger","migration_path","owner","review_condition"],
-  "properties":{
-    "decision_id":{"type":"string"},"item":{"type":"string"},"why_not_now":{"type":"string"},"current_solution":{"type":"string"},"risk_of_deferral":{"type":"string"},"activation_trigger":{"type":"string","minLength":1},"migration_path":{"type":"string"},"expected_activation_cost":{"type":["string","number","null"]},"owner":{"type":"string"},"reviewer":{"type":["string","null"]},"review_condition":{"type":"string"},"related_adr_ids":{"type":"array","items":{"type":"string"}},"related_risk_ids":{"type":"array","items":{"type":"string"}}
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PREOS Deferred Complexity Decision",
+  "type": "object",
+  "required": [
+    "decision_id",
+    "item",
+    "why_not_now",
+    "current_solution",
+    "risk_of_deferral",
+    "activation_trigger",
+    "migration_path",
+    "owner",
+    "review_condition"
+  ],
+  "properties": {
+    "decision_id": {
+      "type": "string"
+    },
+    "item": {
+      "type": "string"
+    },
+    "why_not_now": {
+      "type": "string"
+    },
+    "current_solution": {
+      "type": "string"
+    },
+    "risk_of_deferral": {
+      "type": "string"
+    },
+    "activation_trigger": {
+      "type": "string",
+      "minLength": 1
+    },
+    "migration_path": {
+      "type": "string"
+    },
+    "expected_activation_cost": {
+      "type": [
+        "string",
+        "number",
+        "null"
+      ]
+    },
+    "owner": {
+      "type": "string"
+    },
+    "reviewer": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "review_condition": {
+      "type": "string"
+    },
+    "related_adr_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "related_risk_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
   }
 }

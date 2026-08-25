@@ -1,0 +1,76 @@
+{
+  "states": [
+    "GREEN",
+    "AMBER",
+    "RED",
+    "HUMAN REVIEW",
+    "UNKNOWN"
+  ],
+  "rules": [
+    "UNKNOWN never silently becomes GREEN",
+    "RED blocks release unless an accountable human-approved remediation changes the evidence",
+    "HUMAN REVIEW cannot be self-approved by AI"
+  ],
+  "gates": [
+    {
+      "id": "G0",
+      "name": "Source / Project Contract",
+      "acceptance": "Authoritative sources inventoried and hashed; conflicts resolved; assumptions explicit; scope, stack, maturity, threat stage, roles and authority current."
+    },
+    {
+      "id": "G1",
+      "name": "Product / Business Correctness",
+      "acceptance": "Business invariants, invalid states, pricing, entitlements, manual workflows and acceptance criteria are explicit and tested."
+    },
+    {
+      "id": "G2",
+      "name": "Architecture",
+      "acceptance": "Architecture matches actual need, dependencies and failure policies are explicit, premature complexity is rejected, migration and review triggers exist."
+    },
+    {
+      "id": "G3",
+      "name": "Security / Identity / Trust / Privacy",
+      "acceptance": "Authentication, authorization, tenant isolation, abuse, secrets, supply chain, privacy and trust controls pass applicable tests; professional review recorded where required."
+    },
+    {
+      "id": "G4",
+      "name": "Data Correctness",
+      "acceptance": "Semantics, integrity, concurrency, migration, lineage, quality, retention and silent-wrongness controls are proven."
+    },
+    {
+      "id": "G5",
+      "name": "Financial Correctness / Economics",
+      "acceptance": "Money, reconciliation, billing and custody controls are proven where applicable; unit economics and economic-abuse exposure are acceptable."
+    },
+    {
+      "id": "G6",
+      "name": "Performance / Capacity",
+      "acceptance": "Measured workloads fit resources; hotspots, tenant concentration, quotas, retry amplification and cost scaling have acceptable headroom or planned triggers."
+    },
+    {
+      "id": "G7",
+      "name": "Failure / Recovery",
+      "acceptance": "Timeouts, retries, degradation, backpressure, failover, backups, restores, rollback or forward repair and reconciliation are tested."
+    },
+    {
+      "id": "G8",
+      "name": "Change / Deployment Safety",
+      "acceptance": "Change impact, compatibility, migration ordering, artifact provenance, environment drift, canary, rollback and production promotion are controlled."
+    },
+    {
+      "id": "G9",
+      "name": "Operations / Support",
+      "acceptance": "Monitoring, ownership, support and admin tools, escalation, runbooks, incident command, toil and human-error controls are ready."
+    },
+    {
+      "id": "G10",
+      "name": "Legal / Compliance / Accessibility",
+      "acceptance": "Applicable requirements are identified, current research performed where necessary, evidence retained, and qualified human decisions recorded."
+    },
+    {
+      "id": "G11",
+      "name": "Evidence / Authority",
+      "acceptance": "Every GREEN claim has current evidence bound to code, configuration and environment; HUMAN REVIEW approvals are explicit; accepted risks expire and have review triggers."
+    }
+  ]
+}

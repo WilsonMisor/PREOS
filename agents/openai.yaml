@@ -1,0 +1,6 @@
+interface:
+  display_name: "PREOS"
+  short_description: "Production risk, economics, evidence and evolution assurance"
+  default_prompt: "Use $preos as the production-assurance layer integrated with the AI Product Delivery Blueprint, namespaced gstack specialists and Codex. Preserve the 75-control baseline, selectively use the 1,130-risk corpus and 1,300 readiness questions, bind assurance to current evidence, keep UNKNOWN distinct from GREEN, enforce human authority, enrich Blueprint AI Task Packets rather than replacing them, and route production learning back through controlled change."
+policy:
+  allow_implicit_invocation: true

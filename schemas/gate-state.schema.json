@@ -1,0 +1,3 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","title":"PREOS Gate State","type":"object","required":["gate_id","state","evaluated_at","evidence_ids"],"properties":{"gate_id":{"enum":["G0","G1","G2","G3","G4","G5","G6","G7","G8","G9","G10","G11"]},"state":{"enum":["GREEN","AMBER","RED","HUMAN REVIEW","UNKNOWN"]},"evaluated_at":{"type":"string"},"evidence_ids":{"type":"array","items":{"type":"string"}},"blocking_findings":{"type":"array"},"human_approval":{"type":["object","null"]}}
+}

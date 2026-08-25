@@ -1,0 +1,21 @@
+{
+  "evidence_id": "EVID-0001",
+  "requirement_ids": [],
+  "risk_ids": [],
+  "control_ids": [],
+  "produced_at": "ISO-8601",
+  "producer": "",
+  "environment": "",
+  "commit_sha": null,
+  "configuration_hash": null,
+  "dependency_versions": {},
+  "test_or_command": null,
+  "result": null,
+  "artifact_location": "",
+  "validity": "UNKNOWN",
+  "valid_until": null,
+  "bindings": {},
+  "invalidation_conditions": [],
+  "revalidation_trigger": null,
+  "required_human_approval": null
+}

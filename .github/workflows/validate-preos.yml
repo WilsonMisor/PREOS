@@ -1,0 +1,18 @@
+name: Validate PREOS
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate PREOS integrity and semantics
+        run: python3 scripts/validate-preos.py
+      - name: Run PREOS unit tests
+        run: python3 -m unittest discover -s tests -p 'test_*.py'

@@ -1,5 +1,5 @@
 {
-  "preos_version": "1.0.0",
+  "preos_version": "1.1.0",
   "canonical_source": {
     "storage": "source-package/package-chunks/",
     "chunk_manifest": "source-package/PACKAGE-CHUNKS.json",
@@ -35,6 +35,7 @@
     "docs/installation.md",
     "docs/integrated-lifecycle.md",
     "docs/project-state.md",
+    "docs/session-continuity.md",
     "preos-architecture-economics/SKILL.md",
     "preos-architecture-economics/agents/openai.yaml",
     "preos-production-implement/SKILL.md",
@@ -49,6 +50,7 @@
     "preos-risk-model/agents/openai.yaml",
     "references/baseline/baseline-75-controls.json",
     "references/baseline/baseline-75-controls.md",
+    "references/gates/legacy-seven-gate-mapping.md",
     "references/gates/production-gates.json",
     "references/gates/production-gates.md",
     "references/integration/application-state-layout.md",
@@ -61,6 +63,7 @@
     "references/readiness/master-production-readiness-questions.md",
     "references/risks/atomic-risk-record.schema.json",
     "references/risks/catalogue-index.json",
+    "references/wordpress/wordpress-75-control-overlay.md",
     "schemas/control-assessment.schema.json",
     "schemas/deferred-complexity.schema.json",
     "schemas/evidence-record.schema.json",
@@ -69,7 +72,9 @@
     "schemas/project-contract.schema.json",
     "schemas/risk-acceptance.schema.json",
     "schemas/risk-register.schema.json",
+    "schemas/runtime-recovery.schema.json",
     "scripts/change-impact.py",
+    "scripts/checkpoint-state.py",
     "scripts/classify-controls.py",
     "scripts/evaluate-gates.py",
     "scripts/extract-source.py",
@@ -81,7 +86,9 @@
     "scripts/invalidate-stale-evidence.py",
     "scripts/preos_common.py",
     "scripts/reconstruct-source-package.py",
+    "scripts/record-approval.py",
     "scripts/recover-state.py",
+    "scripts/runtime_state.py",
     "scripts/select-readiness.py",
     "scripts/select-risks.py",
     "scripts/validate-baseline.py",
@@ -169,7 +176,8 @@
     "tests/test_risk_schema.py",
     "tests/test_source_extractor.py",
     "tests/test_source_package_integrity.py",
-    "tests/test_state_recovery.py"
+    "tests/test_state_recovery.py",
+    "tests/test_wordpress_overlay.py"
   ],
   "integration_repositories": {
     "blueprint": "WilsonMisor/wed_dev_skill",

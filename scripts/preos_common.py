@@ -1,5 +1,5 @@
 from pathlib import Path
-import json, hashlib, os, zipfile, base64, io
+import json, hashlib, os, zipfile, base64, io, tempfile
 
 GATE_STATES = ["GREEN","AMBER","RED","HUMAN REVIEW","UNKNOWN"]
 PROTECTED_AUTHORITY_WORDS = {"AI","CODEX","GSTACK","LLM","AGENT","PREOS"}
@@ -35,7 +35,15 @@ def load_source_json(name, root=None):
         return json.loads(zf.read(name).decode('utf-8'))
 
 def dump_json(path,obj):
-    p=Path(path); p.parent.mkdir(parents=True,exist_ok=True); p.write_text(json.dumps(obj,indent=2,ensure_ascii=False)+"\n",encoding='utf-8')
+    p=Path(path); p.parent.mkdir(parents=True,exist_ok=True)
+    text=json.dumps(obj,indent=2,ensure_ascii=False)+"\n"
+    fd,tmp=tempfile.mkstemp(prefix=p.name+'.',suffix='.tmp',dir=p.parent)
+    try:
+        with os.fdopen(fd,'w',encoding='utf-8',newline='\n') as f:
+            f.write(text); f.flush(); os.fsync(f.fileno())
+        os.replace(tmp,p)
+    finally:
+        if os.path.exists(tmp): os.unlink(tmp)
 def sha256_file(path):
     h=hashlib.sha256()
     with open(path,'rb') as f:

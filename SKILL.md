@@ -1,6 +1,6 @@
 ---
 name: preos
-description: Production Risk, Economics, and Evolution Operating System. Integrates with the AI Product Delivery Blueprint, namespaced gstack specialists, and Codex to model real-world production risk, economics, evidence freshness, control dependencies, release risk and post-production learning without replacing human authority.
+description: Production Risk, Economics, and Evolution Operating System. Integrates with the AI Product Delivery Blueprint, namespaced gstack specialists, and Codex to model real-world production risk, economics, evidence freshness, control dependencies, deterministic AI-session recovery, release risk and post-production learning without replacing human authority.
 ---
 
 # PREOS Router
@@ -28,6 +28,7 @@ PREOS gate states are **GREEN, AMBER, RED, HUMAN REVIEW, UNKNOWN**. **UNKNOWN ne
 | Architecture selection and deferred complexity | `$preos-architecture-economics` | `gstack-plan-eng-review` |
 | Before substantial implementation | `$preos-production-plan` | Blueprint AI Task Packet |
 | Approved implementation | `$preos-production-implement` | Codex, then gstack review/QA |
+| Interrupted production-relevant implementation / “start from the last session” | `$preos` recovery intent | `scripts/recover-state.py`; gstack context is supplementary |
 | Incident/release/telemetry/cost learning | `$preos-production-learn` | `gstack-retro`, Blueprint change control |
 
 ## Risk passes
@@ -42,12 +43,18 @@ PREOS gate states are **GREEN, AMBER, RED, HUMAN REVIEW, UNKNOWN**. **UNKNOWN ne
 
 The PREOS Project Contract is a compiled hash-bound snapshot of approved Blueprint sources. It is not a competing PRD, SRS or SRD. When a bound source changes, run change impact and evidence freshness review before relying on prior assurance results.
 
-## State rule
+## State and AI-session continuity rule
 
 - Version-controlled project truth: `.ai-product-delivery/preos/` inside the application repository.
 - Resumable execution state: `PREOS_STATE_ROOT/projects/<project-id>/production/`.
 - Never place PREOS truth under `.gstack/` or PREOS runtime state under `GSTACK_STATE_ROOT`.
 - External Git/CI/runtime/provider systems remain authoritative for facts they own.
+- **Conversation memory is never authoritative execution state.**
+- Use event-based soft/hard checkpoints for production-relevant Codex work; arbitrary timed checkpoints are not a substitute for coherent verified boundaries.
+- Pending human approvals survive AI-session loss and remain pending until an accountable human decision is durably recorded.
+- After Codex/context/terminal/network/PC interruption, reconcile Project Contract/task bindings, authoritative source hashes, Git branch/HEAD/working tree, approvals and evidence before implementation resumes.
+- Recovery outcomes are `SAFE_TO_RESUME`, `BLOCKED`, or `RECOVERY_CONFLICT`. Resume only from the first unverified action. Never guess through a recovery conflict.
+- Read `docs/session-continuity.md`; deterministic helpers are `scripts/checkpoint-state.py`, `scripts/record-approval.py`, and `scripts/recover-state.py`.
 
 ## Selective loading
 
@@ -57,9 +64,17 @@ Never load all 1,130 risks or ask all 1,300 questions unless the task truly requ
 
 The Blueprint AI Task Packet remains the canonical implementation unit. PREOS extends it with requirement IDs, risk IDs, control IDs, ADR/deferred-complexity IDs, failure tests, evidence, monitoring, recovery, reconciliation, economics, gstack routes and named human approver. Do not invent a competing implementation object.
 
+## WordPress production interpretation
+
+When the Blueprint activates the classic-theme/custom-plugin WordPress profile, load `references/wordpress/wordpress-75-control-overlay.md`. It maps every canonical `FS-001` through `FS-075` exactly once to WordPress-specific gate/test/evidence interpretation without duplicating or renumbering the immutable baseline. Classic theme owns presentation; custom plugin owns application/business logic. Where native DB RLS is unavailable, enforce owner/tenant/organisation/role/capability/`WHERE`-scoped access and test cross-user/cross-tenant leakage.
+
+The legacy seven Stage-5 implementation lenses are preserved only as a compatibility view in `references/gates/legacy-seven-gate-mapping.md`; PREOS G0-G11 remain authoritative.
+
 ## gstack integration
 
 PREOS routes specialist work to namespaced gstack commands such as `gstack-office-hours`, `gstack-plan-ceo-review`, `gstack-plan-eng-review`, `gstack-plan-design-review`, `gstack-cso`, `gstack-review`, `gstack-investigate`, `gstack-qa`, `gstack-qa-only`, `gstack-benchmark`, `gstack-ship`, `gstack-land-and-deploy`, `gstack-canary` and `gstack-retro`. Provide requirement/risk/control/evidence IDs and current gate state. gstack cannot accept risk or silently rewrite approved Blueprint baselines.
+
+`gstack-context-save` / `gstack-context-restore` may supply semantic working context, but a restored gstack context does not mean production implementation is safe to resume. PREOS deterministic recovery and actual Git/external truth control that decision.
 
 ## Production gates
 
@@ -71,4 +86,4 @@ AI may analyze, propose, implement approved scope, test, measure, collect eviden
 
 ## Completion
 
-Return active Blueprint source versions/hashes, PREOS stage, selected risk/control IDs, current UNKNOWN/HUMAN REVIEW/RED items, gstack routes invoked or required, Codex task packet status, evidence freshness, G0-G11 state, human approvals/role gaps, deferred-complexity triggers, limitations and next lifecycle route.
+Return active Blueprint source versions/hashes, PREOS stage, selected risk/control IDs, current UNKNOWN/HUMAN REVIEW/RED items, gstack routes invoked or required, Codex task packet status, continuity/recovery state when relevant, evidence freshness, G0-G11 state, human approvals/role gaps, deferred-complexity triggers, limitations and next lifecycle route.

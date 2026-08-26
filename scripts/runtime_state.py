@@ -202,8 +202,6 @@ def load_pipeline_state(root: Path, *, required: bool) -> dict | None:
         parse_time(data["updated_at"]); parse_time(data["last_transition"])
         validate_state(str(data["state"]))
     else:
-        # Legacy 1.1 state remains readable for migration but is never treated as
-        # proof of the new state-machine contract.
         if not isinstance(data, dict) or not data.get("project_id") or not data.get("updated_at"):
             raise ValueError("legacy PIPELINE-STATE.json is invalid")
         parse_time(str(data["updated_at"]))
@@ -258,6 +256,37 @@ def load_ledger(root: Path, project_id: str) -> list[dict]:
             previous_state = str(state_value)
         events.append(event)
     return events
+
+
+def _ledger_tail_conflicts(ledger: list[dict], pipeline: dict | None, state: dict) -> list[dict]:
+    """Reconcile durable ledger truth with the selected persisted state boundary.
+
+    checkpoint-state persists CURRENT/PIPELINE state before appending ledger
+    events. If execution stops during that append, each artifact may be valid in
+    isolation while the ledger is behind. Recovery must detect that split-brain
+    state instead of returning SAFE_TO_RESUME.
+    """
+    if not ledger:
+        return []
+    conflicts: list[dict] = []
+    ledger_state = next((str(e["pipeline_state"]) for e in reversed(ledger) if e.get("pipeline_state")), None)
+    persisted_state = pipeline.get("state") if pipeline else state.get("pipeline_state")
+    if ledger_state and persisted_state and ledger_state != persisted_state:
+        conflicts.append({
+            "type": "LEDGER_PIPELINE_STATE_MISMATCH",
+            "ledger": ledger_state,
+            "persisted": persisted_state,
+        })
+
+    ledger_checkpoint = next((str(e["checkpoint_id"]) for e in reversed(ledger) if e.get("checkpoint_id")), None)
+    persisted_checkpoint = pipeline.get("last_checkpoint_id") if pipeline else state.get("checkpoint_id")
+    if ledger_checkpoint and persisted_checkpoint and ledger_checkpoint != persisted_checkpoint:
+        conflicts.append({
+            "type": "LEDGER_CHECKPOINT_MISMATCH",
+            "ledger": ledger_checkpoint,
+            "persisted": persisted_checkpoint,
+        })
+    return conflicts
 
 
 def source_binding_conflicts(contract: dict, repo: Path) -> list[dict]:
@@ -443,7 +472,9 @@ def reconcile_project(project_id: str, repo: Path) -> dict:
     conflicts.extend(_pipeline_conflicts(pipeline, state, actual_git))
 
     ledger_valid = True
-    try: ledger = load_ledger(root, project_id)
+    try:
+        ledger = load_ledger(root, project_id)
+        conflicts.extend(_ledger_tail_conflicts(ledger, pipeline, state))
     except Exception as exc:
         conflicts.append({"type": "LEDGER_INVALID", "detail": str(exc)}); ledger = []; ledger_valid = False
 

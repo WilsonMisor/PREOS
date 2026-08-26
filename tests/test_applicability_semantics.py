@@ -80,6 +80,24 @@ class ApplicabilitySemanticsTests(unittest.TestCase):
         self.assertEqual(c["evidence_ids"], ["E-existing"])
         self.assertEqual(c["result"], "GREEN")
 
+    def test_newly_green_applicable_control_requires_evidence(self):
+        proc, _ = self.run_classify({"1": {
+            "applicability": "APPLIES", "already_satisfied": False,
+            "result": "GREEN", "evidence_ids": []
+        }}, check=False)
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("GREEN APPLIES control requires evidence_ids", proc.stderr)
+
+    def test_newly_green_applicable_control_accepts_bound_evidence_id(self):
+        _, payload = self.run_classify({"1": {
+            "applicability": "APPLIES", "already_satisfied": False,
+            "result": "GREEN", "evidence_ids": ["E-NEW"]
+        }})
+        c = self.by_no(payload)
+        self.assertEqual(c["result"], "GREEN")
+        self.assertTrue(c["obligation_required"])
+        self.assertEqual(c["evidence_ids"], ["E-NEW"])
+
     def test_forbidden_is_blocking_without_human_override(self):
         proc, payload = self.run_classify({"1": {
             "applicability": "FORBIDDEN", "forbidden_reason": "Action violates production policy"

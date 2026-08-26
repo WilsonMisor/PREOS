@@ -50,11 +50,11 @@ Recovery reconciles:
 - Git repository, branch, HEAD and exact changed-file fingerprints;
 - persisted approval state;
 - evidence bindings/freshness;
-- last verified and next unverified actions.
+- last verified action and the **first unverified action**, recorded as `next_unverified_action`.
 
 A recovery result is one of:
 
-- `SAFE_TO_RESUME` — resume from `next_unverified_action`; revalidate stale evidence first when reported.
+- `SAFE_TO_RESUME` — resume from the first unverified action (`next_unverified_action`); revalidate stale evidence first when reported.
 - `BLOCKED` — a persisted prerequisite such as human approval is still pending.
 - `RECOVERY_CONFLICT` — state and reality disagree; stop coding until reconciled.
 
@@ -74,4 +74,4 @@ Do not resume from the last conversational topic. Do not silently discard dirty/
 
 ## Fresh-session interaction
 
-A user may say `start from the last session`. The PREOS skill should identify the project, run deterministic recovery, summarize the last verified action and next unverified action, preserve pending approvals, and refuse implementation if the result is `RECOVERY_CONFLICT`.
+A user may say `start from the last session`. The PREOS skill should identify the project, run deterministic recovery, summarize the last verified action and first unverified action, preserve pending approvals, and refuse implementation if the result is `RECOVERY_CONFLICT`.

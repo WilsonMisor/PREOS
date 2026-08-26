@@ -53,8 +53,13 @@ def main() -> None:
             except ValueError: errs.append(f"{path}: invalid valid_until")
     if errs:
         print("\n".join("FAIL " + e for e in errs)); raise SystemExit(1)
-    mode = "schema-valid with complete freshness bindings" if args.require_complete_bindings else "structurally schema-valid"
-    print(f"PASS evidence: {len(args.evidence)} record(s) {mode}")
+    if args.require_complete_bindings:
+        print(f"PASS evidence: {len(args.evidence)} record(s) schema-valid with complete freshness bindings")
+    else:
+        # Preserve the established structural-validation output consumed by the
+        # gstack organizational acceptance harness. Structural mode does not
+        # claim that synthetic evidence is production freshness-bound evidence.
+        print(f"PASS evidence: {len(args.evidence)} record(s) structurally valid")
 
 
 if __name__ == "__main__":

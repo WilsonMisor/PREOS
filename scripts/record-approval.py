@@ -2,9 +2,8 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 
-from runtime_state import append_jsonl, atomic_write_json, authority_is_ai, load_approvals, production_root, utc_now
+from runtime_state import append_jsonl, atomic_write_json, authority_is_human, load_approvals, production_root, utc_now
 
 
 def main() -> None:
@@ -18,8 +17,8 @@ def main() -> None:
     ap.add_argument("--rationale", default="")
     args = ap.parse_args()
 
-    if args.status == "GRANTED" and authority_is_ai(args.authority):
-        raise SystemExit("AI/Codex/gstack/PREOS may not grant consequential human approval.")
+    if args.status in {"GRANTED", "DENIED"} and not authority_is_human(args.authority):
+        raise SystemExit("Consequential approval or denial requires a named human/accountable authority; AI/Codex/gstack/PREOS/ROLE GAP may not decide it.")
 
     root = production_root(args.project_id)
     root.mkdir(parents=True, exist_ok=True)
@@ -36,7 +35,7 @@ def main() -> None:
         "updated_at": now,
     }
     approvals.append(record)
-    state = {"schema_version": "1.0", "project_id": args.project_id, "updated_at": now, "approvals": approvals}
+    state = {"schema_version": "1.1", "project_id": args.project_id, "updated_at": now, "approvals": approvals}
     atomic_write_json(root / "approval-state.json", state)
     append_jsonl(root / "implementation-ledger.jsonl", {
         "event_id": f"APPROVAL-{args.approval_id}-{now}",

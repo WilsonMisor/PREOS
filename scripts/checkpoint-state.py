@@ -37,6 +37,16 @@ def _section_has_requirements(text: str, heading: str) -> bool:
     return False
 
 
+def _repo_path(value: str | None, repo: Path) -> Path | None:
+    """Resolve a CLI path with the same repo-relative convention as file_binding."""
+    if not value:
+        return None
+    path = Path(value).expanduser()
+    if not path.is_absolute():
+        path = repo / path
+    return path.resolve()
+
+
 def _validate_hard_verification(manifest_path: Path | None, task_packet: Path | None, root: Path, repo: Path, git: dict) -> dict | None:
     packet_requires_checks = False; packet_requires_evidence = False
     if task_packet and task_packet.is_file():
@@ -66,6 +76,21 @@ def _validate_hard_verification(manifest_path: Path | None, task_packet: Path | 
     missing = [eid for eid in evidence_ids if eid not in indexed]
     if missing:
         raise SystemExit(f"Hard checkpoint refused: verification evidence is not indexed: {', '.join(missing)}")
+
+    # A hard checkpoint is a verified boundary, so every referenced evidence
+    # record must explicitly claim the canonical CURRENT validity. UNKNOWN,
+    # legacy traffic-light statuses, and omitted validity are not proof.
+    non_current = sorted(
+        eid for eid in evidence_ids
+        if str(indexed[eid].get("validity") or "").upper() != "CURRENT"
+        or str(indexed[eid].get("status") or "").upper() != "CURRENT"
+    )
+    if non_current:
+        raise SystemExit(
+            "Hard checkpoint refused: verification evidence is not explicitly CURRENT: "
+            + ", ".join(non_current)
+        )
+
     stale = stale_evidence(root, git, {}, repo)
     bad = sorted(set(evidence_ids) & set(stale))
     if bad:
@@ -125,7 +150,7 @@ def main() -> None:
     target_pipeline = target_for_event(args.event, previous_pipeline, explicit)
 
     hard_verification = None
-    task_packet_path = Path(args.task_packet).resolve() if args.task_packet else None
+    task_packet_path = _repo_path(args.task_packet, repo)
     if args.kind == "hard":
         if not git["clean"]:
             raise SystemExit("Hard checkpoint refused: working tree is not clean. Verify and commit the coherent unit first; PREOS will not auto-commit or push.")
@@ -133,7 +158,7 @@ def main() -> None:
             raise SystemExit("Hard checkpoint refused: last verified action is required.")
         if any([args.pending_test, args.pending_build, args.pending_migration, args.pending_evidence]):
             raise SystemExit("Hard checkpoint refused: test/build/migration/evidence state is still pending or uncertain.")
-        manifest_path = Path(args.verification_manifest).resolve() if args.verification_manifest else None
+        manifest_path = Path(args.verification_manifest).expanduser().resolve() if args.verification_manifest else None
         hard_verification = _validate_hard_verification(manifest_path, task_packet_path, root, repo, git)
 
     bindings = {}

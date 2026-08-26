@@ -22,11 +22,11 @@ class MasterPlanRuntimeContractTests(unittest.TestCase):
         (self.repo / "README.md").write_text("baseline\n", encoding="utf-8")
         git(self.repo, "add", "."); git(self.repo, "commit", "-m", "baseline")
         self.env = os.environ.copy(); self.env["PREOS_STATE_ROOT"] = str(self.base / "state")
-        self.run("init-project-state.py", "p1", "--repo", self.repo)
+        self.run_script("init-project-state.py", "p1", "--repo", self.repo)
 
     def tearDown(self): self.tmp.cleanup()
 
-    def run(self, name, *args, check=True, env=None):
+    def run_script(self, name, *args, check=True, env=None):
         proc = subprocess.run([sys.executable, str(SCRIPTS / name), *map(str, args)], cwd=ROOT,
                               env=env or self.env, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if check: self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
@@ -36,7 +36,7 @@ class MasterPlanRuntimeContractTests(unittest.TestCase):
     def root(self): return Path(self.env["PREOS_STATE_ROOT"]) / "projects/p1/production"
 
     def recover(self, check=False):
-        proc = self.run("recover-state.py", "p1", "--repo", self.repo, check=check)
+        proc = self.run_script("recover-state.py", "p1", "--repo", self.repo, check=check)
         return proc, json.loads(proc.stdout)
 
     def governed_files(self, strict_packet=False):
@@ -56,9 +56,9 @@ class MasterPlanRuntimeContractTests(unittest.TestCase):
 
     def test_pipeline_state_is_reconciled_and_tamper_blocks_recovery(self):
         contract, packet = self.governed_files()
-        self.run("checkpoint-state.py", "p1", "--repo", self.repo, "--event", "SESSION_INTERRUPTED",
-                 "--project-contract", contract, "--task-packet", packet, "--task-packet-id", "TP-1",
-                 "--last-verified-action", "edit captured", "--next-unverified-action", "tests", "--pending-test", "unit")
+        self.run_script("checkpoint-state.py", "p1", "--repo", self.repo, "--event", "SESSION_INTERRUPTED",
+                        "--project-contract", contract, "--task-packet", packet, "--task-packet-id", "TP-1",
+                        "--last-verified-action", "edit captured", "--next-unverified-action", "tests", "--pending-test", "unit")
         pipeline_path = self.root / "PIPELINE-STATE.json"
         pipeline = json.loads(pipeline_path.read_text(encoding="utf-8")); pipeline["current_task_packet"] = "TP-WRONG"
         pipeline_path.write_text(json.dumps(pipeline), encoding="utf-8")
@@ -67,9 +67,9 @@ class MasterPlanRuntimeContractTests(unittest.TestCase):
         self.assertIn("PIPELINE_TASK_PACKET_MISMATCH", {c["type"] for c in result["conflicts"]})
 
     def test_invalid_state_transition_is_rejected(self):
-        proc = self.run("checkpoint-state.py", "p1", "--repo", self.repo,
-                        "--event", "CHECKPOINT", "--pipeline-state", "RELEASED",
-                        "--last-verified-action", "none", check=False)
+        proc = self.run_script("checkpoint-state.py", "p1", "--repo", self.repo,
+                               "--event", "CHECKPOINT", "--pipeline-state", "RELEASED",
+                               "--last-verified-action", "none", check=False)
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("invalid PREOS state transition", proc.stderr)
 
@@ -92,9 +92,9 @@ class MasterPlanRuntimeContractTests(unittest.TestCase):
 
     def test_ledger_checkpoint_task_packet_reference_mismatch_is_rejected(self):
         contract, packet = self.governed_files()
-        self.run("checkpoint-state.py", "p1", "--repo", self.repo, "--event", "SESSION_INTERRUPTED",
-                 "--project-contract", contract, "--task-packet", packet, "--task-packet-id", "TP-1",
-                 "--last-verified-action", "captured", "--next-unverified-action", "test")
+        self.run_script("checkpoint-state.py", "p1", "--repo", self.repo, "--event", "SESSION_INTERRUPTED",
+                        "--project-contract", contract, "--task-packet", packet, "--task-packet-id", "TP-1",
+                        "--last-verified-action", "captured", "--next-unverified-action", "test")
         ledger = self.root / "implementation-ledger.jsonl"
         rows = [json.loads(x) for x in ledger.read_text(encoding="utf-8").splitlines() if x.strip()]
         cp_event = next(x for x in rows if x["event_type"] == "SOFT_CHECKPOINT")
@@ -106,10 +106,10 @@ class MasterPlanRuntimeContractTests(unittest.TestCase):
 
     def test_hard_checkpoint_refuses_declared_requirements_without_verification_manifest(self):
         contract, packet = self.governed_files(strict_packet=True)
-        proc = self.run("checkpoint-state.py", "p1", "--repo", self.repo, "--kind", "hard",
-                        "--event", "IMPLEMENTATION_COMPLETE", "--project-contract", contract,
-                        "--task-packet", packet, "--task-packet-id", "TP-1",
-                        "--last-verified-action", "claimed complete", check=False)
+        proc = self.run_script("checkpoint-state.py", "p1", "--repo", self.repo, "--kind", "hard",
+                               "--event", "IMPLEMENTATION_COMPLETE", "--project-contract", contract,
+                               "--task-packet", packet, "--task-packet-id", "TP-1",
+                               "--last-verified-action", "claimed complete", check=False)
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("verification-manifest", proc.stderr)
 
@@ -121,22 +121,22 @@ class MasterPlanRuntimeContractTests(unittest.TestCase):
         testdef = self.repo / "test_contract.txt"; testdef.write_text("unit:test\n", encoding="utf-8")
         artifact = self.repo / "test-result.txt"; artifact.write_text("PASS\n", encoding="utf-8")
         git(self.repo, "add", "."); git(self.repo, "commit", "-m", "verified test inputs")
-        self.run("capture-evidence.py", "p1", "E-TEST", "--repo", self.repo,
-                 "--producer", "gstack-qa", "--environment", "test",
-                 "--artifact", artifact, "--project-contract", contract, "--task-packet", packet,
-                 "--config", config, "--schema", schema, "--dependency", deps,
-                 "--test-definition", testdef, "--test-or-command", "unit:test")
+        self.run_script("capture-evidence.py", "p1", "E-TEST", "--repo", self.repo,
+                        "--producer", "gstack-qa", "--environment", "test",
+                        "--artifact", artifact, "--project-contract", contract, "--task-packet", packet,
+                        "--config", config, "--schema", schema, "--dependency", deps,
+                        "--test-definition", testdef, "--test-or-command", "unit:test")
         manifest = self.base / "verification.json"
         manifest.write_text(json.dumps({
             "schema_version": "1.0",
             "checks": [{"id": "unit", "status": "PASS", "command_or_test": "unit:test", "evidence_id": "E-TEST"}],
             "evidence_ids": ["E-TEST"], "traceability": "UPDATED", "rollback_point": "git HEAD"
         }), encoding="utf-8")
-        proc = self.run("checkpoint-state.py", "p1", "--repo", self.repo, "--kind", "hard",
-                        "--event", "IMPLEMENTATION_COMPLETE", "--project-contract", contract,
-                        "--task-packet", packet, "--task-packet-id", "TP-1",
-                        "--last-verified-action", "unit test and evidence verified",
-                        "--next-unverified-action", "independent review", "--verification-manifest", manifest)
+        proc = self.run_script("checkpoint-state.py", "p1", "--repo", self.repo, "--kind", "hard",
+                               "--event", "IMPLEMENTATION_COMPLETE", "--project-contract", contract,
+                               "--task-packet", packet, "--task-packet-id", "TP-1",
+                               "--last-verified-action", "unit test and evidence verified",
+                               "--next-unverified-action", "independent review", "--verification-manifest", manifest)
         self.assertIn("HARD CHECKPOINT", proc.stdout)
         state = json.loads((self.root / "CURRENT-STATE.json").read_text(encoding="utf-8"))
         self.assertEqual(state["hard_checkpoint_verification"]["evidence_ids"], ["E-TEST"])
@@ -150,11 +150,11 @@ class MasterPlanRuntimeContractTests(unittest.TestCase):
         artifact = self.repo / "evidence.txt"; artifact.write_text("PASS\n", encoding="utf-8")
         git(self.repo, "add", "."); git(self.repo, "commit", "-m", "evidence inputs")
         env = self.env.copy(); env["APP_MODE"] = "v1"
-        self.run("capture-evidence.py", "p1", "E-FRESH", "--repo", self.repo,
-                 "--producer", "qa", "--environment", "test", "--artifact", artifact,
-                 "--project-contract", contract, "--task-packet", packet,
-                 "--source", self.repo / "requirements.md", "--config", config, "--schema", schema,
-                 "--dependency", deps, "--test-definition", testdef, "--env-var", "APP_MODE", env=env)
+        self.run_script("capture-evidence.py", "p1", "E-FRESH", "--repo", self.repo,
+                        "--producer", "qa", "--environment", "test", "--artifact", artifact,
+                        "--project-contract", contract, "--task-packet", packet,
+                        "--source", self.repo / "requirements.md", "--config", config, "--schema", schema,
+                        "--dependency", deps, "--test-definition", testdef, "--env-var", "APP_MODE", env=env)
         # Environment drift alone is enough to make the evidence stale while Git remains unchanged.
         env2 = self.env.copy(); env2["APP_MODE"] = "v2"
         proc = subprocess.run([sys.executable, str(SCRIPTS / "recover-state.py"), "p1", "--repo", str(self.repo)],

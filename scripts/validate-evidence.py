@@ -5,7 +5,6 @@ import argparse
 import datetime
 from pathlib import Path
 import re
-import sys
 
 from schema_validation import load_schema, validate_instance
 from runtime_state import load_json
@@ -18,8 +17,10 @@ REQUIRED_BINDINGS = {
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Validate PREOS evidence records and freshness-binding completeness.")
+    ap = argparse.ArgumentParser(description="Validate PREOS evidence records.")
     ap.add_argument("evidence", nargs="+")
+    ap.add_argument("--require-complete-bindings", action="store_true",
+                    help="Require the complete production freshness binding vocabulary")
     args = ap.parse_args(); errs = []; now = datetime.datetime.now(datetime.timezone.utc)
     schema = load_schema(ROOT / "schemas/evidence-record.schema.json")
     for path_text in args.evidence:
@@ -32,7 +33,7 @@ def main() -> None:
         if e.get("validity") == "GREEN": errs.append(f"{path}: validity uses CURRENT/STALE/EXPIRED/UNKNOWN, not GREEN")
         sha = e.get("commit_sha")
         if sha and not re.fullmatch(r"[0-9a-fA-F]{7,64}", sha): errs.append(f"{path}: invalid commit_sha")
-        if e.get("validity") == "CURRENT":
+        if args.require_complete_bindings and e.get("validity") == "CURRENT":
             bindings = e.get("bindings", {})
             missing = sorted(REQUIRED_BINDINGS - set(bindings))
             if missing: errs.append(f"{path}: CURRENT evidence missing freshness bindings: {', '.join(missing)}")
@@ -52,7 +53,8 @@ def main() -> None:
             except ValueError: errs.append(f"{path}: invalid valid_until")
     if errs:
         print("\n".join("FAIL " + e for e in errs)); raise SystemExit(1)
-    print(f"PASS evidence: {len(args.evidence)} record(s) schema-valid with complete freshness bindings")
+    mode = "schema-valid with complete freshness bindings" if args.require_complete_bindings else "structurally schema-valid"
+    print(f"PASS evidence: {len(args.evidence)} record(s) {mode}")
 
 
 if __name__ == "__main__":

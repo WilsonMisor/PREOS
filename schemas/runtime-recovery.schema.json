@@ -37,18 +37,26 @@
       "type": "object",
       "required": ["schema_version", "checkpoint_id", "checkpoint_kind", "project_id", "updated_at", "current_stage", "git"],
       "properties": {
-        "schema_version": {"const": "1.0"},
+        "schema_version": {"enum": ["1.0", "1.1"]},
         "checkpoint_id": {"type": "string"},
         "checkpoint_kind": {"enum": ["SOFT", "HARD"]},
         "project_id": {"type": "string"},
         "updated_at": {"type": "string"},
         "current_stage": {"type": "string"},
+        "blueprint_phase": {"type": ["string", "null"]},
+        "preos_phase": {"type": ["string", "null"]},
+        "gstack_specialist_stage": {"type": ["string", "null"]},
+        "implementation_status": {"type": ["string", "null"]},
+        "release_status": {"type": ["string", "null"]},
         "project_contract_version": {"type": ["string", "null"]},
         "task_packet_id": {"type": ["string", "null"]},
         "last_verified_action": {"type": ["string", "null"]},
         "next_unverified_action": {"type": ["string", "null"]},
         "pending_test": {"type": ["string", "null"]},
+        "pending_build": {"type": ["string", "null"]},
+        "pending_migration": {"type": ["string", "null"]},
         "pending_evidence": {"type": ["string", "null"]},
+        "required_approval_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
         "bindings": {
           "type": "object",
           "properties": {
@@ -80,8 +88,11 @@
         "project_id": {"type": "string"},
         "last_verified_action": {"type": ["string", "null"]},
         "next_unverified_action": {"type": ["string", "null"]},
+        "missing_approvals": {"type": "array", "items": {"type": "string"}},
         "pending_approvals": {"type": "array", "items": {"type": "string"}},
+        "denied_approvals": {"type": "array", "items": {"type": "string"}},
         "stale_evidence": {"type": "array", "items": {"type": "string"}},
+        "ledger_events_validated": {"type": "integer", "minimum": 0},
         "conflicts": {"type": "array", "items": {"type": "object"}}
       }
     }

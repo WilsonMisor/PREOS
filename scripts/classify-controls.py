@@ -119,6 +119,12 @@ def normalize_assessment(control: dict, supplied: dict | None) -> dict:
             result = "GREEN"
         elif result in {"NOT_APPLICABLE", "BLOCKED"}:
             raise ValueError(f"control {no}: APPLIES cannot have result {result}")
+        # GREEN is an assurance claim, never a planning default. Whether the
+        # control was newly satisfied or already satisfied, it requires bound
+        # evidence IDs. The evidence freshness validator decides whether those
+        # IDs are actually current at the assurance gate.
+        if result == "GREEN" and not evidence_ids:
+            raise ValueError(f"control {no}: GREEN APPLIES control requires evidence_ids")
 
     elif applicability == "NOT_APPLICABLE":
         if not str(not_applicable_reason or "").strip():

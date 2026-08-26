@@ -145,7 +145,7 @@ class SessionLossAcceptanceTests(unittest.TestCase):
             "updated_at": MOD.utc_now(),
             "evidence": [{
                 "evidence_id": "E-SOURCE-BOUND",
-                "status": "FRESH",
+                "status": "CURRENT",
                 "bindings": {
                     "git_head": state["git"]["head"],
                     "project_contract": state["bindings"]["project_contract"],

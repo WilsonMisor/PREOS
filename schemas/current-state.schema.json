@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PREOS Current State",
+  "type": "object",
+  "required": ["schema_version", "project_id", "updated_at", "current_stage", "required_approval_ids", "bindings", "git"],
+  "properties": {
+    "schema_version": {"enum": ["1.1", "1.2"]},
+    "checkpoint_id": {"type": ["string", "null"]},
+    "checkpoint_kind": {"enum": ["SOFT", "HARD", null]},
+    "project_id": {"type": "string", "minLength": 1},
+    "updated_at": {"type": "string", "minLength": 1},
+    "current_stage": {"type": "string", "minLength": 1},
+    "pipeline_state": {"type": ["string", "null"]},
+    "blueprint_phase": {"type": ["string", "null"]},
+    "preos_phase": {"type": ["string", "null"]},
+    "gstack_specialist_stage": {"type": ["string", "null"]},
+    "implementation_status": {"type": ["string", "null"]},
+    "release_status": {"type": ["string", "null"]},
+    "event": {"type": ["string", "null"]},
+    "project_contract_version": {"type": ["string", "null"]},
+    "task_packet_id": {"type": ["string", "null"]},
+    "last_verified_action": {"type": ["string", "null"]},
+    "next_unverified_action": {"type": ["string", "null"]},
+    "pending_test": {"type": ["string", "null"]},
+    "pending_build": {"type": ["string", "null"]},
+    "pending_migration": {"type": ["string", "null"]},
+    "pending_evidence": {"type": ["string", "null"]},
+    "required_approval_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "active_risk_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "active_control_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "bindings": {"type": "object"},
+    "git": {
+      "type": "object",
+      "required": ["repo_root", "branch", "head", "working_tree", "working_tree_fingerprint", "clean"],
+      "properties": {
+        "repo_root": {"type": "string"},
+        "branch": {"type": "string"},
+        "head": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "working_tree": {"type": "array"},
+        "working_tree_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "clean": {"type": "boolean"}
+      }
+    },
+    "hard_checkpoint_verification": {"type": ["object", "null"]}
+  }
+}

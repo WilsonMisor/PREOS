@@ -113,6 +113,7 @@ class SessionLossAcceptanceTests(unittest.TestCase):
         state["bindings"] = {"project_contract": MOD.file_binding(contract, self.repo)}
         state["git"] = MOD.git_snapshot(self.repo)
         state["updated_at"] = MOD.utc_now()
+        state["checkpoint_id"] = "CP-CONTRACT-SOFT"
         MOD.atomic_write_json(root / "checkpoints" / "CP-CONTRACT-SOFT.json", state)
         MOD.atomic_write_json(root / "CURRENT-STATE.json", state)
         (self.base / "gstack-context.json").write_text(json.dumps({"claim": "contract approved"}), encoding="utf-8")
@@ -135,6 +136,7 @@ class SessionLossAcceptanceTests(unittest.TestCase):
         state["bindings"] = {"project_contract": MOD.file_binding(contract, self.repo)}
         state["git"] = MOD.git_snapshot(self.repo)
         state["updated_at"] = MOD.utc_now()
+        state["checkpoint_id"] = "CP-SOURCE-SOFT"
         MOD.atomic_write_json(root / "checkpoints" / "CP-SOURCE-SOFT.json", state)
         MOD.atomic_write_json(root / "CURRENT-STATE.json", state)
         MOD.atomic_write_json(root / "evidence-index.json", {
@@ -143,7 +145,7 @@ class SessionLossAcceptanceTests(unittest.TestCase):
             "updated_at": MOD.utc_now(),
             "evidence": [{
                 "evidence_id": "E-SOURCE-BOUND",
-                "status": "FRESH",
+                "status": "CURRENT",
                 "bindings": {
                     "git_head": state["git"]["head"],
                     "project_contract": state["bindings"]["project_contract"],

@@ -2,58 +2,35 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "PREOS Control Assessment",
   "type": "object",
-  "required": [
-    "control_no",
-    "applicability",
-    "result",
-    "evidence_ids"
-  ],
+  "required": ["control_no", "applicability", "result", "evidence_ids"],
   "properties": {
-    "control_no": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 75
-    },
+    "control_no": {"type": "integer", "minimum": 1, "maximum": 75},
     "applicability": {
-      "enum": [
-        "APPLICABLE",
-        "NOT_APPLICABLE",
-        "UNKNOWN"
-      ]
+      "enum": ["APPLIES", "CONDITIONAL", "NOT_APPLICABLE", "ESCALATE", "FORBIDDEN"]
     },
-    "not_applicable_reason": {
-      "type": [
-        "string",
-        "null"
-      ]
+    "condition": {"type": ["string", "null"]},
+    "condition_result": {"enum": ["TRUE", "FALSE", "UNKNOWN", "NOT_EVALUATED"]},
+    "not_applicable_reason": {"type": ["string", "null"]},
+    "escalation_reason": {"type": ["string", "null"]},
+    "human_decision_id": {"type": ["string", "null"]},
+    "forbidden_reason": {"type": ["string", "null"]},
+    "authorized_override": {
+      "type": ["object", "null"],
+      "properties": {
+        "approval_id": {"type": "string"},
+        "authority": {"type": "string"},
+        "rationale": {"type": "string"}
+      },
+      "required": ["approval_id", "authority", "rationale"]
     },
+    "obligation_required": {"type": "boolean"},
+    "already_satisfied": {"type": "boolean"},
     "result": {
-      "enum": [
-        "GREEN",
-        "AMBER",
-        "RED",
-        "HUMAN REVIEW",
-        "UNKNOWN",
-        "NOT_APPLICABLE"
-      ]
+      "enum": ["GREEN", "AMBER", "RED", "HUMAN REVIEW", "UNKNOWN", "NOT_APPLICABLE", "BLOCKED"]
     },
-    "evidence_ids": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "dependencies": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "owner": {
-      "type": [
-        "string",
-        "null"
-      ]
-    }
+    "evidence_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "dependencies": {"type": "array", "items": {"type": "string"}},
+    "owner": {"type": ["string", "null"]},
+    "rule": {"type": ["string", "null"]}
   }
 }

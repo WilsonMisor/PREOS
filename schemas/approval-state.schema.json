@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PREOS Approval State",
+  "type": "object",
+  "required": ["schema_version", "project_id", "updated_at", "approvals"],
+  "properties": {
+    "schema_version": {"enum": ["1.1", "1.2"]},
+    "project_id": {"type": "string", "minLength": 1},
+    "updated_at": {"type": "string", "minLength": 1},
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["approval_id", "status", "authority"],
+        "properties": {
+          "approval_id": {"type": "string", "minLength": 1},
+          "approval_type": {"type": ["string", "null"]},
+          "scope": {"type": ["string", "null"]},
+          "status": {"enum": ["PENDING", "GRANTED", "DENIED"]},
+          "authority": {"type": "string"},
+          "rationale": {"type": ["string", "null"]},
+          "updated_at": {"type": ["string", "null"]}
+        }
+      }
+    }
+  }
+}

@@ -173,6 +173,7 @@ class StateRecoveryTests(unittest.TestCase):
         state["bindings"] = {"project_contract": MOD.file_binding(contract, self.repo)}
         state["git"] = MOD.git_snapshot(self.repo)
         state["updated_at"] = MOD.utc_now()
+        state["checkpoint_id"] = "CP-2-SOFT"
         MOD.atomic_write_json(root / "checkpoints" / "CP-2-SOFT.json", state)
         MOD.atomic_write_json(root / "CURRENT-STATE.json", state)
         source.write_text("v2", encoding="utf-8")

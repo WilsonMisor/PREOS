@@ -35,14 +35,15 @@
     },
     "checkpoint": {
       "type": "object",
-      "required": ["schema_version", "checkpoint_id", "checkpoint_kind", "project_id", "updated_at", "current_stage", "git"],
+      "required": ["schema_version", "checkpoint_id", "checkpoint_kind", "project_id", "updated_at", "current_stage", "required_approval_ids", "bindings", "git"],
       "properties": {
-        "schema_version": {"enum": ["1.0", "1.1"]},
+        "schema_version": {"enum": ["1.0", "1.1", "1.2"]},
         "checkpoint_id": {"type": "string"},
         "checkpoint_kind": {"enum": ["SOFT", "HARD"]},
         "project_id": {"type": "string"},
         "updated_at": {"type": "string"},
         "current_stage": {"type": "string"},
+        "pipeline_state": {"type": ["string", "null"]},
         "blueprint_phase": {"type": ["string", "null"]},
         "preos_phase": {"type": ["string", "null"]},
         "gstack_specialist_stage": {"type": ["string", "null"]},
@@ -56,6 +57,8 @@
         "pending_build": {"type": ["string", "null"]},
         "pending_migration": {"type": ["string", "null"]},
         "pending_evidence": {"type": ["string", "null"]},
+        "active_risk_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "active_control_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
         "required_approval_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
         "bindings": {
           "type": "object",
@@ -64,7 +67,8 @@
             "task_packet": {"$ref": "#/$defs/fileBinding"}
           }
         },
-        "git": {"$ref": "#/$defs/gitSnapshot"}
+        "git": {"$ref": "#/$defs/gitSnapshot"},
+        "hard_checkpoint_verification": {"type": ["object", "null"]}
       }
     },
     "approval": {
@@ -86,6 +90,7 @@
       "properties": {
         "status": {"enum": ["SAFE_TO_RESUME", "BLOCKED", "RECOVERY_CONFLICT"]},
         "project_id": {"type": "string"},
+        "pipeline_state": {"type": ["string", "null"]},
         "last_verified_action": {"type": ["string", "null"]},
         "next_unverified_action": {"type": ["string", "null"]},
         "missing_approvals": {"type": "array", "items": {"type": "string"}},

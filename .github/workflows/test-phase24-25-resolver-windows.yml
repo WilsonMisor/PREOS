@@ -31,6 +31,8 @@ jobs:
         run: python acceptance/phase24_25_resolver_r3.py --self-test
       - name: Windows transaction and rollback tests
         run: python acceptance/test_phase24_transaction_windows_v2.py
+      - name: Windows Phase 25 process-control tests
+        run: python acceptance/test_phase25_process_control_windows.py
       - name: Exact Windows candidate build
         env:
           CODEX_HOME: ${{ runner.temp }}\codex-home

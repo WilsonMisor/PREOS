@@ -30,6 +30,10 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+      - name: Install current OpenAI Codex CLI
+        run: npm install --global @openai/codex@latest
+      - name: Probe real Codex CLI parser compatibility
+        run: python acceptance/test_real_codex_cli_parser_windows.py
       - name: Resolver self-test
         run: python acceptance/phase24_25_resolver_r3.py --self-test
       - name: Windows transaction and rollback tests

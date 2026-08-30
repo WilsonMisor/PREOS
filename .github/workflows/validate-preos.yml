@@ -16,6 +16,10 @@ jobs:
         python-version: ['3.13']
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Preserve repository bytes
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
       - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5

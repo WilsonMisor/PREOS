@@ -8,7 +8,8 @@ permissions:
   contents: read
 
 jobs:
-  validate:
+  platform-validation:
+    name: platform-validation (${{ matrix.os }}, Python ${{ matrix.python-version }})
     strategy:
       fail-fast: false
       matrix:
@@ -31,3 +32,19 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_*.py'
         env:
           PYTHONPATH: ${{ github.workspace }}/scripts
+
+  validate:
+    name: validate
+    needs: platform-validation
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all platform validation jobs to pass
+        env:
+          PLATFORM_RESULT: ${{ needs.platform-validation.result }}
+        run: |
+          if [ "$PLATFORM_RESULT" != "success" ]; then
+            echo "Platform validation result: $PLATFORM_RESULT" >&2
+            exit 1
+          fi
+          echo "All PREOS platform validation jobs passed."

@@ -16,7 +16,10 @@ def sha256_file(path: Path) -> str:
 
 
 def run(cmd, *, cwd: Path, env: dict[str,str], check=False):
-    p=subprocess.run([str(x) for x in cmd],cwd=cwd,env=env,text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    p=subprocess.run(
+        [str(x) for x in cmd],cwd=cwd,env=env,text=True,
+        encoding="utf-8",errors="replace",stdout=subprocess.PIPE,stderr=subprocess.PIPE,
+    )
     p=subprocess.CompletedProcess(p.args,p.returncode,p.stdout or "",p.stderr or "")
     if check and p.returncode!=0:
         raise AssertionError(f"command failed: {subprocess.list2cmdline([str(x) for x in cmd])}\nrc={p.returncode}\nstdout={p.stdout}\nstderr={p.stderr}")
@@ -25,6 +28,14 @@ def run(cmd, *, cwd: Path, env: dict[str,str], check=False):
 
 def load_json(path: Path):
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def latest_candidate_home(codex_home: Path) -> Path:
+    root=codex_home/"phase24-candidates"
+    candidates=[p for p in root.glob("ci-r3-*") if p.is_dir() and (p/"skills").is_dir()]
+    if not candidates:
+        raise AssertionError(f"no verified ci-r3 candidate home under {root}")
+    return max(candidates,key=lambda p:p.stat().st_mtime_ns)
 
 
 def main():
@@ -81,13 +92,13 @@ def main():
         # Bounded edit, but final verification remains deliberately pending.
         (repo/"value.json").write_text('{"value":"v2"}\n',encoding="utf-8")
         assert not (repo/".phase25_test_execution_marker").exists()
-        soft=rr([sys.executable,PREOS/"scripts"/"checkpoint-state.py",project,"--repo",repo,
-                 "--kind","soft","--event","SESSION_INTERRUPTED",
-                 "--project-contract","project-contract.json","--project-contract-version","PC-1",
-                 "--task-packet","task-packet.md","--task-packet-id","TP-001",
-                 "--last-verified-action","bounded Codex edit complete",
-                 "--next-unverified-action",expected_test,"--pending-test",expected_test,
-                 "--pending-evidence","EV-TP001-TEST","--release-status","NOT_AUTHORIZED"])
+        rr([sys.executable,PREOS/"scripts"/"checkpoint-state.py",project,"--repo",repo,
+            "--kind","soft","--event","SESSION_INTERRUPTED",
+            "--project-contract","project-contract.json","--project-contract-version","PC-1",
+            "--task-packet","task-packet.md","--task-packet-id","TP-001",
+            "--last-verified-action","bounded Codex edit complete",
+            "--next-unverified-action",expected_test,"--pending-test",expected_test,
+            "--pending-evidence","EV-TP001-TEST","--release-status","NOT_AUTHORIZED"])
         prod=state_root/"projects"/project/"production"
         current=load_json(prod/"CURRENT-STATE.json"); pipeline=load_json(prod/"PIPELINE-STATE.json")
         assert current["pending_test"]==expected_test and pipeline["pending_test"]==expected_test
@@ -118,11 +129,11 @@ def main():
         verified_sha=rr(["git","rev-parse","HEAD"]).stdout.strip()
         assert rr(["git","status","--porcelain"]).stdout.strip()=="", "ignored acceptance artifacts unexpectedly dirtied repo"
 
-        capture=rr([sys.executable,PREOS/"scripts"/"capture-evidence.py",project,"EV-TP001-TEST","--repo",repo,
-                    "--producer","OpenAI Codex Phase 25 disposable drill","--environment","disposable-local",
-                    "--artifact","evidence/test_output.txt","--project-contract","project-contract.json",
-                    "--task-packet","task-packet.md","--source","requirements.md","--test-definition","tests/verify_value.py",
-                    "--test-or-command","python tests/verify_value.py","--result","PASS"])
+        rr([sys.executable,PREOS/"scripts"/"capture-evidence.py",project,"EV-TP001-TEST","--repo",repo,
+            "--producer","OpenAI Codex Phase 25 disposable drill","--environment","disposable-local",
+            "--artifact","evidence/test_output.txt","--project-contract","project-contract.json",
+            "--task-packet","task-packet.md","--source","requirements.md","--test-definition","tests/verify_value.py",
+            "--test-or-command","python tests/verify_value.py","--result","PASS"])
         manifest={
             "schema_version":"1.0",
             "checks":[{"id":"TP-001-deterministic-test","status":"PASS","command_or_test":"python tests/verify_value.py","evidence_id":"EV-TP001-TEST"}],
@@ -131,22 +142,23 @@ def main():
         }
         (repo/"verification-manifest.json").write_text(json.dumps(manifest,indent=2)+"\n",encoding="utf-8")
         assert rr(["git","status","--porcelain"]).stdout.strip()==""
-        hard=rr([sys.executable,PREOS/"scripts"/"checkpoint-state.py",project,"--repo",repo,
-                 "--kind","hard","--event","IMPLEMENTATION_COMPLETE",
-                 "--project-contract","project-contract.json","--project-contract-version","PC-1",
-                 "--task-packet","task-packet.md","--task-packet-id","TP-001",
-                 "--last-verified-action","python tests/verify_value.py PASS",
-                 "--next-unverified-action","human production authorization remains separate",
-                 "--verification-manifest",repo/"verification-manifest.json","--release-status","NOT_AUTHORIZED"])
+        rr([sys.executable,PREOS/"scripts"/"checkpoint-state.py",project,"--repo",repo,
+            "--kind","hard","--event","IMPLEMENTATION_COMPLETE",
+            "--project-contract","project-contract.json","--project-contract-version","PC-1",
+            "--task-packet","task-packet.md","--task-packet-id","TP-001",
+            "--last-verified-action","python tests/verify_value.py PASS",
+            "--next-unverified-action","human production authorization remains separate",
+            "--verification-manifest",repo/"verification-manifest.json","--release-status","NOT_AUTHORIZED"])
         current=load_json(prod/"CURRENT-STATE.json")
         assert current.get("checkpoint_kind")=="HARD"
         assert current.get("release_status")=="NOT_AUTHORIZED"
 
-        # gstack continuity docs must exist in the isolated candidate home and remain supplementary.
-        ch=Path(os.environ["CODEX_HOME"])
+        # Candidate build is intentionally isolated in CI. Inspect the latest verified
+        # candidate rather than pretending candidate-only mode promoted it to live skills.
+        candidate_home=latest_candidate_home(Path(os.environ["CODEX_HOME"]))
         for skill in ("gstack-context-restore","gstack-preos-handoff"):
-            path=ch/"skills"/skill/"SKILL.md"
-            assert path.is_file(), f"missing candidate {skill}"
+            path=candidate_home/"skills"/skill/"SKILL.md"
+            assert path.is_file(), f"missing candidate {skill} at {path}"
             text=path.read_text(encoding="utf-8",errors="replace")
             assert "PREOS" in text or "recovery" in text.lower(), f"{skill} does not preserve PREOS/recovery semantics"
 
@@ -163,6 +175,7 @@ def main():
         print(f"verified_commit={verified_sha}")
         print(f"release_status={current.get('release_status')}")
         print(f"negative_status={neg.get('status')}")
+        print(f"candidate_home={candidate_home}")
 
 if __name__=="__main__":
     main()

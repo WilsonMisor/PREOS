@@ -12,8 +12,6 @@ permissions:
 jobs:
   resolver-windows-candidate:
     runs-on: windows-latest
-    env:
-      CODEX_HOME: ${{ runner.temp }}\codex-home
     steps:
       - name: Preserve repository bytes
         shell: pwsh
@@ -36,6 +34,12 @@ jobs:
       - name: Windows Phase 25 process-control tests
         run: python acceptance/test_phase25_process_control_windows.py
       - name: Exact Windows candidate build
-        run: python acceptance/phase24_25_resolver_r3.py --candidate-only
+        shell: pwsh
+        run: |
+          $env:CODEX_HOME = Join-Path $env:RUNNER_TEMP 'codex-home'
+          python acceptance/phase24_25_resolver_r3.py --candidate-only
       - name: Full deterministic Phase 25 lifecycle
-        run: python acceptance/test_phase25_deterministic_lifecycle_windows.py
+        shell: pwsh
+        run: |
+          $env:CODEX_HOME = Join-Path $env:RUNNER_TEMP 'codex-home'
+          python acceptance/test_phase25_deterministic_lifecycle_windows.py

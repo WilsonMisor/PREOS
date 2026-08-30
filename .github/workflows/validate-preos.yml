@@ -9,10 +9,21 @@ permissions:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ['3.13']
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
       - name: Validate PREOS integrity and semantics
-        run: python3 scripts/validate-preos.py
+        run: python scripts/validate-preos.py
       - name: Run PREOS unit tests
-        run: python3 -m unittest discover -s tests -p 'test_*.py'
+        run: python -m unittest discover -s tests -p 'test_*.py'
+        env:
+          PYTHONPATH: ${{ github.workspace }}/scripts

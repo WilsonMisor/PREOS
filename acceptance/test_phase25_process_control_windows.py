@@ -25,10 +25,13 @@ def parse_thread_id(text: str):
 
 
 def codex_command(codex: Path, repo: Path):
+    args=[str(codex),"exec","--ephemeral","--json","--full-auto","-C",str(repo),"-"]
     if os.name=="nt" and codex.suffix.lower() in {".cmd",".bat"}:
-        inner=subprocess.list2cmdline([str(codex),"exec","--ephemeral","--json","--full-auto","-C",str(repo),"-"])
-        return ["cmd.exe","/d","/s","/c",inner]
-    return [str(codex),"exec","--ephemeral","--json","--full-auto","-C",str(repo),"-"]
+        # Do not wrap the entire batch invocation as one nested quoted string.
+        # `call` lets cmd.exe parse the batch path as an ordinary argument, so
+        # paths containing spaces work without the escaped-quote failure seen in CI.
+        return ["cmd.exe","/d","/c","call",*args]
+    return args
 
 
 def codex_exec_until_marker(codex: Path, repo: Path, prompt: str, env: dict[str,str], marker: Path):

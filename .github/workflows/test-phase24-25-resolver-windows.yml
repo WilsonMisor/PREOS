@@ -29,6 +29,8 @@ jobs:
           bun-version: latest
       - name: Resolver self-test
         run: python acceptance/phase24_25_resolver_r3.py --self-test
+      - name: Windows transaction and rollback tests
+        run: python acceptance/test_phase24_transaction_windows.py
       - name: Exact Windows candidate build
         env:
           CODEX_HOME: ${{ runner.temp }}\codex-home

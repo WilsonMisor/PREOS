@@ -1,0 +1,209 @@
+{
+  "version": "1.0.0",
+  "source_id": "SRC-02",
+  "policy": "Preserve PREOS G0-G11 as stable assurance super-gates. Rename the attached framework G0-G17 to R0-R17 readiness sub-gates to avoid identifier collision and breaking changes.",
+  "count": 18,
+  "gates": [
+    {
+      "source_gate_id": "G0",
+      "name": "Scope and criticality",
+      "acceptance": "Product scope, users, markets, criticality, data sensitivity, and risk class approved.",
+      "readiness_gate_id": "R0",
+      "mapped_preos_super_gates": [
+        "G0",
+        "G1"
+      ],
+      "normally_blocking_when_material": false
+    },
+    {
+      "source_gate_id": "G1",
+      "name": "Requirements and traceability",
+      "acceptance": "Critical functional and nonfunctional requirements have measurable acceptance criteria and evidence paths.",
+      "readiness_gate_id": "R1",
+      "mapped_preos_super_gates": [
+        "G0",
+        "G1",
+        "G11"
+      ],
+      "normally_blocking_when_material": false
+    },
+    {
+      "source_gate_id": "G2",
+      "name": "Architecture and AI governance",
+      "acceptance": "Current architecture, threat model, AI tool permissions, human approvals, and change ownership are established.",
+      "readiness_gate_id": "R2",
+      "mapped_preos_super_gates": [
+        "G0",
+        "G2",
+        "G11"
+      ],
+      "normally_blocking_when_material": false
+    },
+    {
+      "source_gate_id": "G3",
+      "name": "Security architecture",
+      "acceptance": "Security controls and privileged paths are designed and reviewed before final release testing.",
+      "readiness_gate_id": "R3",
+      "mapped_preos_super_gates": [
+        "G3"
+      ],
+      "normally_blocking_when_material": true
+    },
+    {
+      "source_gate_id": "G4",
+      "name": "Privacy and data lifecycle",
+      "acceptance": "Actual data handling is mapped, minimised, lawful where required, and operationally supportable.",
+      "readiness_gate_id": "R4",
+      "mapped_preos_super_gates": [
+        "G3",
+        "G4",
+        "G10"
+      ],
+      "normally_blocking_when_material": true
+    },
+    {
+      "source_gate_id": "G5",
+      "name": "Legal documentation",
+      "acceptance": "Terms, Privacy Policy, notices, permissions, and product claims match actual behaviour.",
+      "readiness_gate_id": "R5",
+      "mapped_preos_super_gates": [
+        "G10",
+        "G11"
+      ],
+      "normally_blocking_when_material": true
+    },
+    {
+      "source_gate_id": "G6",
+      "name": "Compliance and jurisdiction",
+      "acceptance": "Applicable legal, regulatory, contractual, marketplace, and sector obligations are mapped and satisfied.",
+      "readiness_gate_id": "R6",
+      "mapped_preos_super_gates": [
+        "G10",
+        "G11"
+      ],
+      "normally_blocking_when_material": true
+    },
+    {
+      "source_gate_id": "G7",
+      "name": "Supply chain",
+      "acceptance": "Dependencies, SDKs, APIs, licences, provenance, and critical third parties pass review.",
+      "readiness_gate_id": "R7",
+      "mapped_preos_super_gates": [
+        "G3",
+        "G8",
+        "G10"
+      ],
+      "normally_blocking_when_material": false
+    },
+    {
+      "source_gate_id": "G8",
+      "name": "Functional and security testing",
+      "acceptance": "Critical workflows and application security controls pass required test suites.",
+      "readiness_gate_id": "R8",
+      "mapped_preos_super_gates": [
+        "G1",
+        "G3",
+        "G11"
+      ],
+      "normally_blocking_when_material": true
+    },
+    {
+      "source_gate_id": "G9",
+      "name": "Data and migration",
+      "acceptance": "Integrity, transactions, schema changes, migration, reconciliation, and rollback or recovery are verified.",
+      "readiness_gate_id": "R9",
+      "mapped_preos_super_gates": [
+        "G4",
+        "G7",
+        "G8"
+      ],
+      "normally_blocking_when_material": true
+    },
+    {
+      "source_gate_id": "G10",
+      "name": "Performance and scalability",
+      "acceptance": "Expected peak and stress conditions meet performance, error, and cost thresholds.",
+      "readiness_gate_id": "R10",
+      "mapped_preos_super_gates": [
+        "G5",
+        "G6"
+      ],
+      "normally_blocking_when_material": false
+    },
+    {
+      "source_gate_id": "G11",
+      "name": "Reliability and recovery",
+      "acceptance": "Failure, backup, restoration, disaster recovery, and resilience objectives are demonstrated.",
+      "readiness_gate_id": "R11",
+      "mapped_preos_super_gates": [
+        "G7",
+        "G11"
+      ],
+      "normally_blocking_when_material": true
+    },
+    {
+      "source_gate_id": "G12",
+      "name": "UX and accessibility",
+      "acceptance": "Critical journeys are usable and accessible for intended users.",
+      "readiness_gate_id": "R12",
+      "mapped_preos_super_gates": [
+        "G10"
+      ],
+      "normally_blocking_when_material": false
+    },
+    {
+      "source_gate_id": "G13",
+      "name": "Release and rollback",
+      "acceptance": "Production deployment, approval, observability, feature rollout, and rollback procedures are proven.",
+      "readiness_gate_id": "R13",
+      "mapped_preos_super_gates": [
+        "G8",
+        "G11"
+      ],
+      "normally_blocking_when_material": true
+    },
+    {
+      "source_gate_id": "G14",
+      "name": "Operations and support",
+      "acceptance": "Monitoring, alerts, incident response, support, ownership, and runbooks are operational.",
+      "readiness_gate_id": "R14",
+      "mapped_preos_super_gates": [
+        "G9",
+        "G11"
+      ],
+      "normally_blocking_when_material": true
+    },
+    {
+      "source_gate_id": "G15",
+      "name": "Payments and distribution",
+      "acceptance": "Payment, billing, app store, marketplace, and distribution controls pass where applicable.",
+      "readiness_gate_id": "R15",
+      "mapped_preos_super_gates": [
+        "G5",
+        "G8",
+        "G10"
+      ],
+      "normally_blocking_when_material": false
+    },
+    {
+      "source_gate_id": "G16",
+      "name": "Residual risk acceptance",
+      "acceptance": "Open risks are explicitly owned, time bounded where possible, and accepted by the correct authority.",
+      "readiness_gate_id": "R16",
+      "mapped_preos_super_gates": [
+        "G11"
+      ],
+      "normally_blocking_when_material": true
+    },
+    {
+      "source_gate_id": "G17",
+      "name": "Production authorisation",
+      "acceptance": "All blockers are cleared and accountable authority signs the production release decision.",
+      "readiness_gate_id": "R17",
+      "mapped_preos_super_gates": [
+        "G11"
+      ],
+      "normally_blocking_when_material": true
+    }
+  ]
+}

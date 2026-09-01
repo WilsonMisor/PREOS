@@ -22,6 +22,7 @@ The repository directly preserves and validates the source package:
 - 1,130 atomic risk records across 52 production domains, stored as deterministic gzip streams for bounded repository size and exact decompression.
 - 1,300 production-readiness questions.
 - Atomic risk JSON schema.
+- Model 2 risk migration contract, unresolved legacy crosswalk scaffold, and R0-R17 readiness mapping for compatibility-gated adoption.
 - Production risk/economics/evolution operating-system document.
 - Virtual team ownership and decision-authority matrix.
 - Original Codex + gstack PREOS architecture proposal.

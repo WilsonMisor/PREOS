@@ -6,6 +6,7 @@
     "project_id",
     "generated_at",
     "source_hashes",
+    "risk_corpus",
     "classification",
     "maturity_stage",
     "authority",
@@ -72,6 +73,32 @@
     },
     "unknowns": {
       "type": "array"
+    },
+    "risk_corpus": {
+      "type": "object",
+      "required": [
+        "version",
+        "activation_allowed"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "enum": [
+            "legacy-v1",
+            "model2"
+          ]
+        },
+        "activation_allowed": {
+          "type": "boolean"
+        },
+        "crosswalk": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
     }
   }
 }

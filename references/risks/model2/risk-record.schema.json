@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PREOS Five Dimension Risk Record v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "risk_id",
+    "canonical_name",
+    "dimension",
+    "category",
+    "field_count",
+    "fields"
+  ],
+  "properties": {
+    "risk_id": {
+      "type": "string"
+    },
+    "canonical_name": {
+      "type": "string"
+    },
+    "dimension": {
+      "enum": [
+        "universal",
+        "industry",
+        "product",
+        "jurisdiction",
+        "architecture"
+      ]
+    },
+    "category": {
+      "type": "string"
+    },
+    "source_heading_id": {
+      "type": "string"
+    },
+    "source_heading_name": {
+      "type": "string"
+    },
+    "source_line_start": {
+      "type": "integer"
+    },
+    "field_count": {
+      "type": "integer",
+      "const": 40
+    },
+    "fields": {
+      "type": "object",
+      "minProperties": 40,
+      "maxProperties": 40
+    }
+  }
+}

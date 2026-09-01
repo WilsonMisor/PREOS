@@ -11,7 +11,16 @@
     "baseline_controls": 75,
     "atomic_risks": 1130,
     "risk_domains": 52,
-    "readiness_questions": 1300
+    "readiness_questions": 1300,
+    "risk_model2_records": 4337,
+    "risk_model2_field_count": 40,
+    "risk_model2_dimensions": {
+      "universal": 1406,
+      "industry": 1450,
+      "product": 753,
+      "jurisdiction": 328,
+      "architecture": 400
+    }
   },
   "required_paths": [
     ".github/CODEOWNERS",
@@ -177,7 +186,18 @@
     "tests/test_source_extractor.py",
     "tests/test_source_package_integrity.py",
     "tests/test_state_recovery.py",
-    "tests/test_wordpress_overlay.py"
+    "tests/test_wordpress_overlay.py",
+    ".gitattributes",
+    "references/risks/migration/risk-model-2-migration.md",
+    "references/risks/migration/legacy-to-model2-crosswalk.schema.json",
+    "references/risks/migration/legacy-to-model2-crosswalk.json",
+    "references/risks/model2/risk-record.schema.json",
+    "references/readiness/r0-r17-gates.json",
+    "references/readiness/domain-registry.json",
+    "scripts/validate-risk-model2.py",
+    "scripts/select-risk-model2.py",
+    "tests/test_risk_model2_migration.py",
+    "tests/test_readiness_r0_r17.py"
   ],
   "integration_repositories": {
     "blueprint": "WilsonMisor/wed_dev_skill",

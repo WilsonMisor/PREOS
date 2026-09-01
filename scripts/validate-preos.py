@@ -10,7 +10,7 @@ import sys
 from preos_common import source_package_bytes
 
 ROOT = Path(__file__).resolve().parents[1]
-checks = ["validate-source-package.py", "validate-baseline.py", "validate-risk-catalogue.py", "validate-readiness.py", "validate-integration.py"]
+checks = ["validate-source-package.py", "validate-baseline.py", "validate-risk-catalogue.py", "validate-readiness.py", "validate-integration.py", "validate-risk-model2.py"]
 for script in checks:
     r = subprocess.run([sys.executable, str(ROOT / "scripts" / script)], cwd=ROOT)
     if r.returncode:

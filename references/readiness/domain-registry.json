@@ -1,0 +1,223 @@
+{
+  "version": "1.0.0",
+  "source_id": "SRC-02",
+  "count": 36,
+  "domains": [
+    {
+      "id": "RD-01",
+      "source_section": 4,
+      "name": "Product Definition and Intended Use",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-02",
+      "source_section": 5,
+      "name": "Requirements, Acceptance Criteria, and Traceability",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-03",
+      "source_section": 6,
+      "name": "AI Assisted and Vibe Coding Governance",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-04",
+      "source_section": 7,
+      "name": "Architecture and Threat Modelling",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-05",
+      "source_section": 8,
+      "name": "Functional Correctness and Business Logic",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-06",
+      "source_section": 9,
+      "name": "Secure Software Development Lifecycle",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-07",
+      "source_section": 10,
+      "name": "Application Security Verification",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-08",
+      "source_section": 11,
+      "name": "Identity, Authentication, Authorisation, and Privileged Access",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-09",
+      "source_section": 12,
+      "name": "Data Security and Integrity",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-10",
+      "source_section": 13,
+      "name": "Privacy by Design and Data Lifecycle",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-11",
+      "source_section": 14,
+      "name": "Accurate Legal Documentation and Disclosure Consistency",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-12",
+      "source_section": 15,
+      "name": "Legal and Regulatory Compliance",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-13",
+      "source_section": 16,
+      "name": "Third Party Components, SDKs, APIs, and Software Supply Chain",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-14",
+      "source_section": 17,
+      "name": "Secrets, Configuration, Environments, and Infrastructure Security",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-15",
+      "source_section": 18,
+      "name": "Testing Strategy and Quality Assurance",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-16",
+      "source_section": 19,
+      "name": "Reliability, Availability, and Resilience",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-17",
+      "source_section": 20,
+      "name": "Performance, Scalability, and Capacity",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-18",
+      "source_section": 21,
+      "name": "Database, Migration, Transaction, and Data Consistency Readiness",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-19",
+      "source_section": 22,
+      "name": "Backup, Restoration, Disaster Recovery, and Continuity",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-20",
+      "source_section": 23,
+      "name": "Observability, Logging, Auditability, and Alerting",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-21",
+      "source_section": 24,
+      "name": "Vulnerability Management and Incident Response",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-22",
+      "source_section": 25,
+      "name": "Release Engineering, Deployment, Change Control, and Rollback",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-23",
+      "source_section": 26,
+      "name": "User Experience, Usability, and Accessibility",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-24",
+      "source_section": 27,
+      "name": "Compatibility, Portability, and Platform Behaviour",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-25",
+      "source_section": 28,
+      "name": "App Store, Marketplace, and Distribution Readiness",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-26",
+      "source_section": 29,
+      "name": "Payments, Billing, Subscriptions, and Financial Controls",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-27",
+      "source_section": 30,
+      "name": "Abuse Prevention, User Safety, and Content Governance",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-28",
+      "source_section": 31,
+      "name": "Customer Support, Service Operations, and Supportability",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-29",
+      "source_section": 32,
+      "name": "Documentation, Runbooks, Ownership, and Knowledge Continuity",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-30",
+      "source_section": 33,
+      "name": "Cost, Resource Efficiency, and Production Economics",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-31",
+      "source_section": 34,
+      "name": "Localisation, Internationalisation, Time, Currency, and Regional Behaviour",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-32",
+      "source_section": 35,
+      "name": "Intellectual Property, Licences, Provenance, and AI Generated Code Risk",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-33",
+      "source_section": 36,
+      "name": "Analytics, Telemetry, Experimentation, and Product Measurement",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-34",
+      "source_section": 37,
+      "name": "Feature Flags, Configuration Rollout, and Controlled Experimentation",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-35",
+      "source_section": 38,
+      "name": "Data Portability, Account Closure, Decommissioning, and Product Exit",
+      "source_id": "SRC-02"
+    },
+    {
+      "id": "RD-36",
+      "source_section": 39,
+      "name": "Post Launch Assurance and Continuous Production Readiness",
+      "source_id": "SRC-02"
+    }
+  ]
+}

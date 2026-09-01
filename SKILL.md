@@ -41,7 +41,7 @@ PREOS gate states are **GREEN, AMBER, RED, HUMAN REVIEW, UNKNOWN**. **UNKNOWN ne
 
 ## Project Contract rule
 
-The PREOS Project Contract is a compiled hash-bound snapshot of approved Blueprint sources. It is not a competing PRD, SRS or SRD. When a bound source changes, run change impact and evidence freshness review before relying on prior assurance results.
+The PREOS Project Contract is a compiled hash-bound snapshot of approved Blueprint sources. It is not a competing PRD, SRS or SRD. When a bound source changes, run change impact and evidence freshness review before relying on prior assurance results. Every Project Contract must declare its risk_corpus binding; legacy-v1 remains the default until the model2 crosswalk is complete and human approval authorizes activation.
 
 ## State and AI-session continuity rule
 

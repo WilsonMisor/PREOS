@@ -1,0 +1,6 @@
+interface:
+  display_name: "PREOS Risk Model"
+  short_description: "PREOS Risk Model stage of integrated PREOS assurance"
+  default_prompt: "Use $preos-risk-model within the AI Product Delivery Blueprint + PREOS + gstack + Codex system. Preserve human authority, evidence semantics, selective loading, and approved scope."
+policy:
+  allow_implicit_invocation: true

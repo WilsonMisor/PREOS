@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "repository": "WilsonMisor/PREOS",
+  "component": "preos-production-assurance",
+  "skills": [
+    {
+      "name": "preos",
+      "source_path": "codex-distribution/skills/preos",
+      "implicit_invocation": true
+    },
+    {
+      "name": "preos-architecture-economics",
+      "source_path": "codex-distribution/skills/preos-architecture-economics"
+    },
+    {
+      "name": "preos-production-implement",
+      "source_path": "codex-distribution/skills/preos-production-implement"
+    },
+    {
+      "name": "preos-production-learn",
+      "source_path": "codex-distribution/skills/preos-production-learn"
+    },
+    {
+      "name": "preos-production-plan",
+      "source_path": "codex-distribution/skills/preos-production-plan"
+    },
+    {
+      "name": "preos-project-init",
+      "source_path": "codex-distribution/skills/preos-project-init"
+    },
+    {
+      "name": "preos-risk-model",
+      "source_path": "codex-distribution/skills/preos-risk-model"
+    }
+  ],
+  "agents": []
+}

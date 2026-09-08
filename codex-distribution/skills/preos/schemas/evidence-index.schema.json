@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PREOS Evidence Index",
+  "type": "object",
+  "required": ["schema_version", "project_id", "updated_at", "evidence"],
+  "properties": {
+    "schema_version": {"enum": ["1.1", "1.2"]},
+    "project_id": {"type": "string", "minLength": 1},
+    "updated_at": {"type": "string", "minLength": 1},
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["evidence_id", "bindings"],
+        "properties": {
+          "evidence_id": {"type": "string", "minLength": 1},
+          "status": {"enum": ["CURRENT", "STALE", "EXPIRED", "UNKNOWN", "GREEN", "AMBER", "RED", "HUMAN REVIEW"]},
+          "validity": {"enum": ["CURRENT", "STALE", "EXPIRED", "UNKNOWN"]},
+          "valid_until": {"type": ["string", "null"]},
+          "artifact_location": {"type": ["string", "null"]},
+          "bindings": {"type": "object"}
+        }
+      }
+    }
+  }
+}

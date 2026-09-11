@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "canonical_name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "dimension": {
+      "type": "string"
+    },
+    "failure_mechanism": {
+      "type": "string"
+    },
+    "project_contract_id": {
+      "type": "string"
+    },
+    "provenance_class": {
+      "type": "string"
+    },
+    "risk_definition_id": {
+      "type": "string"
+    },
+    "root_cause": {
+      "type": "string"
+    },
+    "source_risk_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "risk_definition_id",
+    "source_risk_id",
+    "canonical_name",
+    "dimension",
+    "category",
+    "root_cause",
+    "failure_mechanism",
+    "provenance_class"
+  ],
+  "title": "PREOS risk-definition.schema.json",
+  "type": "object"
+}

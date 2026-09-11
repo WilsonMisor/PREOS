@@ -1,27 +1,39 @@
 {
-  "preos_version": "1.1.0",
   "canonical_source": {
-    "storage": "source-package/package-chunks/",
+    "bytes": 488918,
     "chunk_manifest": "source-package/PACKAGE-CHUNKS.json",
     "reconstructed_name": "production_risk_economics_evolution_operating_system_package.zip",
-    "bytes": 488918,
-    "sha256": "8e5612bb9ee4bca3dfe9aeb31252275c6a915ff5a67eddc6f1a7e721eaa621ed"
+    "sha256": "8e5612bb9ee4bca3dfe9aeb31252275c6a915ff5a67eddc6f1a7e721eaa621ed",
+    "storage": "source-package/package-chunks/"
   },
   "expected_counts": {
-    "baseline_controls": 75,
     "atomic_risks": 1130,
-    "risk_domains": 52,
+    "baseline_controls": 75,
     "readiness_questions": 1300,
-    "risk_model2_records": 4337,
-    "risk_model2_field_count": 40,
+    "risk_domains": 52,
     "risk_model2_dimensions": {
-      "universal": 1406,
+      "architecture": 400,
       "industry": 1450,
-      "product": 753,
       "jurisdiction": 328,
-      "architecture": 400
-    }
+      "product": 753,
+      "universal": 1406
+    },
+    "risk_model2_field_count": 40,
+    "risk_model2_records": 4337
   },
+  "gate_states": [
+    "GREEN",
+    "AMBER",
+    "RED",
+    "HUMAN REVIEW",
+    "UNKNOWN"
+  ],
+  "integration_repositories": {
+    "blueprint": "WilsonMisor/wed_dev_skill",
+    "gstack": "WilsonMisor/gstack",
+    "preos": "WilsonMisor/PREOS"
+  },
+  "preos_version": "1.1.0",
   "required_paths": [
     ".github/CODEOWNERS",
     ".github/workflows/validate-preos.yml",
@@ -197,22 +209,20 @@
     "scripts/validate-risk-model2.py",
     "scripts/select-risk-model2.py",
     "tests/test_risk_model2_migration.py",
-    "tests/test_readiness_r0_r17.py"
+    "tests/test_readiness_r0_r17.py",
+    "references/risks/model2/risk-corpus.jsonl",
+    "references/risks/model2/catalogue-index.json",
+    "references/risks/model2/concern-separation-crosswalk.json",
+    "references/integration/source4-production-assurance-crosswalk.json",
+    "schemas/risk-definition.schema.json",
+    "schemas/risk-assessment.schema.json",
+    "schemas/risk-economics.schema.json",
+    "schemas/risk-evolution.schema.json",
+    "schemas/risk-evidence-binding.schema.json",
+    "tests/test_production_assurance_suite_v2.py"
   ],
-  "integration_repositories": {
-    "blueprint": "WilsonMisor/wed_dev_skill",
-    "preos": "WilsonMisor/PREOS",
-    "gstack": "WilsonMisor/gstack"
-  },
   "state_roots": {
     "project": ".ai-product-delivery/preos/",
     "runtime": "PREOS_STATE_ROOT"
-  },
-  "gate_states": [
-    "GREEN",
-    "AMBER",
-    "RED",
-    "HUMAN REVIEW",
-    "UNKNOWN"
-  ]
+  }
 }

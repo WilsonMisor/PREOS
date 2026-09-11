@@ -36,7 +36,7 @@ class RiskModel2MigrationTests(unittest.TestCase):
         proc = subprocess.run([sys.executable, str(SCRIPTS / "validate-risk-model2.py")], cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         self.assertIn("activation gate: disabled", proc.stdout)
-        self.assertIn("not installed before crosswalk gate", proc.stdout)
+        self.assertIn("model2 catalogue: 4337 records validated", proc.stdout)
 
     def test_project_contract_schema_and_template_declare_risk_corpus(self):
         schema = json.loads((ROOT / "schemas" / "project-contract.schema.json").read_text(encoding="utf-8"))

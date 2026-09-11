@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "mitigation_strategy": {
+      "type": "string"
+    },
+    "prevention_strategy": {
+      "type": "string"
+    },
+    "project_contract_id": {
+      "type": "string"
+    },
+    "recovery_strategy": {
+      "type": "string"
+    },
+    "regression_protection": {
+      "type": "string"
+    },
+    "risk_evolution_id": {
+      "type": "string"
+    },
+    "source_risk_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "risk_evolution_id",
+    "source_risk_id",
+    "prevention_strategy",
+    "mitigation_strategy",
+    "recovery_strategy",
+    "regression_protection"
+  ],
+  "title": "PREOS risk-evolution.schema.json",
+  "type": "object"
+}

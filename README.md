@@ -64,3 +64,8 @@ python -m unittest discover -s tests -p 'test_*.py'
 ```
 
 CI runs the same integrity and semantic checks on pushes and pull requests.
+
+## Production Assurance Suite v2
+
+This repository now materializes the four-source Production Assurance Suite v2 intake as PREOS model2 artifacts. The Source 1 five-dimension corpus is installed under references/risks/model2/risk-corpus.jsonl with 4,337 records and exact dimension counts. Concern separation is enforced through references/risks/model2/concern-separation-crosswalk.json and the separated risk schemas. Source 4 production-assurance semantics are tracked in references/integration/source4-production-assurance-crosswalk.json. legacy-v1 remains the Project Contract default until PREOS_MODEL2_CROSSWALK_APPROVAL is recorded by a qualified human.
+

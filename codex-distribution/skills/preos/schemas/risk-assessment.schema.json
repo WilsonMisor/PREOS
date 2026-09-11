@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "applicability": {
+      "type": "string"
+    },
+    "blast_radius": {
+      "type": "string"
+    },
+    "detectability": {
+      "type": "string"
+    },
+    "likelihood": {
+      "type": "string"
+    },
+    "project_contract_id": {
+      "type": "string"
+    },
+    "risk_assessment_id": {
+      "type": "string"
+    },
+    "severity": {
+      "type": "string"
+    },
+    "source_risk_id": {
+      "type": "string"
+    },
+    "trigger_conditions": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "risk_assessment_id",
+    "source_risk_id",
+    "applicability",
+    "trigger_conditions",
+    "likelihood",
+    "severity",
+    "blast_radius",
+    "detectability"
+  ],
+  "title": "PREOS risk-assessment.schema.json",
+  "type": "object"
+}

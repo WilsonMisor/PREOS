@@ -87,3 +87,8 @@ AI may analyze, propose, implement approved scope, test, measure, collect eviden
 ## Completion
 
 Return active Blueprint source versions/hashes, PREOS stage, selected risk/control IDs, current UNKNOWN/HUMAN REVIEW/RED items, gstack routes invoked or required, Codex task packet status, continuity/recovery state when relevant, evidence freshness, G0-G11 state, human approvals/role gaps, deferred-complexity triggers, limitations and next lifecycle route.
+
+## Production Assurance Suite v2
+
+The four-source PAS v2 corpus is installed as model2 reference material, not as the default risk corpus. Keep RiskDefinition, RiskAssessment, RiskEconomics, RiskEvolution, RiskEvidence, and RiskAcceptance separate. Source 4 specialist concepts route through the existing namespaced gstack integration and do not create a second release authority. PREOS_MODEL2_CROSSWALK_APPROVAL remains HUMAN REVIEW until a qualified human approves activation.
+

@@ -136,6 +136,58 @@ def validate_optional_catalogue() -> dict[str, int | bool]:
     return {"installed": True, "total": total}
 
 
+def validate_concern_separation() -> None:
+    path = MODEL2_DIR / 'concern-separation-crosswalk.json'
+    if not path.is_file():
+        fail('missing concern-separation crosswalk')
+    data = load_json(path)
+    concerns = data.get('concerns', {})
+    required = ['risk_definition', 'risk_assessment', 'risk_economics', 'risk_evolution', 'risk_evidence', 'risk_acceptance']
+    for concern in required:
+        if concern not in concerns:
+            fail(f'missing concern projection: {concern}')
+    observed = []
+    for numbers in concerns.values():
+        observed.extend(numbers)
+    if sorted(observed) != list(range(1, 41)):
+        fail('concern separation must account for each Source 1 field exactly once')
+    schemas = [
+        'risk-definition.schema.json',
+        'risk-assessment.schema.json',
+        'risk-economics.schema.json',
+        'risk-evolution.schema.json',
+        'risk-evidence-binding.schema.json',
+        'risk-acceptance.schema.json',
+    ]
+    for schema_name in schemas:
+        if not (ROOT / 'schemas' / schema_name).is_file():
+            fail(f'missing separated risk schema: {schema_name}')
+
+
+def validate_source4_crosswalk() -> None:
+    path = ROOT / 'references' / 'integration' / 'source4-production-assurance-crosswalk.json'
+    if not path.is_file():
+        fail('missing Source 4 production assurance crosswalk')
+    data = load_json(path)
+    expected = {
+        'roles': 18,
+        'questions': 30,
+        'assumptions': 40,
+        'context_dimensions': 40,
+        'domains': 32,
+        'test_families': 28,
+        'atomic_fields': 37,
+        'output_sections': 20,
+    }
+    counts = data.get('counts', {})
+    for key, value in expected.items():
+        if counts.get(key) != value:
+            fail(f'Source 4 crosswalk count mismatch for {key}')
+    policy = data.get('routing_policy', '')
+    if 'do not create competing top-level release authority' not in policy:
+        fail('Source 4 routing policy must prevent competing release authority')
+
+
 def validate_project_contract_schema() -> None:
     schema = load_json(ROOT / "schemas" / "project-contract.schema.json")
     if "risk_corpus" not in schema.get("required", []):
@@ -155,6 +207,8 @@ def main() -> None:
     validate_record_schema()
     crosswalk = validate_crosswalk()
     catalogue = validate_optional_catalogue()
+    validate_concern_separation()
+    validate_source4_crosswalk()
     validate_project_contract_schema()
     print(f"PASS PREOS risk model2 migration: {crosswalk['total']} legacy risks have explicit dispositions")
     if catalogue.get("installed"):

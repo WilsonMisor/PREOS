@@ -24,3 +24,8 @@ Introduce the attached 4,337-entry five-dimension catalogue as PREOS Risk Corpus
 - Duplicate risk IDs are unresolved.
 - Project contracts cannot declare which corpus version they use.
 - Evidence generated under v1 would be silently reinterpreted under v2.
+
+## Production Assurance Suite v2 Update
+
+PAS v2 installs the Source 1 five-dimension catalogue as references/risks/model2/risk-corpus.jsonl and validates 4,337 records across universal, industry, product, jurisdiction, and architecture dimensions. The new concern-separation crosswalk accounts for Source 1 fields 1-40 exactly once and keeps assessment, economics, evolution, evidence, and acceptance concerns out of the reusable RiskDefinition. Source 4 is represented by the production-assurance crosswalk in references/integration/source4-production-assurance-crosswalk.json. Model2 remains disabled as a Project Contract default until the existing human approval gate is closed.
+

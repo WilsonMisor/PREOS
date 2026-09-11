@@ -1,0 +1,14 @@
+{
+  "activation_state": "installed_not_default",
+  "concern_separation_required": true,
+  "count": 4337,
+  "dimensions": {
+    "architecture": 400,
+    "industry": 1450,
+    "jurisdiction": 328,
+    "product": 753,
+    "universal": 1406
+  },
+  "field_count_expected": 40,
+  "source_document_sha256": "cfb5a9e7323ffcd9e27b5d0da73b8d896c989550b27fd6ba38678a17d1ab6a4b"
+}

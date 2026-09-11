@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "acceptance_evidence": {
+      "type": "string"
+    },
+    "alert": {
+      "type": "string"
+    },
+    "automated_test": {
+      "type": "string"
+    },
+    "observability": {
+      "type": "string"
+    },
+    "project_contract_id": {
+      "type": "string"
+    },
+    "risk_evidence_id": {
+      "type": "string"
+    },
+    "source_risk_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "risk_evidence_id",
+    "source_risk_id",
+    "automated_test",
+    "observability",
+    "alert",
+    "acceptance_evidence"
+  ],
+  "title": "PREOS risk-evidence-binding.schema.json",
+  "type": "object"
+}

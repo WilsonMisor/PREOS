@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
@@ -188,6 +189,13 @@ def validate_source4_crosswalk() -> None:
         fail('Source 4 routing policy must prevent competing release authority')
 
 
+
+def run_model2_validator(script_name: str) -> str:
+    result = subprocess.run([sys.executable, str(ROOT / "scripts" / script_name)], cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if result.returncode:
+        fail((result.stdout + result.stderr).strip() or f"{script_name} failed")
+    return result.stdout.strip()
+
 def validate_project_contract_schema() -> None:
     schema = load_json(ROOT / "schemas" / "project-contract.schema.json")
     if "risk_corpus" not in schema.get("required", []):
@@ -208,9 +216,15 @@ def main() -> None:
     crosswalk = validate_crosswalk()
     catalogue = validate_optional_catalogue()
     validate_concern_separation()
+    semantic = run_model2_validator("semantic-risk-validator.py")
+    relationships = run_model2_validator("validate-risk-relationships.py")
+    concerns = run_model2_validator("validate-risk-concerns.py")
     validate_source4_crosswalk()
     validate_project_contract_schema()
     print(f"PASS PREOS risk model2 migration: {crosswalk['total']} legacy risks have explicit dispositions")
+    print(semantic)
+    print(relationships)
+    print(concerns)
     if catalogue.get("installed"):
         print(f"PASS PREOS risk model2 catalogue: {catalogue['total']} records validated")
     else:

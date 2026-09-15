@@ -1,0 +1,204 @@
+{
+  "schema_version": "pasv2-concern-runtime-v1",
+  "definitions": [
+    {
+      "risk_definition_id": "RDEF-412EAB735AC9F0D1",
+      "definition_version": "1.0.0",
+      "canonical_name": "API Contract Ambiguity",
+      "definition_content_sha256": "historical-definition-v1"
+    },
+    {
+      "risk_definition_id": "RDEF-412EAB735AC9F0D1",
+      "definition_version": "1.1.0",
+      "canonical_name": "API Contract Ambiguity",
+      "definition_content_sha256": "current-definition-v2"
+    },
+    {
+      "risk_definition_id": "RDEF-8F5DC09A56DA1C52",
+      "definition_version": "1.0.0",
+      "canonical_name": "Zombie Request Problem",
+      "definition_content_sha256": "8ee9486d4406fba7ba2d4c68d422819127160596f8888a761a646cf0f3658239"
+    }
+  ],
+  "assessments": [
+    {
+      "risk_assessment_id": "RAS-001",
+      "risk_definition_id": "RDEF-412EAB735AC9F0D1",
+      "definition_version": "1.0.0",
+      "project_id": "PASV2-DEMO",
+      "release_id": "REL-001",
+      "change_id": "CHG-001",
+      "source_risk_id": "4.1.1",
+      "likelihood": "Medium",
+      "severity": "Medium",
+      "scope_id": "scope-api"
+    },
+    {
+      "risk_assessment_id": "RAS-002",
+      "risk_definition_id": "RDEF-412EAB735AC9F0D1",
+      "definition_version": "1.0.0",
+      "project_id": "PASV2-DEMO",
+      "release_id": "REL-002",
+      "change_id": "CHG-002",
+      "source_risk_id": "4.1.1",
+      "likelihood": "High",
+      "severity": "High",
+      "scope_id": "scope-api"
+    },
+    {
+      "risk_assessment_id": "RAS-003",
+      "risk_definition_id": "RDEF-412EAB735AC9F0D1",
+      "definition_version": "1.1.0",
+      "project_id": "PASV2-DEMO",
+      "release_id": "REL-003",
+      "change_id": "CHG-003",
+      "source_risk_id": "4.1.1",
+      "likelihood": "Low",
+      "severity": "Medium",
+      "scope_id": "scope-api-v2"
+    }
+  ],
+  "economics": [
+    {
+      "risk_economics_id": "REC-001",
+      "risk_definition_id": "RDEF-412EAB735AC9F0D1",
+      "definition_version": "1.0.0",
+      "risk_assessment_id": "RAS-001",
+      "project_id": "PASV2-DEMO",
+      "economics_version": "1",
+      "unit_economics": {
+        "incident_cost": 1000
+      },
+      "complexity_tax": "low",
+      "cost_assumptions": [
+        "first estimate"
+      ]
+    },
+    {
+      "risk_economics_id": "REC-002",
+      "risk_definition_id": "RDEF-412EAB735AC9F0D1",
+      "definition_version": "1.0.0",
+      "risk_assessment_id": "RAS-001",
+      "project_id": "PASV2-DEMO",
+      "economics_version": "2",
+      "unit_economics": {
+        "incident_cost": 1800
+      },
+      "complexity_tax": "medium",
+      "cost_assumptions": [
+        "refreshed estimate"
+      ]
+    }
+  ],
+  "evolutions": [
+    {
+      "risk_evolution_id": "REV-001",
+      "risk_definition_id": "RDEF-412EAB735AC9F0D1",
+      "definition_version": "1.0.0",
+      "risk_assessment_id": "RAS-001",
+      "project_id": "PASV2-DEMO",
+      "evolution_version": "1",
+      "maturity_stage": "initial",
+      "activation_trigger": "API surface grows",
+      "migration_path": "contract-test-first",
+      "review_conditions": [
+        "release change"
+      ]
+    },
+    {
+      "risk_evolution_id": "REV-002",
+      "risk_definition_id": "RDEF-412EAB735AC9F0D1",
+      "definition_version": "1.0.0",
+      "risk_assessment_id": "RAS-001",
+      "project_id": "PASV2-DEMO",
+      "evolution_version": "2",
+      "maturity_stage": "managed",
+      "activation_trigger": "new consumers",
+      "migration_path": "schema registry",
+      "review_conditions": [
+        "consumer onboarding"
+      ]
+    }
+  ],
+  "evidence_bindings": [
+    {
+      "risk_evidence_id": "REB-001",
+      "risk_definition_id": "RDEF-412EAB735AC9F0D1",
+      "definition_version": "1.0.0",
+      "risk_assessment_id": "RAS-001",
+      "project_id": "PASV2-DEMO",
+      "validity": "STALE",
+      "bindings": {
+        "git_head": "old"
+      },
+      "replacement_evidence_id": "REB-002"
+    },
+    {
+      "risk_evidence_id": "REB-002",
+      "risk_definition_id": "RDEF-412EAB735AC9F0D1",
+      "definition_version": "1.0.0",
+      "risk_assessment_id": "RAS-001",
+      "project_id": "PASV2-DEMO",
+      "validity": "CURRENT",
+      "bindings": {
+        "git_head": "current"
+      }
+    }
+  ],
+  "acceptances": [
+    {
+      "acceptance_id": "RAC-001",
+      "risk_definition_id": "RDEF-412EAB735AC9F0D1",
+      "definition_version": "1.0.0",
+      "risk_assessment_id": "RAS-001",
+      "project_id": "PASV2-DEMO",
+      "scope_id": "scope-api",
+      "scope": "bounded API contract risk",
+      "scope_hash": "scope-v1",
+      "current_scope_hash": "scope-v1",
+      "authority": "Accountable Product Owner",
+      "reason": "temporary bounded exposure",
+      "approved_at": "2026-09-14T00:00:00Z",
+      "expires_at": "2027-09-14T00:00:00Z",
+      "review_trigger": "definition or scope change",
+      "status": "ACTIVE",
+      "current_authority": true
+    },
+    {
+      "acceptance_id": "RAC-002",
+      "risk_definition_id": "RDEF-412EAB735AC9F0D1",
+      "definition_version": "1.0.0",
+      "risk_assessment_id": "RAS-002",
+      "project_id": "PASV2-DEMO",
+      "scope_id": "scope-api",
+      "scope": "expired exposure",
+      "authority": "Accountable Product Owner",
+      "reason": "expired example",
+      "approved_at": "2025-01-01T00:00:00Z",
+      "expires_at": "2025-06-01T00:00:00Z",
+      "review_trigger": "time bound",
+      "status": "EXPIRED",
+      "current_authority": false
+    },
+    {
+      "acceptance_id": "RAC-003",
+      "risk_definition_id": "RDEF-412EAB735AC9F0D1",
+      "definition_version": "1.0.0",
+      "risk_assessment_id": "RAS-002",
+      "project_id": "PASV2-DEMO",
+      "scope_id": "scope-api",
+      "scope": "revoked exposure",
+      "authority": "Accountable Product Owner",
+      "reason": "superseded by control",
+      "approved_at": "2026-01-01T00:00:00Z",
+      "expires_at": "2027-01-01T00:00:00Z",
+      "review_trigger": "control available",
+      "status": "REVOKED",
+      "revoked_at": "2026-09-14T00:00:00Z",
+      "revoked_by": "Chief Risk Owner",
+      "revocation_reason": "risk definition changed",
+      "replacement_acceptance_id": "RAC-001",
+      "current_authority": false
+    }
+  ]
+}

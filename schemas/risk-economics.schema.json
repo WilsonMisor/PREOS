@@ -1,37 +1,36 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PREOS risk-economics.schema.json",
+  "type": "object",
   "additionalProperties": false,
   "properties": {
-    "availability_consequence": {
-      "type": "string"
-    },
-    "business_consequence": {
-      "type": "string"
-    },
-    "financial_consequence": {
-      "type": "string"
-    },
-    "performance_consequence": {
-      "type": "string"
-    },
-    "project_contract_id": {
-      "type": "string"
-    },
-    "risk_economics_id": {
-      "type": "string"
-    },
-    "source_risk_id": {
-      "type": "string"
-    }
+    "risk_economics_id": { "type": "string", "minLength": 1 },
+    "risk_definition_id": { "type": "string", "minLength": 1 },
+    "definition_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "risk_assessment_id": { "type": "string" },
+    "source_risk_id": { "type": "string" },
+    "project_contract_id": { "type": "string" },
+    "project_id": { "type": "string" },
+    "business_consequence": { "type": "string", "minLength": 1 },
+    "financial_consequence": { "type": "string", "minLength": 1 },
+    "performance_consequence": { "type": "string", "minLength": 1 },
+    "availability_consequence": { "type": "string", "minLength": 1 },
+    "economics_version": { "type": "string", "minLength": 1 },
+    "unit_economics": { "type": "object" },
+    "complexity_tax": { "type": "string", "minLength": 1 },
+    "cost_assumptions": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
   },
   "required": [
     "risk_economics_id",
-    "source_risk_id",
+    "risk_definition_id",
+    "definition_version",
     "business_consequence",
     "financial_consequence",
     "performance_consequence",
-    "availability_consequence"
-  ],
-  "title": "PREOS risk-economics.schema.json",
-  "type": "object"
+    "availability_consequence",
+    "economics_version",
+    "unit_economics",
+    "complexity_tax",
+    "cost_assumptions"
+  ]
 }

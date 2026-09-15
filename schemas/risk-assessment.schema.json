@@ -1,37 +1,29 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PREOS risk-assessment.schema.json",
+  "type": "object",
   "additionalProperties": false,
   "properties": {
-    "applicability": {
-      "type": "string"
-    },
-    "blast_radius": {
-      "type": "string"
-    },
-    "detectability": {
-      "type": "string"
-    },
-    "likelihood": {
-      "type": "string"
-    },
-    "project_contract_id": {
-      "type": "string"
-    },
-    "risk_assessment_id": {
-      "type": "string"
-    },
-    "severity": {
-      "type": "string"
-    },
-    "source_risk_id": {
-      "type": "string"
-    },
-    "trigger_conditions": {
-      "type": "string"
-    }
+    "risk_assessment_id": { "type": "string", "minLength": 1 },
+    "risk_definition_id": { "type": "string", "minLength": 1 },
+    "definition_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "source_risk_id": { "type": "string" },
+    "project_contract_id": { "type": "string" },
+    "project_id": { "type": "string" },
+    "release_id": { "type": "string" },
+    "change_id": { "type": "string" },
+    "scope_id": { "type": "string" },
+    "applicability": { "type": "string", "minLength": 1 },
+    "trigger_conditions": { "type": "string", "minLength": 1 },
+    "likelihood": { "type": "string", "minLength": 1 },
+    "severity": { "type": "string", "minLength": 1 },
+    "blast_radius": { "type": "string", "minLength": 1 },
+    "detectability": { "type": "string", "minLength": 1 }
   },
   "required": [
     "risk_assessment_id",
+    "risk_definition_id",
+    "definition_version",
     "source_risk_id",
     "applicability",
     "trigger_conditions",
@@ -39,7 +31,5 @@
     "severity",
     "blast_radius",
     "detectability"
-  ],
-  "title": "PREOS risk-assessment.schema.json",
-  "type": "object"
+  ]
 }

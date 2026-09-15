@@ -1,0 +1,17 @@
+{
+  "schema_version": "pasv2-risk-relationships-v1",
+  "relationship_types": [
+    "SAME_AS",
+    "VARIANT_OF",
+    "SPECIALIZES",
+    "GENERALIZES",
+    "OVERLAPS",
+    "CAUSED_BY",
+    "AMPLIFIES",
+    "TRIGGERS",
+    "MITIGATED_BY",
+    "DEPENDS_ON",
+    "SUPERSEDES",
+    "RELATED_TO"
+  ]
+}

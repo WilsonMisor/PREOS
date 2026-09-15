@@ -1,0 +1,85 @@
+{
+  "schema_version": "pasv2-traceability-chain-v1",
+  "chains": [
+    {
+      "chain_id": "PASV2-CHAIN-SENTINEL-A",
+      "source_document": "source-1-five-dimension-risk-catalogue",
+      "source_item": "4.1.21 Serialization Failure",
+      "normalized_runtime_record": "semantic-review-ledger.jsonl::4.1.21",
+      "risk_definition": "RDEF-C6FBAB16C16C9972@1.1.0",
+      "risk_assessment": "concern-runtime-evidence.json::RAS-001",
+      "control": "FS-004",
+      "requirement": "MP-REQ-semantic-normalization-sentinel-a",
+      "task_packet": "PASV2 bounded remediation task",
+      "implementation": "PREOS/scripts/semantic-risk-validator.py",
+      "test": "PREOS/tests/test_pasv2_bounded_remediation.py::test_semantic_sentinels_are_corrected_without_raw_overwrite",
+      "evidence": "semantic-review-ledger.jsonl::SRV-S1-0021",
+      "gate": "PREOS_MODEL2_CROSSWALK_APPROVAL remains HUMAN_REVIEW",
+      "release": "NOT_APPLICABLE",
+      "incident": "NOT_APPLICABLE",
+      "learning": "PASV2 independent audit finding AUD-023",
+      "applicability": {
+        "release": "NOT_APPLICABLE",
+        "incident": "NOT_APPLICABLE"
+      },
+      "links": [
+        {
+          "from": "source_document",
+          "to": "source_item"
+        },
+        {
+          "from": "source_item",
+          "to": "normalized_runtime_record"
+        },
+        {
+          "from": "normalized_runtime_record",
+          "to": "risk_definition"
+        },
+        {
+          "from": "risk_definition",
+          "to": "risk_assessment"
+        },
+        {
+          "from": "risk_assessment",
+          "to": "control"
+        },
+        {
+          "from": "control",
+          "to": "requirement"
+        },
+        {
+          "from": "requirement",
+          "to": "task_packet"
+        },
+        {
+          "from": "task_packet",
+          "to": "implementation"
+        },
+        {
+          "from": "implementation",
+          "to": "test"
+        },
+        {
+          "from": "test",
+          "to": "evidence"
+        },
+        {
+          "from": "evidence",
+          "to": "gate"
+        },
+        {
+          "from": "gate",
+          "to": "release"
+        },
+        {
+          "from": "release",
+          "to": "incident"
+        },
+        {
+          "from": "incident",
+          "to": "learning"
+        }
+      ]
+    }
+  ]
+}

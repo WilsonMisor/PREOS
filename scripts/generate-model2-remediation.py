@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/env python3
 from __future__ import annotations
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 import hashlib, json, re

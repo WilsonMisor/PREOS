@@ -126,7 +126,7 @@ class PASV2BoundedRemediationTests(unittest.TestCase):
             rel = Path(td) / "relationships.jsonl"
             rel.write_text((ROOT / "references" / "risks" / "model2" / "risk-relationships.jsonl").read_text(encoding="utf-8"), encoding="utf-8")
             with rel.open("a", encoding="utf-8") as handle:
-                handle.write(json.dumps({"relationship_id": "REL-BAD", "relationship_type": "RELATED_TO", "source": {"type": "RISK_CONTEXT_VARIANT", "id": "MISSING"}, "target": {"type": "RISK_CONTEXT_VARIANT", "id": "MISSING2"}}) + "\n")
+                handle.write(json.dumps({"relationship_id": "REL-BAD", "relationship_type": "RELATED_TO", "source": {"type": "RISK_CONTEXT_VARIANT", "id": "MISSING"}, "target": {"type": "RISK_CONTEXT_VARIANT", "id": "MISSING2"}, "provenance_class": "human-reviewed relation", "evidence_reference": "unit-test", "confidence": 0.5, "review_status": "VALIDATED_BY_RULE"}) + "\n")
             bad = run_script("validate-risk-relationships.py", "--relationships", rel, check=False)
             self.assertNotEqual(bad.returncode, 0)
             self.assertIn("orphan", bad.stderr + bad.stdout)
@@ -138,7 +138,15 @@ class PASV2BoundedRemediationTests(unittest.TestCase):
         self.assertEqual(len(rows), 1148)
         self.assertEqual(len({row["readiness_domain_id"] for row in rows if row["readiness_domain_id"].startswith("RD-") and row["readiness_domain_id"] != "RD-GLOBAL"}), 36)
         self.assertIn("required_evidence_item", {row["classification"] for row in rows})
-        self.assertTrue(all(row["target_artifacts"] and row["preos_gates"] and row["preos_control_ids"] for row in rows))
+        self.assertTrue(all(row["target_artifacts"] for row in rows))
+        deterministic = [row for row in rows if row.get("mapping_status") != "HUMAN_REVIEW_REQUIRED"]
+        human_review = [row for row in rows if row.get("mapping_status") == "HUMAN_REVIEW_REQUIRED"]
+        self.assertTrue(all(row["preos_gates"] and row["preos_control_ids"] for row in deterministic))
+        self.assertTrue(human_review)
+        self.assertTrue(all(not row["preos_gates"] and not row["preos_control_ids"] for row in human_review))
+        self.assertIn("gstack-cso", {row["gstack_specialist_route"] for row in deterministic})
+        self.assertIn("gstack-benchmark", {row["gstack_specialist_route"] for row in deterministic})
+        self.assertIn("gstack-design-review", {row["gstack_specialist_route"] for row in deterministic})
 
     def test_selector_filters_and_retrieval_levels_are_bounded(self):
         one = run_script("select-risk-model2.py", "--id", "4.1.21", "--retrieval-level", "1", "--limit", "1")
@@ -192,6 +200,7 @@ class PASV2BoundedRemediationTests(unittest.TestCase):
     def test_traceability_chain_reaches_release_incident_learning_with_explicit_na(self):
         proc = run_script("validate-traceability-chain.py")
         self.assertIn("PASS traceability chain", proc.stdout)
+        self.assertIn("8556 graph records", proc.stdout)
 
 
 if __name__ == "__main__":

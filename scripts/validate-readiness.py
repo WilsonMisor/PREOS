@@ -87,7 +87,10 @@ def validate_source2_units() -> dict[str, int]:
             "validator",
         ):
             if row.get(field) in (None, "", []):
-                fail(f"{unit_id} missing {field}")
+                if row.get("mapping_status") == "HUMAN_REVIEW_REQUIRED" and field in {"preos_gates", "preos_control_ids"}:
+                    pass
+                else:
+                    fail(f"{unit_id} missing {field}")
         if row["classification"] not in EXPECTED_CLASSES:
             fail(f"{unit_id} has unsupported classification {row['classification']}")
         classes[row["classification"]] += 1
@@ -99,7 +102,7 @@ def validate_source2_units() -> dict[str, int]:
             fail(f"{unit_id} has malformed risk/control mapping")
         if row["human_approval_boundary"] not in {"required", "not_required_by_unit"}:
             fail(f"{unit_id} has unsupported human approval boundary")
-        if row["implementation_status"] != "IMPLEMENTED_BY_REMEDIATION":
+        if row["implementation_status"] not in {"IMPLEMENTED_BY_REMEDIATION", "DETERMINISTIC_SEMANTIC_MAPPING", "HUMAN_REVIEW_REQUIRED"}:
             fail(f"{unit_id} has unexpected implementation status")
     if not domains <= observed_domains:
         fail("Source 2 readiness ledger does not cover all 36 RD domains")

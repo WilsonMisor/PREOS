@@ -65,6 +65,10 @@ def validate_semantics(definitions_path: Path = DEFAULT_DEFINITIONS, reviews_pat
         if source_record in review_sources:
             raise ValueError(f"{reviews_path}:{line_no}: duplicate semantic review for {source_record}")
         review_sources.add(source_record)
+        if not record.get("rules_evaluated"):
+            raise ValueError(f"{reviews_path}:{line_no}: semantic review has no evaluated rule IDs")
+        if record["semantic_review_status"] == "ACCEPTED_AS_SOURCE_SEMANTICS" and not record.get("deterministic_acceptance_basis"):
+            raise ValueError(f"{reviews_path}:{line_no}: accepted semantic review lacks deterministic acceptance basis")
         if record["semantic_review_status"] == "CORRECTED":
             corrected += 1
         if source_record in {"4.1.21", "5.6.17"}:

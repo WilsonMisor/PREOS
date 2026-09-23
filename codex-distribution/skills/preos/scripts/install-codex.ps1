@@ -1,12 +1,14 @@
 $ErrorActionPreference = 'Stop'
 $Root = Resolve-Path (Join-Path $PSScriptRoot '..')
 $CodexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME '.codex' }
-$AgentsHome = if ($env:AGENTS_HOME) { $env:AGENTS_HOME } else { Join-Path $HOME '.agents' }
-$SkillRoot = if ($env:CODEX_SKILLS_HOME) { $env:CODEX_SKILLS_HOME } else { Join-Path $AgentsHome 'skills' }
+$SkillRoot = if ($env:CODEX_SKILL_ROOT) { $env:CODEX_SKILL_ROOT } elseif ($env:CODEX_SKILLS_HOME) { $env:CODEX_SKILLS_HOME } else { Join-Path $CodexHome 'skills' }
 $Dist = Join-Path $Root 'codex-distribution'
 if (-not (Test-Path (Join-Path $Dist 'skills'))) {
     & python (Join-Path $Root 'scripts\build_codex_distribution.py')
 }
+$Manifest = Get-Content -LiteralPath (Join-Path $Root 'CODEX-DISTRIBUTION.json') -Raw | ConvertFrom-Json
+$Skills = @($Manifest.skills | ForEach-Object { [string]$_.name })
+if (-not $Skills -or $Skills.Count -eq 0) { throw 'PREOS manifest did not declare skills' }
 New-Item -ItemType Directory -Force -Path $SkillRoot | Out-Null
 $BackupRoot = Join-Path $CodexHome ('framework-install-backups\preos-' + (Get-Date -Format 'yyyyMMddTHHmmssZ'))
 function Backup-ExistingPath([string]$Path) {
@@ -16,7 +18,6 @@ function Backup-ExistingPath([string]$Path) {
         Move-Item -LiteralPath $Path -Destination (Join-Path $BackupRoot $Name)
     }
 }
-$Skills = @('preos','preos-project-init','preos-risk-model','preos-architecture-economics','preos-production-plan','preos-production-implement','preos-production-learn')
 foreach ($Skill in $Skills) {
     $Source = Join-Path $Dist ('skills\' + $Skill)
     if (-not (Test-Path (Join-Path $Source 'SKILL.md'))) { throw ('PREOS distribution missing skill: ' + $Skill) }

@@ -2,12 +2,22 @@
 set -euo pipefail
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
-AGENTS_HOME="${AGENTS_HOME:-$HOME/.agents}"
-SKILL_ROOT="${CODEX_SKILLS_HOME:-$AGENTS_HOME/skills}"
+SKILL_ROOT="${CODEX_SKILL_ROOT:-${CODEX_SKILLS_HOME:-$CODEX_HOME/skills}}"
 DIST="$ROOT/codex-distribution"
 if [ ! -d "$DIST/skills" ]; then
   python "$ROOT/scripts/build_codex_distribution.py"
 fi
+mapfile -t SKILLS < <(python - "$ROOT/CODEX-DISTRIBUTION.json" <<'PY'
+import json, pathlib, sys
+manifest = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding='utf-8'))
+for skill in manifest.get('skills', []):
+    name = skill.get('name')
+    if not name:
+        raise SystemExit('PREOS CODEX-DISTRIBUTION.json contains an unnamed skill')
+    print(name)
+PY
+)
+[ "${#SKILLS[@]}" -gt 0 ] || { echo 'PREOS manifest did not declare skills' >&2; exit 2; }
 mkdir -p "$SKILL_ROOT"
 BACKUP_ROOT="$CODEX_HOME/framework-install-backups/preos-$(date -u +%Y%m%dT%H%M%SZ)"
 backup_existing_path() {
@@ -17,7 +27,7 @@ backup_existing_path() {
     mv "$target" "$BACKUP_ROOT/$(basename "$target")"
   fi
 }
-for skill in preos preos-project-init preos-risk-model preos-architecture-economics preos-production-plan preos-production-implement preos-production-learn; do
+for skill in "${SKILLS[@]}"; do
   source="$DIST/skills/$skill"
   [ -f "$source/SKILL.md" ] || { echo "PREOS distribution missing skill: $skill" >&2; exit 2; }
   target="$SKILL_ROOT/$skill"

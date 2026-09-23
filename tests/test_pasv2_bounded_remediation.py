@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -147,6 +148,51 @@ class PASV2BoundedRemediationTests(unittest.TestCase):
         self.assertIn("gstack-cso", {row["gstack_specialist_route"] for row in deterministic})
         self.assertIn("gstack-benchmark", {row["gstack_specialist_route"] for row in deterministic})
         self.assertIn("gstack-design-review", {row["gstack_specialist_route"] for row in deterministic})
+
+
+    def test_model2_generator_is_idempotent_and_validator_clean(self):
+        model2 = ROOT / "references" / "risks" / "model2"
+        with tempfile.TemporaryDirectory() as td:
+            input_dir = Path(td) / "input"
+            output_dir = Path(td) / "output"
+            input_dir.mkdir()
+            for name in ("risk-corpus.jsonl", "concern-runtime-evidence.json"):
+                shutil.copyfile(model2 / name, input_dir / name)
+            proc = run_script("generate-model2-remediation.py", "--input-dir", input_dir, "--output-dir", output_dir)
+            payload = json.loads(proc.stdout)
+            self.assertEqual(payload["definitions"], len(jsonl(model2 / "normalized-risk-definitions.jsonl")))
+            self.assertEqual(payload["reviews"], len(jsonl(model2 / "semantic-review-ledger.jsonl")))
+            self.assertEqual(payload["human_review_required"], 4335)
+            sem = run_script("semantic-risk-validator.py", "--definitions", output_dir / "normalized-risk-definitions.jsonl", "--reviews", output_dir / "semantic-review-ledger.jsonl")
+            self.assertIn("PASS semantic risk validation", sem.stdout)
+            rel = run_script("validate-risk-relationships.py", "--definitions", output_dir / "normalized-risk-definitions.jsonl", "--variants", output_dir / "risk-context-variants.jsonl", "--relationships", output_dir / "risk-relationships.jsonl", "--types", output_dir / "risk-relationship-types.json")
+            self.assertIn("PASS risk relationship validation", rel.stdout)
+            concerns = run_script("validate-risk-concerns.py", output_dir / "concern-runtime-evidence.json")
+            self.assertIn("PASS risk concern linkage", concerns.stdout)
+            canonical_ids = [row["risk_definition_id"] for row in jsonl(model2 / "normalized-risk-definitions.jsonl")]
+            generated_ids = [row["risk_definition_id"] for row in jsonl(output_dir / "normalized-risk-definitions.jsonl")]
+            self.assertEqual(generated_ids, canonical_ids)
+            canonical_review_ids = [row["semantic_review_id"] for row in jsonl(model2 / "semantic-review-ledger.jsonl")]
+            generated_review_ids = [row["semantic_review_id"] for row in jsonl(output_dir / "semantic-review-ledger.jsonl")]
+            self.assertEqual(generated_review_ids, canonical_review_ids)
+            relationship_text = (output_dir / "risk-relationships.jsonl").read_text(encoding="utf-8")
+            self.assertNotIn("Vocabulary support exemplar", relationship_text)
+
+    def test_readiness_generator_is_idempotent_and_validator_clean(self):
+        readiness = ROOT / "references" / "readiness"
+        with tempfile.TemporaryDirectory() as td:
+            output_dir = Path(td) / "readiness"
+            proc = run_script("generate-readiness-remediation.py", "--output-dir", output_dir, "--skip-traceability")
+            payload = json.loads(proc.stdout)
+            self.assertEqual(payload["source2_readiness_units"], 1148)
+            validation = run_script("validate-readiness.py", "--source2", output_dir / "source2-readiness-units.jsonl")
+            self.assertIn("PASS Source 2 readiness ledger", validation.stdout)
+            canonical_ids = [row["source_unit_id"] for row in jsonl(readiness / "source2-readiness-units.jsonl")]
+            generated_ids = [row["source_unit_id"] for row in jsonl(output_dir / "source2-readiness-units.jsonl")]
+            self.assertEqual(generated_ids, canonical_ids)
+            generated = jsonl(output_dir / "source2-readiness-units.jsonl")
+            self.assertTrue(any(row.get("mapping_status") == "HUMAN_REVIEW_REQUIRED" for row in generated))
+            self.assertTrue(all(not row["preos_gates"] and not row["preos_control_ids"] for row in generated if row.get("mapping_status") == "HUMAN_REVIEW_REQUIRED"))
 
     def test_selector_filters_and_retrieval_levels_are_bounded(self):
         one = run_script("select-risk-model2.py", "--id", "4.1.21", "--retrieval-level", "1", "--limit", "1")

@@ -17,8 +17,8 @@ MODEL2 = PREOS / "references" / "risks" / "model2"
 READINESS = PREOS / "references" / "readiness"
 TRACEABILITY = PREOS / "references" / "traceability"
 BASELINES = {
-    "PREOS": "166bb377a50f9f9232383859e808f7b79ea875a3",
-    "wed_dev_skill": "0f81fb370f3adca2e82fddd61b54f495a1ec23e3",
+    "PREOS": "d186a18f2974b29472b5a3c4d3471e930c803d6c",
+    "wed_dev_skill": "2de54d6d37d54d0bd13ae3b97e5da12cdfe98c3b",
     "gstack": "02dc743ce558d207af7cea9fe4d5a1c54092ccf3",
 }
 

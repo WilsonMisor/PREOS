@@ -196,6 +196,44 @@ def run_model2_validator(script_name: str) -> str:
         fail((result.stdout + result.stderr).strip() or f"{script_name} failed")
     return result.stdout.strip()
 
+def validate_model2_activation_binding(contract: dict) -> None:
+    risk_corpus = contract.get("risk_corpus")
+    if not isinstance(risk_corpus, dict):
+        fail("project contract risk_corpus must be an object")
+    required = [
+        "version",
+        "activation_allowed",
+        "crosswalk",
+        "semantic_review",
+        "approval_gate",
+        "human_approval_record",
+        "source_version_hashes",
+    ]
+    for field in required:
+        if field not in risk_corpus:
+            fail("project contract risk_corpus missing activation binding field: " + field)
+    if risk_corpus.get("version") != "model2" or risk_corpus.get("activation_allowed") is not True:
+        return
+    review = risk_corpus.get("semantic_review")
+    if not isinstance(review, dict) or review.get("status") != "COMPLETE" or review.get("unresolved_count") != 0:
+        fail("model2 activation requires completed semantic review with zero unresolved rows")
+    gate = risk_corpus.get("approval_gate")
+    if not isinstance(gate, dict) or gate.get("gate_id") != "PREOS_MODEL2_CROSSWALK_APPROVAL" or gate.get("status") != "APPROVED":
+        fail("model2 activation requires approved PREOS_MODEL2_CROSSWALK_APPROVAL gate")
+    approval = risk_corpus.get("human_approval_record")
+    if not isinstance(approval, dict):
+        fail("model2 activation requires durable human_approval_record")
+    for field in ("approval_id", "approved_by", "approved_at", "authority_role", "scope"):
+        if not approval.get(field):
+            fail("model2 activation human_approval_record missing " + field)
+    source_hashes = risk_corpus.get("source_version_hashes")
+    if not isinstance(source_hashes, list) or not source_hashes:
+        fail("model2 activation requires source_version_hashes")
+    for index, item in enumerate(source_hashes, 1):
+        if not isinstance(item, dict) or not item.get("artifact") or not isinstance(item.get("sha256"), str) or len(item["sha256"]) != 64:
+            fail(f"model2 activation source_version_hashes[{index}] is invalid")
+
+
 def validate_project_contract_schema() -> None:
     schema = load_json(ROOT / "schemas" / "project-contract.schema.json")
     if "risk_corpus" not in schema.get("required", []):
@@ -206,9 +244,19 @@ def validate_project_contract_schema() -> None:
     enum = prop.get("properties", {}).get("version", {}).get("enum", [])
     if enum != ["legacy-v1", "model2"]:
         fail(f"project contract risk_corpus version enum mismatch: {enum}")
+    for field in ("semantic_review", "approval_gate", "human_approval_record", "source_version_hashes"):
+        if field not in prop.get("required", []):
+            fail("project contract risk_corpus schema missing required activation field: " + field)
     template = load_json(ROOT / "templates" / "project-contract.json")
+    try:
+        validate_instance(template, schema, root_schema=schema, path="project-contract-template")
+    except SchemaValidationError as exc:
+        fail(str(exc))
     if template.get("risk_corpus", {}).get("version") != "legacy-v1":
         fail("project contract template must default to legacy-v1")
+    if template.get("risk_corpus", {}).get("activation_allowed") is not False:
+        fail("project contract template must keep model2 activation disabled")
+    validate_model2_activation_binding(template)
 
 
 def main() -> None:

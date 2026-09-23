@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from collections import Counter
+import argparse
 import json
 import re
 
@@ -23,6 +24,19 @@ EXPECTED_CLASSES = {
     "required_evidence_item",
     "ownership_requirement",
     "applicability_rule",
+}
+ALLOWED_POLICIES = {
+    "SOURCE2-HUMAN-REVIEW-NO-DETERMINISTIC-MAP",
+    "SOURCE2-EXISTING-KEYWORD-MAP",
+    "SOURCE2-DATA-FLOW-PRIVILEGE",
+    "SOURCE2-DEPENDENCY-LICENSE",
+    "SOURCE2-BACKUP-RESTORE",
+    "SOURCE2-LEGAL-REGULATORY",
+    "SOURCE2-PAYMENT-BILLING",
+    "SOURCE2-CREDENTIAL-AI-PROMPT",
+    "SOURCE2-AUTHZ-TENANT",
+    "SOURCE2-PERFORMANCE-CAPACITY",
+    "SOURCE2-ACCESSIBILITY",
 }
 
 
@@ -48,8 +62,7 @@ def validate_question_source() -> int:
     return count
 
 
-def validate_source2_units() -> dict[str, int]:
-    path = READINESS / "source2-readiness-units.jsonl"
+def validate_source2_units(path: Path = READINESS / "source2-readiness-units.jsonl") -> dict[str, int]:
     if not path.is_file():
         fail("missing source2-readiness-units.jsonl")
     rows = load_jsonl(path)
@@ -61,12 +74,17 @@ def validate_source2_units() -> dict[str, int]:
     gates = {gate["id"] for gate in production.get("gates", [])}
     observed_domains: set[str] = set()
     classes: Counter[str] = Counter()
+    policies: Counter[str] = Counter()
     seen: set[str] = set()
     for idx, row in enumerate(rows, 1):
         unit_id = row.get("source_unit_id")
         if not unit_id or unit_id in seen:
             fail(f"row {idx} has missing/duplicate source_unit_id")
         seen.add(unit_id)
+        policy = row.get("mapping_policy_id")
+        if policy not in ALLOWED_POLICIES:
+            fail(f"{unit_id} has missing or unsupported mapping policy {policy}")
+        policies[policy] += 1
         for field in (
             "source_location",
             "excerpt_sha256",
@@ -85,6 +103,8 @@ def validate_source2_units() -> dict[str, int]:
             "human_approval_boundary",
             "implementation_status",
             "validator",
+            "mapping_status",
+            "review_status",
         ):
             if row.get(field) in (None, "", []):
                 if row.get("mapping_status") == "HUMAN_REVIEW_REQUIRED" and field in {"preos_gates", "preos_control_ids"}:
@@ -95,6 +115,16 @@ def validate_source2_units() -> dict[str, int]:
             fail(f"{unit_id} has unsupported classification {row['classification']}")
         classes[row["classification"]] += 1
         observed_domains.add(row["readiness_domain_id"])
+        if row.get("mapping_status") == "HUMAN_REVIEW_REQUIRED":
+            if row.get("preos_gates") or row.get("preos_control_ids"):
+                fail(f"{unit_id} human-review row must not force gates or controls")
+            if row.get("implementation_status") != "HUMAN_REVIEW_REQUIRED" or row.get("review_status") != "HUMAN_REVIEW_REQUIRED":
+                fail(f"{unit_id} human-review row has inconsistent status")
+        else:
+            if policy == "SOURCE2-HUMAN-REVIEW-NO-DETERMINISTIC-MAP":
+                fail(f"{unit_id} deterministic row uses human-review policy")
+            if not row.get("preos_gates") or not row.get("preos_control_ids"):
+                fail(f"{unit_id} deterministic row lacks gates or controls")
         if not set(row["preos_gates"]) <= gates:
             fail(f"{unit_id} maps to unknown PREOS gate")
         combined_ids = list(row["preos_control_ids"]) + list(row["preos_risk_ids"])
@@ -108,14 +138,19 @@ def validate_source2_units() -> dict[str, int]:
         fail("Source 2 readiness ledger does not cover all 36 RD domains")
     if not EXPECTED_CLASSES <= set(classes):
         fail("Source 2 readiness ledger is missing one or more required classifications")
-    return {"units": len(rows), "domains": len(observed_domains), "classifications": len(classes)}
+    if not policies.get("SOURCE2-HUMAN-REVIEW-NO-DETERMINISTIC-MAP"):
+        fail("Source 2 readiness ledger must preserve human-review-required rows")
+    return {"units": len(rows), "domains": len(observed_domains), "classifications": len(classes), "policies": len(policies)}
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source2", default=str(READINESS / "source2-readiness-units.jsonl"))
+    args = parser.parse_args()
     questions = validate_question_source()
-    result = validate_source2_units()
+    result = validate_source2_units(Path(args.source2))
     print(f"PASS readiness: {questions} production-readiness questions present in checksum-verified authoritative source package")
-    print(f"PASS Source 2 readiness ledger: {result['units']} semantic units, {result['domains']} domain buckets, {result['classifications']} classifications")
+    print(f"PASS Source 2 readiness ledger: {result['units']} semantic units, {result['domains']} domain buckets, {result['classifications']} classifications, {result['policies']} mapping policies")
 
 
 if __name__ == "__main__":

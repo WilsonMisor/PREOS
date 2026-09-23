@@ -1,3 +1,5 @@
+import copy
+import importlib.util
 import json
 import subprocess
 import sys
@@ -10,6 +12,10 @@ sys.path.insert(0, str(SCRIPTS))
 
 from preos_common import iter_risks
 from schema_validation import load_schema, validate_instance
+
+spec = importlib.util.spec_from_file_location("validate_risk_model2", SCRIPTS / "validate-risk-model2.py")
+validate_risk_model2 = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(validate_risk_model2)
 
 
 class RiskModel2MigrationTests(unittest.TestCase):
@@ -42,9 +48,46 @@ class RiskModel2MigrationTests(unittest.TestCase):
         schema = json.loads((ROOT / "schemas" / "project-contract.schema.json").read_text(encoding="utf-8"))
         template = json.loads((ROOT / "templates" / "project-contract.json").read_text(encoding="utf-8"))
         self.assertIn("risk_corpus", schema["required"])
-        self.assertEqual(schema["properties"]["risk_corpus"]["properties"]["version"]["enum"], ["legacy-v1", "model2"])
+        risk_schema = schema["properties"]["risk_corpus"]
+        self.assertEqual(risk_schema["properties"]["version"]["enum"], ["legacy-v1", "model2"])
+        for field in ["semantic_review", "approval_gate", "human_approval_record", "source_version_hashes"]:
+            self.assertIn(field, risk_schema["required"])
+            self.assertIn(field, template["risk_corpus"])
+        validate_instance(template, schema, root_schema=schema)
         self.assertEqual(template["risk_corpus"]["version"], "legacy-v1")
         self.assertFalse(template["risk_corpus"]["activation_allowed"])
+        self.assertEqual(template["risk_corpus"]["approval_gate"]["status"], "OPEN")
+        self.assertIsNone(template["risk_corpus"]["human_approval_record"])
+
+    def test_model2_activation_requires_human_approval_binding(self):
+        template = json.loads((ROOT / "templates" / "project-contract.json").read_text(encoding="utf-8"))
+        active = copy.deepcopy(template)
+        active["risk_corpus"].update({"version": "model2", "activation_allowed": True})
+        with self.assertRaises(SystemExit):
+            validate_risk_model2.validate_model2_activation_binding(active)
+        active["risk_corpus"].update({
+            "semantic_review": {
+                "status": "COMPLETE",
+                "unresolved_count": 0,
+                "reviewed_at": "2026-09-22T00:00:00Z",
+                "reviewer": "qualified-human-reviewer",
+            },
+            "approval_gate": {
+                "gate_id": "PREOS_MODEL2_CROSSWALK_APPROVAL",
+                "status": "APPROVED",
+            },
+            "human_approval_record": {
+                "approval_id": "APPROVAL-1",
+                "approved_by": "accountable-human",
+                "approved_at": "2026-09-22T00:00:00Z",
+                "authority_role": "risk acceptance authority",
+                "scope": "model2 project contract activation test fixture",
+            },
+            "source_version_hashes": [
+                {"artifact": "references/risks/model2/risk-corpus.jsonl", "sha256": "a" * 64}
+            ],
+        })
+        validate_risk_model2.validate_model2_activation_binding(active)
 
 
 if __name__ == "__main__":

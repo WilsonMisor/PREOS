@@ -95,6 +95,11 @@ def validate_relationships(
         rel_type = str(rel.get("relationship_type") or "")
         if rel_type not in supported:
             raise ValueError(f"{relationships_path}:{line_no}: unsupported relationship type {rel_type}")
+        if "Vocabulary support exemplar" in str(rel.get("rationale") or ""):
+            raise ValueError(f"{relationships_path}:{line_no}: synthetic placeholder/exemplar edge is not allowed")
+        for field in ("provenance_class", "evidence_reference", "confidence", "review_status"):
+            if rel.get(field) in (None, "", []):
+                raise ValueError(f"{relationships_path}:{line_no}: missing relationship evidence field {field}")
         rel_types.add(rel_type)
         for side in ("source", "target"):
             endpoint = rel.get(side)

@@ -19,6 +19,18 @@
   "risk_corpus": {
     "version": "legacy-v1",
     "activation_allowed": false,
-    "crosswalk": "references/risks/migration/legacy-to-model2-crosswalk.json"
+    "crosswalk": "references/risks/migration/legacy-to-model2-crosswalk.json",
+    "semantic_review": {
+      "status": "HUMAN_REVIEW_REQUIRED",
+      "unresolved_count": 1130,
+      "reviewed_at": null,
+      "reviewer": null
+    },
+    "approval_gate": {
+      "gate_id": "PREOS_MODEL2_CROSSWALK_APPROVAL",
+      "status": "OPEN"
+    },
+    "human_approval_record": null,
+    "source_version_hashes": []
   }
 }

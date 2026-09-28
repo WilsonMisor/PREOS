@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 WORKSPACE = ROOT.parent
 READINESS = ROOT / "references" / "readiness"
 TRACEABILITY = ROOT / "references" / "traceability"
-UNITS = WORKSPACE / ".migration-control" / "PASV2_V5_SOURCE_SEMANTIC_UNITS.jsonl"
+UNITS = ROOT / "references" / "source-units" / "PASV2_V5_SOURCE_SEMANTIC_UNITS.jsonl"
 
 POLICIES = [
     ("SOURCE2-CREDENTIAL-AI-PROMPT", ("credential", "secret", "prompt", "ai generated", "coding prompt", "source code", "iac", "configuration"), "security-and-ai-data-handling-review", ["G3", "G8", "G11"], ["FS-015", "FS-026"], "gstack-cso", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),

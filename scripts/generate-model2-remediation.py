@@ -54,14 +54,20 @@ def slug(value: str) -> str:
     return re.sub(r"[^A-Za-z0-9]+", "-", value).strip("-").upper()
 
 
+def contains_semantic_term(text: str, term: str) -> bool:
+    if len(term) <= 3:
+        return re.search(r"\b" + re.escape(term) + r"\b", text) is not None
+    return term in text
+
+
 def generic_normalized_definition(record: dict[str, Any]) -> dict[str, Any]:
     name = record["canonical_name"]
     category = record["category"]
     dimension = record["dimension"]
     fields = record["fields"]
     field_text = json.dumps(fields, ensure_ascii=False).lower()
-    security_terms = ("access", "auth", "secret", "credential", "privilege", "tenant", "exploit", "attack", "abuse", "injection", "privacy")
-    ai_terms = ("ai", "agent", "model", "prompt", "rag", "retrieval", "embedding", "llm")
+    security_terms = ("security", "access", "auth", "secret", "credential", "privilege", "tenant", "exploit", "attack", "abuse", "injection", "privacy")
+    ai_terms = ("ai", "agent", "prompt", "rag", "retrieval", "embedding", "llm")
     if dimension == "jurisdiction":
         return {
             "canonical_name": name,
@@ -74,7 +80,7 @@ def generic_normalized_definition(record: dict[str, Any]) -> dict[str, Any]:
             "automated_test": f"Create a deterministic compliance test for {name} that exercises the triggering legal condition and asserts the required software behavior, evidence, timing and denial path.",
             "owner": "Product Compliance and Product Engineering",
         }
-    if any(term in field_text or term in name.lower() or term in category.lower() for term in ai_terms):
+    if any(contains_semantic_term(field_text, term) or contains_semantic_term(name.lower(), term) or contains_semantic_term(category.lower(), term) for term in ai_terms):
         return {
             "canonical_name": name,
             "category": category,
@@ -86,7 +92,7 @@ def generic_normalized_definition(record: dict[str, Any]) -> dict[str, Any]:
             "automated_test": f"Create a deterministic security regression for {name} that reproduces the abuse or exploit condition and asserts denial, safe handling and complete audit evidence.",
             "owner": "AI Product Engineering, AI Safety and Application Security",
         }
-    if any(term in field_text or term in name.lower() or term in category.lower() for term in security_terms):
+    if any(contains_semantic_term(name.lower(), term) or contains_semantic_term(category.lower(), term) for term in security_terms):
         return {
             "canonical_name": name,
             "category": category,

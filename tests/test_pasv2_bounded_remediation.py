@@ -18,6 +18,10 @@ def jsonl(path: Path):
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
+def canonical_jsonl(path: Path):
+    return [json.dumps(row, sort_keys=True, separators=(",", ":")) for row in jsonl(path)]
+
+
 def run_script(name, *args, check=True):
     proc = subprocess.run([sys.executable, str(SCRIPTS / name), *map(str, args)], cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if check:
@@ -169,12 +173,13 @@ class PASV2BoundedRemediationTests(unittest.TestCase):
             self.assertIn("PASS risk relationship validation", rel.stdout)
             concerns = run_script("validate-risk-concerns.py", output_dir / "concern-runtime-evidence.json")
             self.assertIn("PASS risk concern linkage", concerns.stdout)
-            canonical_ids = [row["risk_definition_id"] for row in jsonl(model2 / "normalized-risk-definitions.jsonl")]
-            generated_ids = [row["risk_definition_id"] for row in jsonl(output_dir / "normalized-risk-definitions.jsonl")]
-            self.assertEqual(generated_ids, canonical_ids)
-            canonical_review_ids = [row["semantic_review_id"] for row in jsonl(model2 / "semantic-review-ledger.jsonl")]
-            generated_review_ids = [row["semantic_review_id"] for row in jsonl(output_dir / "semantic-review-ledger.jsonl")]
-            self.assertEqual(generated_review_ids, canonical_review_ids)
+            for name in (
+                "normalized-risk-definitions.jsonl",
+                "semantic-review-ledger.jsonl",
+                "risk-context-variants.jsonl",
+                "risk-relationships.jsonl",
+            ):
+                self.assertEqual(canonical_jsonl(output_dir / name), canonical_jsonl(model2 / name), name)
             relationship_text = (output_dir / "risk-relationships.jsonl").read_text(encoding="utf-8")
             self.assertNotIn("Vocabulary support exemplar", relationship_text)
 
@@ -187,9 +192,10 @@ class PASV2BoundedRemediationTests(unittest.TestCase):
             self.assertEqual(payload["source2_readiness_units"], 1148)
             validation = run_script("validate-readiness.py", "--source2", output_dir / "source2-readiness-units.jsonl")
             self.assertIn("PASS Source 2 readiness ledger", validation.stdout)
-            canonical_ids = [row["source_unit_id"] for row in jsonl(readiness / "source2-readiness-units.jsonl")]
-            generated_ids = [row["source_unit_id"] for row in jsonl(output_dir / "source2-readiness-units.jsonl")]
-            self.assertEqual(generated_ids, canonical_ids)
+            self.assertEqual(
+                canonical_jsonl(output_dir / "source2-readiness-units.jsonl"),
+                canonical_jsonl(readiness / "source2-readiness-units.jsonl"),
+            )
             generated = jsonl(output_dir / "source2-readiness-units.jsonl")
             self.assertTrue(any(row.get("mapping_status") == "HUMAN_REVIEW_REQUIRED" for row in generated))
             self.assertTrue(all(not row["preos_gates"] and not row["preos_control_ids"] for row in generated if row.get("mapping_status") == "HUMAN_REVIEW_REQUIRED"))

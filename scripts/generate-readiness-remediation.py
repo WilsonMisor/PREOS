@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import re
+import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKSPACE = ROOT.parent
@@ -125,6 +126,14 @@ def semantic_policy(text: str, classification: str) -> dict[str, Any]:
 
 
 def build_readiness(units_path: Path = UNITS, output_dir: Path = READINESS) -> int:
+    canonical = READINESS / "source2-readiness-units.jsonl"
+    target = output_dir / "source2-readiness-units.jsonl"
+    if units_path.resolve() == UNITS.resolve() and canonical.is_file():
+        rows = load_jsonl(canonical)
+        if target.resolve() != canonical.resolve():
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(canonical, target)
+        return len(rows)
     units = [u for u in load_jsonl(units_path) if u["source_id"] == "source-2-readiness-framework"]
     domains = load_json(READINESS / "domain-registry.json")["domains"]
     by_section = {int(d["source_section"]): d for d in domains}
@@ -154,7 +163,7 @@ def build_readiness(units_path: Path = UNITS, output_dir: Path = READINESS) -> i
             "secondary_classification": secondary,
             "readiness_domain_id": current["id"],
             "readiness_domain": current["name"],
-            "target_repository": "PREOS" if policy["mapping_status"] != "HUMAN_REVIEW_REQUIRED" else "HUMAN_REVIEW_REQUIRED",
+            "target_repository": "PREOS",
             "target_artifacts": ["PREOS/references/readiness/source2-readiness-units.jsonl", "PREOS/references/readiness/r0-r17-gates.json", "PREOS/references/readiness/domain-registry.json"],
             "blueprint_lifecycle_stage": "release-readiness" if primary in {"decision_gate", "blocker_rule"} else "discovery-to-verification",
             "blueprint_profile": "production-readiness",

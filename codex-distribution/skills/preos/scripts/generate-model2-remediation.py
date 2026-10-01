@@ -65,66 +65,15 @@ def generic_normalized_definition(record: dict[str, Any]) -> dict[str, Any]:
     category = record["category"]
     dimension = record["dimension"]
     fields = record["fields"]
-    field_text = json.dumps(fields, ensure_ascii=False).lower()
-    security_terms = ("security", "access", "auth", "secret", "credential", "privilege", "tenant", "exploit", "attack", "abuse", "injection", "privacy")
-    ai_terms = ("ai", "agent", "prompt", "rag", "retrieval", "embedding", "llm")
-    if dimension == "jurisdiction":
-        return {
-            "canonical_name": name,
-            "category": category,
-            "dimension": dimension,
-            "root_cause": "A legal or regulatory obligation is not translated into an explicit software rule, evidence requirement, workflow state, retention rule, access control, reporting path or configurable policy.",
-            "failure_mechanism": "The software performs, permits, records, retains, transfers, reports or fails to report an action in a way that does not satisfy the applicable obligation.",
-            "trigger_conditions": f"The software, entity, user, data flow or regulated activity falls within {category} scope and the obligation represented by {name} is triggered.",
-            "prevention_strategy": "Translate the applicable obligation into versioned policy as code, explicit workflow states, data handling rules, access controls, evidence capture, retention, reporting and change management. Require legal and compliance review before release.",
-            "automated_test": f"Create a deterministic compliance test for {name} that exercises the triggering legal condition and asserts the required software behavior, evidence, timing and denial path.",
-            "owner": "Product Compliance and Product Engineering",
-        }
-    if any(contains_semantic_term(field_text, term) or contains_semantic_term(name.lower(), term) or contains_semantic_term(category.lower(), term) for term in ai_terms):
-        return {
-            "canonical_name": name,
-            "category": category,
-            "dimension": dimension,
-            "root_cause": "Model inputs, retrieval, tool permissions, output validation, evaluation, grounding or human oversight are insufficient for nondeterministic AI behavior.",
-            "failure_mechanism": "The model or agent generates or acts on incorrect, malicious, stale or unauthorized information and propagates it into product state or external actions.",
-            "trigger_conditions": f"The product implements {category}. Untrusted prompts, retrieved content, model output, tool results, changing model behavior or agent actions enter the AI execution path.",
-            "prevention_strategy": "Apply deny by default authorization, least privilege, strong authentication, input validation, output encoding, parameterized operations, secret management, dependency controls, rate limits and abuse resistant workflow design as relevant to the named risk.",
-            "automated_test": f"Create a deterministic security regression for {name} that reproduces the abuse or exploit condition and asserts denial, safe handling and complete audit evidence.",
-            "owner": "AI Product Engineering, AI Safety and Application Security",
-        }
-    if any(contains_semantic_term(name.lower(), term) or contains_semantic_term(category.lower(), term) for term in security_terms):
-        return {
-            "canonical_name": name,
-            "category": category,
-            "dimension": dimension,
-            "root_cause": "Trust boundary, input, identity, authorization, secret, dependency or abuse controls are insufficient for the exposed operation.",
-            "failure_mechanism": "The application performs an unauthorized action, accepts malicious control data, leaks sensitive information, weakens integrity or allows an attacker to consume protected resources.",
-            "trigger_conditions": f"The software participates in {category}. Attacker controlled input, identity, content, dependency or traffic reaches a trust boundary, privileged operation or sensitive resource.",
-            "prevention_strategy": "Apply deny by default authorization, least privilege, strong authentication, input validation, output encoding, parameterized operations, secret management, dependency controls, rate limits and abuse resistant workflow design as relevant to the named risk.",
-            "automated_test": f"Create a deterministic security regression for {name} that reproduces the abuse or exploit condition and asserts denial, safe handling and complete audit evidence.",
-            "owner": fields.get("Owner") or "Application Security and Platform Engineering",
-        }
-    if dimension == "architecture":
-        return {
-            "canonical_name": name,
-            "category": category,
-            "dimension": dimension,
-            "root_cause": "The relevant domain invariant, boundary condition, lifecycle rule or operational constraint is not explicitly encoded, validated and tested.",
-            "failure_mechanism": "The software accepts or produces a state that violates the intended domain model and propagates the incorrect result to dependent components or users.",
-            "trigger_conditions": f"The system uses {category}. The domain condition represented by {name} occurs during real usage, concurrency, integration change, partial failure or long term operation.",
-            "prevention_strategy": f"Define the invariant represented by {name}, encode it as an explicit state, validation, authorization, ordering, uniqueness, lifecycle or reconciliation rule, and prevent invalid transitions at every entry path.",
-            "automated_test": f"Create a deterministic automated regression that forces {name} and asserts the expected state, denial, compensation, audit record and user outcome.",
-            "owner": fields.get("Owner") or "Architecture, Platform and Site Reliability Engineering",
-        }
     return {
         "canonical_name": name,
         "category": category,
         "dimension": dimension,
-        "root_cause": "Insufficient design constraint, validation, isolation, capacity control or lifecycle management for this failure mode.",
-        "failure_mechanism": "The affected component enters an unsafe, inconsistent, overloaded or unavailable state and propagates impact to callers or dependent components.",
-        "trigger_conditions": "Real traffic, real data, concurrency, dependency degradation, malicious input, deployment change or long term operation exposes the weakness.",
-        "prevention_strategy": "Define explicit limits, safe defaults, isolation, validation, idempotency, capacity margins and architecture specific controls before release.",
-        "automated_test": "Create a deterministic automated regression that forces the named condition and asserts safe behavior.",
+        "root_cause": fields.get("Root cause") or "Insufficient design constraint, validation, isolation, capacity control or lifecycle management for this failure mode.",
+        "failure_mechanism": fields.get("Failure mechanism") or "The affected component enters an unsafe, inconsistent, overloaded or unavailable state and propagates impact to callers or dependent components.",
+        "trigger_conditions": fields.get("Conditions required to trigger the problem") or "Real traffic, real data, concurrency, dependency degradation, malicious input, deployment change or long term operation exposes the weakness.",
+        "prevention_strategy": fields.get("Prevention strategy") or "Define explicit limits, safe defaults, isolation, validation, idempotency, capacity margins and architecture specific controls before release.",
+        "automated_test": fields.get("Automated test") or "Create a deterministic automated regression that forces the named condition and asserts safe behavior.",
         "owner": fields.get("Owner") or "Reliability Engineering",
     }
 
@@ -141,7 +90,7 @@ def normalize(record: dict[str, Any]) -> tuple[dict[str, Any], str, str, float, 
             "prevention_strategy": "Define canonical encodings, schemas, versioning, round-trip invariants, compatibility rules, and deterministic transformation tests before release.",
             "automated_test": "Assert round-trip serialization, malformed payload rejection, backward and forward compatibility, encoding boundaries, and transformation invariants.",
             "owner": "API Platform and Data Contract Engineering",
-        }, "CORRECTED", "Rejected shared-state concurrency interpretation; normalized toward serialization, encoding, decoding and transformation semantics.", 0.99, RULES_EVALUATED + ["SEM-SENTINEL-A"], [], ["SEM-SENTINEL-A"])
+        }, "CORRECTED", "Rejected shared-state concurrency interpretation; normalized toward serialization, encoding, decoding and transformation semantics.", 0.99, ["SEM-SENTINEL-A"] + RULES_EVALUATED, [], ["SEM-SENTINEL-A"])
     if record["risk_id"] == "5.6.17":
         return ({
             "canonical_name": "Drug Serialization Failure",
@@ -153,7 +102,7 @@ def normalize(record: dict[str, Any]) -> tuple[dict[str, Any], str, str, float, 
             "prevention_strategy": "Validate item identifiers, package hierarchy, lot and unit identity, authenticity checks, regulatory event records, audit trail integrity, and traceability handoffs.",
             "automated_test": "Exercise valid, duplicate, missing, mismatched, recalled, returned, and unauthenticated pharmaceutical serialization identifiers across package and supply-chain record flows.",
             "owner": "Quality Systems, Serialization Operations and GxP Engineering",
-        }, "CORRECTED", "Rejected sensor/control-loop interpretation; normalized toward pharmaceutical item serialization, identifiers, package identity, authenticity, traceability and regulatory records.", 0.99, RULES_EVALUATED + ["SEM-SENTINEL-B"], [], ["SEM-SENTINEL-B"])
+        }, "CORRECTED", "Rejected sensor/control-loop interpretation; normalized toward pharmaceutical item serialization, identifiers, package identity, authenticity, traceability and regulatory records.", 0.99, ["SEM-SENTINEL-B"] + RULES_EVALUATED, [], ["SEM-SENTINEL-B"])
     return (
         generic_normalized_definition(record),
         "HUMAN_REVIEW_REQUIRED",
@@ -257,10 +206,10 @@ def build(input_dir: Path = MODEL2, output_dir: Path = MODEL2) -> dict[str, int]
     for records in [items for items in groups.values() if len(items) > 1]:
         base = records[0]
         for item in records[1:]:
-            relationships.append({"relationship_id": f"REL-{rel_no:06d}", "relationship_type": "SAME_AS", "source": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(item["risk_id"])}, "target": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(base["risk_id"])}, "rationale": "Contextual variants share a canonical normalized problem name while retaining source-specific context.", "provenance_class": "deterministic canonical-name grouping", "evidence_reference": f"SAME_AS::{base['risk_id']}::{item['risk_id']}", "confidence": 0.82, "review_status": "VALIDATED_BY_RULE"})
+            relationships.append({"relationship_id": f"REL-{rel_no:06d}", "relationship_type": "SAME_AS", "source": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(item["risk_id"])}, "target": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(base["risk_id"])}, "rationale": "Contextual variants share a canonical normalized problem name while retaining source-specific context.", "provenance_class": "exact-name identity", "evidence_reference": f"SAME_AS::REL-{rel_no:06d}", "confidence": 0.9, "review_status": "VALIDATED_BY_RULE"})
             rel_no += 1
             if base["dimension"] == "universal" and item["dimension"] != "universal":
-                relationships.append({"relationship_id": f"REL-{rel_no:06d}", "relationship_type": "SPECIALIZES", "source": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(item["risk_id"])}, "target": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(base["risk_id"])}, "rationale": "Context-specific variant specializes a universal canonical risk.", "provenance_class": "deterministic dimension hierarchy", "evidence_reference": f"SPECIALIZES::{base['risk_id']}::{item['risk_id']}", "confidence": 0.76, "review_status": "VALIDATED_BY_RULE"})
+                relationships.append({"relationship_id": f"REL-{rel_no:06d}", "relationship_type": "SPECIALIZES", "source": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(item["risk_id"])}, "target": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(base["risk_id"])}, "rationale": "Context-specific variant specializes a universal canonical risk.", "provenance_class": "deterministic semantic rule", "evidence_reference": f"SPECIALIZES::REL-{rel_no:06d}", "confidence": 0.84, "review_status": "VALIDATED_BY_RULE"})
                 rel_no += 1
 
     human_review = [row for row in reviews if row["semantic_review_status"] == "HUMAN_REVIEW_REQUIRED"]

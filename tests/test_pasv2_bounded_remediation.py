@@ -198,8 +198,21 @@ class PASV2BoundedRemediationTests(unittest.TestCase):
         one = run_script("select-risk-model2.py", "--id", "4.1.21", "--retrieval-level", "1", "--limit", "1")
         payload = json.loads(one.stdout)
         self.assertEqual(payload["count"], 1)
-        self.assertNotIn("raw_record", payload["records"][0])
-        self.assertNotIn("normalized_definition", payload["records"][0])
+        level1 = payload["records"][0]
+        for key in ("risk_id", "canonical_name", "category", "severity_hint"):
+            self.assertIn(key, level1)
+        self.assertNotIn("raw_record", level1)
+        self.assertNotIn("normalized_definition", level1)
+        two = run_script("select-risk-model2.py", "--canonical-name", "Serialization Failure", "--retrieval-level", "2", "--limit", "1")
+        level2 = json.loads(two.stdout)["records"][0]
+        for key in ("trigger", "failure_mechanism", "required_controls"):
+            self.assertIn(key, level2)
+            self.assertTrue(level2[key])
+        three = run_script("select-risk-model2.py", "--alias", "Serialization Failure", "--retrieval-level", "3", "--limit", "1")
+        level3 = json.loads(three.stdout)["records"][0]
+        for key in ("tests", "monitoring", "recovery", "evidence"):
+            self.assertIn(key, level3)
+            self.assertTrue(level3[key])
         four = run_script("select-risk-model2.py", "--source-variant-id", "RCV-S1-4-1-21", "--relationship", "VARIANT_OF", "--retrieval-level", "4", "--limit", "1")
         payload = json.loads(four.stdout)
         self.assertEqual(payload["count"], 1)

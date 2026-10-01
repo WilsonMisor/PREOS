@@ -44,11 +44,22 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
-def record_owner(record: dict[str, Any]) -> str:
+def record_fields(record: dict[str, Any]) -> dict[str, Any]:
     fields = record.get("fields", {})
-    if not isinstance(fields, dict):
-        return ""
-    return text(fields.get("39") or fields.get("Field 39") or fields.get("Owner"))
+    return fields if isinstance(fields, dict) else {}
+
+
+def field_value(record: dict[str, Any], *names: str) -> str:
+    fields = record_fields(record)
+    for name in names:
+        value = fields.get(name)
+        if value not in (None, ""):
+            return text(value)
+    return ""
+
+
+def record_owner(record: dict[str, Any]) -> str:
+    return field_value(record, "39", "Field 39", "Owner")
 
 
 def contains(value: Any, needle: str | None) -> bool:
@@ -133,6 +144,12 @@ def variant_matches(variant: dict[str, Any], args: argparse.Namespace, rel_by_en
 def matches(record: dict[str, Any], args: argparse.Namespace, indexes: dict[str, Any]) -> bool:
     if args.risk_id and record.get("risk_id") != args.risk_id:
         return False
+    if args.canonical_name and record.get("canonical_name") != args.canonical_name:
+        return False
+    if args.alias:
+        aliases = field_value(record, "Known aliases", "Aliases")
+        if not contains(record.get("canonical_name"), args.alias) and not contains(aliases, args.alias):
+            return False
     if args.dimension and record.get("dimension") != args.dimension:
         return False
     if args.category_contains and args.category_contains.lower() not in text(record.get("category")).lower():
@@ -179,23 +196,45 @@ def project_record(record: dict[str, Any], args: argparse.Namespace, indexes: di
     result: dict[str, Any] = {
         "risk_id": record.get("risk_id"),
         "canonical_name": record.get("canonical_name"),
-        "dimension": record.get("dimension"),
         "category": record.get("category"),
+        "severity_hint": field_value(record, "Expected severity") or "context-dependent",
+        "dimension": record.get("dimension"),
     }
     if variant:
         result["risk_definition_id"] = variant.get("risk_definition_id")
         result["definition_version"] = variant.get("definition_version")
     if args.retrieval_level >= 2:
+        variant_context = variant.get("context", {}) if isinstance(variant.get("context"), dict) else {}
+        normalized = definition.get("normalized_definition", {}) if isinstance(definition.get("normalized_definition"), dict) else {}
         result.update({
             "risk_context_variant_id": variant.get("risk_context_variant_id"),
-            "context": variant.get("context", {}),
+            "trigger": text(normalized.get("trigger_conditions")) or field_value(record, "Conditions required to trigger the problem"),
+            "failure_mechanism": text(normalized.get("failure_mechanism")) or field_value(record, "Failure mechanism"),
+            "required_controls": [value for value in [text(normalized.get("prevention_strategy")) or field_value(record, "Prevention strategy"), variant_context.get("control")] if value],
+            "context": variant_context,
             "owner": record_owner(record),
             "source_location": variant.get("source_location") or {"source_heading_name": record.get("source_heading_name"), "source_line_start": record.get("source_line_start")},
         })
     if args.retrieval_level >= 3:
-        result["normalized_definition"] = definition.get("normalized_definition")
-        result["semantic_review_status"] = definition.get("semantic_review_status")
-        result["definition_content_sha256"] = definition.get("definition_content_sha256")
+        result.update({
+            "tests": {
+                "automated": field_value(record, "Automated test"),
+                "negative": field_value(record, "Negative test"),
+                "load_or_concurrency": field_value(record, "Load or concurrency test where relevant"),
+                "security_or_abuse": field_value(record, "Security or abuse test where relevant"),
+                "chaos_or_dependency": field_value(record, "Chaos or dependency failure test where relevant"),
+            },
+            "monitoring": {
+                "observability": field_value(record, "Required observability"),
+                "alert": field_value(record, "Required alert"),
+                "detection_strategy": field_value(record, "Detection strategy"),
+            },
+            "recovery": field_value(record, "Recovery strategy"),
+            "evidence": field_value(record, "Required acceptance evidence"),
+            "normalized_definition": definition.get("normalized_definition"),
+            "semantic_review_status": definition.get("semantic_review_status"),
+            "definition_content_sha256": definition.get("definition_content_sha256"),
+        })
     if args.retrieval_level >= 4:
         related = []
         seen_relationships: set[str] = set()
@@ -217,6 +256,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--definitions", default=str(DEFAULT_DEFINITIONS))
     parser.add_argument("--relationships", default=str(DEFAULT_RELATIONSHIPS))
     parser.add_argument("--id", dest="risk_id")
+    parser.add_argument("--canonical-name")
+    parser.add_argument("--alias")
     parser.add_argument("--definition-id")
     parser.add_argument("--source-variant-id")
     parser.add_argument("--dimension", choices=["universal", "industry", "product", "jurisdiction", "architecture"])

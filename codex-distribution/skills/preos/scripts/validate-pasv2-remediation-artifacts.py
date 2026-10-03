@@ -1,15 +1,19 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 from __future__ import annotations
 
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKSPACE = ROOT.parent
 DEFAULT = WORKSPACE / ".migration-control" / "pasv2-remediation"
+sys.path.insert(0, str(ROOT / "scripts"))
+from pasv2_runtime import validate_all_runtime
+
 SELF_REGISTER_NAMES = {
     "complete-master-prompt-compliance-register.json",
     ".migration-control/pasv2-remediation/complete-master-prompt-compliance-register.json",
@@ -253,6 +257,24 @@ def validate_artifact_registry(root: Path) -> None:
             fail("artifact registry missing file " + item["path"])
 
 
+
+def validate_pasv2_runtime_behavior() -> None:
+    try:
+        result = validate_all_runtime()
+    except Exception as exc:
+        fail("runtime behavior validation failed: " + str(exc))
+    if result.get("source4_checks") != 34:
+        fail("runtime Source-4 validator did not compute all 34 checks")
+    if result.get("traceability_records", 0) < 5485:
+        fail("runtime traceability graph is incomplete")
+    if not result.get("high_assurance") or not result.get("low_risk"):
+        fail("runtime acceptance fixtures failed")
+    benchmark = result.get("benchmark", {})
+    budgets = benchmark.get("budgets", {})
+    for field in ("catalogue_query_ms", "selection_time_ms", "validation_time_ms"):
+        if benchmark.get(field, 0) >= budgets.get(field, 0):
+            fail("runtime benchmark budget exceeded for " + field)
+
 def validate_suite_lock() -> None:
     path = WORKSPACE / "SUITE-LOCK.json"
     if not path.is_file():
@@ -313,3 +335,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

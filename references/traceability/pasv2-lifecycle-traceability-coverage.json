@@ -1,0 +1,14 @@
+{
+  "schema_version": "pasv2-lifecycle-traceability-coverage-v1",
+  "graph": "C:/Users/USER/AppData/Local/Temp/tmpbxmnsly8/trace.jsonl",
+  "source_counts": {
+    "source-1-five-dimension-risk-catalogue": 4337,
+    "source-2-readiness-framework": 1148
+  },
+  "terminal_dispositions": {
+    "HUMAN_REVIEW": 4994,
+    "NOT_APPLICABLE": 2,
+    "GOVERNANCE_RUNTIME_CONTRACT": 489
+  },
+  "total_records": 5485
+}

@@ -1,4 +1,4 @@
-﻿import json
+import json
 import subprocess
 import sys
 import tempfile
@@ -76,9 +76,12 @@ class PASV2RuntimeTests(unittest.TestCase):
             path = Path(td) / "trace.jsonl"
             generated = rt.generate_lifecycle_traceability(path)
             self.assertEqual(generated["records"], 5485)
+            self.assertTrue(path.with_suffix(".coverage.json").is_file())
             result = rt.validate_lifecycle_traceability(path)
             self.assertGreaterEqual(result["node_types"], 12)
             self.assertGreater(result["human_review"], 0)
+            self.assertEqual(result["all_source_graph_records"], 8556)
+            self.assertEqual(result["all_source_count"], 4)
 
     def test_high_assurance_and_low_risk_acceptance_fixtures(self):
         high = rt.evaluate_high_assurance_acceptance()

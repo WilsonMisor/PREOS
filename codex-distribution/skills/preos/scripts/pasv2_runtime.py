@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 from __future__ import annotations
 from collections import Counter
 from pathlib import Path
@@ -182,7 +182,9 @@ def generate_lifecycle_traceability(output_path: Path = TRACE / "pasv2-lifecycle
         unit = row["source_unit_id"]; terminal = "HUMAN_REVIEW" if row["mapping_status"] == "HUMAN_REVIEW_REQUIRED" else "GOVERNANCE_RUNTIME_CONTRACT"
         nodes = [{"id": f"SOURCE:source-2:{unit}", "type": "source_item", "resolves": True}, {"id": f"READINESS_UNIT:{unit}", "type": "normalized_runtime_record", "resolves": True}, {"id": f"BLUEPRINT_ARTIFACT:{row['blueprint_artifact']}", "type": "implementation_contract", "resolves": True}, {"id": f"TERMINAL:{terminal}", "type": "terminal_disposition", "disposition": terminal, "resolves": True}]
         rows.append({"trace_id": f"TRACE-S2-{unit}", "source_document": "source-2-readiness-framework", "source_item": unit, "nodes": nodes, "edges": [{"from": nodes[i]["id"], "to": nodes[i + 1]["id"], "type": "TRACE_TO"} for i in range(len(nodes) - 1)], "terminal_disposition": terminal})
-    write_jsonl(output_path, rows); graph_path = f"PREOS/{output_path.relative_to(ROOT).as_posix()}" if output_path.is_relative_to(ROOT) else output_path.as_posix(); coverage = {"schema_version": "pasv2-lifecycle-traceability-coverage-v1", "graph": graph_path, "source_counts": dict(Counter(row["source_document"] for row in rows)), "terminal_dispositions": dict(Counter(row["terminal_disposition"] for row in rows)), "total_records": len(rows)}; write_json(TRACE / "pasv2-lifecycle-traceability-coverage.json", coverage)
+    write_jsonl(output_path, rows); graph_path = f"PREOS/{output_path.relative_to(ROOT).as_posix()}" if output_path.is_relative_to(ROOT) else output_path.as_posix(); coverage = {"schema_version": "pasv2-lifecycle-traceability-coverage-v1", "graph": graph_path, "source_counts": dict(Counter(row["source_document"] for row in rows)), "terminal_dispositions": dict(Counter(row["terminal_disposition"] for row in rows)), "total_records": len(rows)}
+    coverage_path = TRACE / "pasv2-lifecycle-traceability-coverage.json" if output_path.is_relative_to(ROOT) else output_path.with_suffix(".coverage.json")
+    write_json(coverage_path, coverage)
     return {"records": len(rows), **coverage["source_counts"]}
 
 def validate_lifecycle_traceability(path: Path = TRACE / "pasv2-lifecycle-traceability.jsonl") -> dict[str, int]:
@@ -203,7 +205,20 @@ def validate_lifecycle_traceability(path: Path = TRACE / "pasv2-lifecycle-tracea
     required = {"source_item", "normalized_runtime_record", "risk_definition", "risk_context_variant", "control", "test", "evidence", "preos_gate", "release", "incident", "learning", "terminal_disposition"}
     missing = required - set(node_types)
     if missing: raise ValueError(f"lifecycle traceability missing node types: {sorted(missing)}")
-    return {"records": len(rows), "node_types": len(node_types), "human_review": terminals.get("HUMAN_REVIEW", 0)}
+    all_source_coverage = load_json(TRACE / "pasv2-traceability-coverage.json")
+    expected_sources = {
+        "source-1-five-dimension-risk-catalogue": 4337,
+        "source-2-readiness-framework": 1148,
+        "source-3-operating-system": 1612,
+        "source-4-original-master-prompt": 1459,
+    }
+    if all_source_coverage.get("expected_source_counts") != expected_sources:
+        raise ValueError("all-source traceability coverage has stale expected source counts")
+    if all_source_coverage.get("observed_source_counts") != expected_sources:
+        raise ValueError("all-source traceability coverage does not cover all four sources")
+    if all_source_coverage.get("total_graph_records") != sum(expected_sources.values()):
+        raise ValueError("all-source traceability total does not match expected source counts")
+    return {"records": len(rows), "node_types": len(node_types), "human_review": terminals.get("HUMAN_REVIEW", 0), "all_source_graph_records": all_source_coverage["total_graph_records"], "all_source_count": len(expected_sources)}
 
 def validate_source4_completeness() -> dict[str, Any]:
     cx = source4(); checks: dict[str, dict[str, Any]] = {}; source_bytes = SOURCE4_TEXT.read_bytes() if SOURCE4_TEXT.exists() else b""; source_text = source_bytes.decode("utf-8", errors="replace") if source_bytes else ""; actual_hash = hashlib.sha256(source_bytes).hexdigest() if source_bytes else cx.get("source_sha256")

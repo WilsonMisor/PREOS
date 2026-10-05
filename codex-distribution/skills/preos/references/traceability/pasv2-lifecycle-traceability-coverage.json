@@ -1,6 +1,6 @@
 {
   "schema_version": "pasv2-lifecycle-traceability-coverage-v1",
-  "graph": "C:/Users/USER/AppData/Local/Temp/tmpbxmnsly8/trace.jsonl",
+  "graph": "PREOS/references/traceability/pasv2-lifecycle-traceability.jsonl",
   "source_counts": {
     "source-1-five-dimension-risk-catalogue": 4337,
     "source-2-readiness-framework": 1148

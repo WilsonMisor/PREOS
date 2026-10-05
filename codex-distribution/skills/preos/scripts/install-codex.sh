@@ -7,7 +7,7 @@ DIST="$ROOT/codex-distribution"
 if [ ! -d "$DIST/skills" ]; then
   python "$ROOT/scripts/build_codex_distribution.py"
 fi
-mapfile -t SKILLS < <(python - "$ROOT/CODEX-DISTRIBUTION.json" <<'PY'
+mapfile -t SKILLS < <(python - "$ROOT/CODEX-DISTRIBUTION.json" <<'PY' | tr -d '\r'
 import json, pathlib, sys
 manifest = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding='utf-8'))
 for skill in manifest.get('skills', []):

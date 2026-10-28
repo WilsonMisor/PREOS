@@ -25,15 +25,14 @@ class PASV2RuntimeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "candidate cannot be promoted"):
             rt.promote_candidate_risk(candidate)
 
-    def test_candidate_risk_promotes_only_as_versioned_plan_after_human_review(self):
+    def test_candidate_compatibility_api_cannot_promote_from_caller_approval_flags(self):
         candidate = {
             "canonical_name": "Novel Provider Reconciliation Drift",
             "provenance_class": "ENGINEERING_EXPANSION",
             "source": {"class": "incident-derived", "incident_id": "INC-001"},
         }
-        promoted = rt.promote_candidate_risk(candidate, {"approved": True, "qualified_human": True, "reviewer": "Chief Risk Owner"})
-        self.assertEqual(promoted["promotion"], "APPROVED_CHANGESET_ONLY")
-        self.assertFalse(promoted["canonical_corpus_mutated"])
+        with self.assertRaisesRegex(ValueError, 'durable scoped PREOS approval'):
+            rt.promote_candidate_risk(candidate, {"approved": True, "qualified_human": True, "reviewer": "Chief Risk Owner"})
 
     def test_five_engines_execute_required_contracts(self):
         result = rt.run_five_engines(rt.high_assurance_fixture(), evidence={})
@@ -49,7 +48,7 @@ class PASV2RuntimeTests(unittest.TestCase):
         self.assertTrue(blocked["blocked"])
         self.assertEqual(len(blocked["results"]), 20)
         self.assertTrue(any(row["state"] == "BLOCKING_MISSING_EVIDENCE" for row in blocked["results"]))
-        na = rt.evaluate_nondeferrable_controls({"first_production_release": False}, evidence={})
+        na = rt.evaluate_nondeferrable_controls({"production_intent": False, "first_production_release": False}, evidence={})
         self.assertFalse(na["blocked"])
         self.assertTrue(all(row["state"] == "NOT_APPLICABLE" for row in na["results"]))
 

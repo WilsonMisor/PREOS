@@ -47,98 +47,16 @@ def model2_data() -> dict[str, Any]:
     reviews = load_jsonl(MODEL2 / "semantic-review-ledger.jsonl")
     return {"definitions": definitions, "variants": variants, "relationships": relationships, "reviews": reviews, "definitions_by_id": {f"{r['risk_definition_id']}@{r['definition_version']}": r for r in definitions}, "variants_by_id": {r["risk_context_variant_id"]: r for r in variants}}
 
-def normalize_project_context(contract: dict[str, Any]) -> dict[str, Any]:
-    dimensions = [item["text"] for item in source4()["context_dimensions"]]
-    lower = text_blob(contract)
-    normalized = {"product_category": contract.get("product_category") or contract.get("product_type") or "unspecified", "profiles": sorted(set(contract.get("profiles", []))), "user_types": contract.get("user_types", contract.get("actors", [])), "business_model": contract.get("business_model", "unspecified"), "money_movement": bool(contract.get("payments") or contract.get("money_movement") or "payment" in lower or "billing" in lower), "sensitive_data": bool(contract.get("personal_data") or "personal data" in lower or "sensitive" in lower), "tenant_model": contract.get("tenant_model", "not_applicable"), "jurisdictions": contract.get("jurisdictions", []), "architecture": sorted(set(contract.get("architecture", []))), "external_providers": contract.get("external_providers", []), "maturity_stage": contract.get("maturity_stage", "Stage 1 Early Production"), "threat_stage": contract.get("threat_stage", "Stage 1"), "expected_users": contract.get("expected_users", "unknown"), "expected_transaction_volume": contract.get("expected_transaction_volume", "unknown"), "required_source4_dimensions": dimensions, "covered_source4_dimensions": [], "missing_source4_dimensions": []}
-    mapped = {"Product category": normalized["product_category"], "User types": normalized["user_types"], "Business model": normalized["business_model"], "Money movement": normalized["money_movement"], "Sensitive data": normalized["sensitive_data"], "Jurisdictions": normalized["jurisdictions"], "Expected users": normalized["expected_users"], "Expected transaction volume": normalized["expected_transaction_volume"], "Current production stage": normalized["maturity_stage"], "Billing requirements": bool(contract.get("billing") or contract.get("payments")), "Subscription requirements": bool(contract.get("subscriptions")), "Web requirements": "web" in normalized["profiles"], "AI functionality": bool(contract.get("ai_functionality")), "Data and analytics requirements": bool(contract.get("personal_data") or "data" in normalized["profiles"])}
-    for item in dimensions:
-        (normalized["covered_source4_dimensions"] if mapped.get(item) not in (None, "", [], False) else normalized["missing_source4_dimensions"]).append(item)
-    return normalized
 
-def evaluate_candidate_risk(candidate: dict[str, Any], *, human_review: dict[str, Any] | None = None) -> dict[str, Any]:
-    if not candidate.get("canonical_name"):
-        raise ValueError("candidate risk requires canonical_name")
-    provenance = candidate.get("provenance_class")
-    if provenance not in PROVENANCE_CLASSES:
-        raise ValueError(f"unsupported provenance class: {provenance}")
-    existing = {str(row["canonical_name"]).strip().lower(): row for row in model2_data()["definitions"]}.get(str(candidate["canonical_name"]).strip().lower())
-    review_required = provenance in {"SOURCE_IMPLIED", "ENGINEERING_EXPANSION", "EXTERNAL_RESEARCH_REQUIRED", "QUALIFIED_HUMAN_REVIEW_REQUIRED"}
-    approved = bool(human_review and human_review.get("approved") and human_review.get("qualified_human"))
-    allowed = bool(not existing and (approved or not review_required))
-    decision = "REJECT_DUPLICATE_LINK_TO_EXISTING_DEFINITION" if existing else ("QUEUE_HUMAN_REVIEW" if review_required and not approved else "PROMOTION_PLAN_READY")
-    return {"candidate_id": stable_id("CAND-RISK-", {"name": candidate["canonical_name"], "source": candidate.get("source")}), "canonical_name": candidate["canonical_name"], "provenance_class": provenance, "source": candidate.get("source", {}), "relationship_deduplication_analysis": {"duplicate_existing_definition": bool(existing), "matched_risk_definition_id": existing.get("risk_definition_id") if existing else None, "relationship_type": "SAME_AS" if existing else "NEW_CANDIDATE"}, "semantic_review": {"status": "APPROVED_BY_QUALIFIED_HUMAN" if approved else ("HUMAN_REVIEW_REQUIRED" if review_required else "DETERMINISTIC_SOURCE_DIRECT"), "required": review_required, "authority": human_review.get("reviewer") if human_review else None}, "canonicalization_decision": decision, "catalogue_version_change": "PROMOTION_REQUIRES_VERSIONED_CHANGESET" if allowed else "NO_MUTATION_DIRECTLY_FROM_CANDIDATE", "relationship_index_update": "PLAN_ONLY_UNTIL_PROMOTION", "regression_test": "PREOS/tests/test_pasv2_runtime.py", "promotion_allowed": allowed}
 
-def promote_candidate_risk(candidate: dict[str, Any], human_review: dict[str, Any] | None = None) -> dict[str, Any]:
-    workflow = evaluate_candidate_risk(candidate, human_review=human_review)
-    if not workflow["promotion_allowed"]:
-        raise ValueError("candidate cannot be promoted without non-duplicate status and required qualified-human review")
-    return {"candidate_id": workflow["candidate_id"], "promotion": "APPROVED_CHANGESET_ONLY", "new_risk_definition_id": stable_id("RDEF-", candidate["canonical_name"]), "definition_version": "1.0.0", "index_update_required": True, "relationship_update_required": True, "canonical_corpus_mutated": False}
 
-def _variant_match_score(variant: dict[str, Any], context: dict[str, Any]) -> int:
-    blob = text_blob([variant.get("category"), variant.get("dimension"), variant.get("context", {})])
-    score = sum(3 for profile in context.get("profiles", []) if profile in blob)
-    score += sum(4 for arch in context.get("architecture", []) if str(arch).lower() in blob)
-    score += sum(4 for jurisdiction in context.get("jurisdictions", []) if str(jurisdiction).lower() in blob)
-    if context.get("money_movement") and any(w in blob for w in ("payment", "money", "financial")): score += 5
-    if context.get("tenant_model") == "multi-tenant" and "tenant" in blob: score += 5
-    if context.get("sensitive_data") and any(w in blob for w in ("privacy", "personal", "data")): score += 3
-    return score
 
-def context_engine(contract: dict[str, Any]) -> dict[str, Any]:
-    return {"engine": "Context Engine", "input_artifacts": ["Project Contract", "Blueprint classification"], "runtime_implementation": "PREOS/scripts/pasv2_runtime.py::context_engine", "output": normalize_project_context(contract), "human_boundary": "Unknown or materially regulated classification remains HUMAN_REVIEW"}
 
-def risk_generation_engine(contract: dict[str, Any], *, limit: int = 25) -> dict[str, Any]:
-    context = normalize_project_context(contract)
-    ranked = sorted(((_variant_match_score(v, context), v) for v in model2_data()["variants"] if _variant_match_score(v, context)), key=lambda item: (-item[0], item[1]["source_risk_id"]))
-    selected = [item[1] for item in ranked[:limit]]
-    feature = contract.get("features", ["unspecified-feature"])[0]
-    candidate_values = {"concurrency": "duplicate-click", "retry": "worker-retry", "network": "timeout", "dependency": (contract.get("external_providers") or ["none"])[0], "storage": (contract.get("architecture") or ["database"])[0], "permission": "suspended-during-processing", "attack": "replay", "scale": "one-tenant", "cost": "provider-fee", "human_action": "admin-freeze", "business_rule": (contract.get("business_rules") or ["idempotent-state-transition"])[0], "legal_consequence": "Nigeria-consumer-or-data-obligation" if "Nigeria" in context.get("jurisdictions", []) else "contractual", "recovery": "reconciliation"}
-    candidates = []
-    for axis in RISK_GENERATION_AXES:
-        if axis in {"feature", "actor"}: continue
-        value = candidate_values.get(axis, "context-dependent")
-        name = f"{feature} {axis.replace('_', ' ').title()} Risk"
-        candidates.append({"candidate_id": stable_id("CAND-RISK-", {"name": name, "source": {"class": "contextual-generation", "axis": axis, "value": value}}), "axis": axis, "value": value, "promotion_allowed": False, "decision": "QUEUE_HUMAN_REVIEW"})
-    withdrawal = ["duplicate clicks", "simultaneous devices", "stale balances", "provider timeouts", "duplicate provider events", "missing provider events", "out of order events", "worker retries", "user suspension during processing", "fraud review during processing", "admin freeze", "provider outage", "database failure", "queue retry", "regional failure", "reconciliation mismatch", "support manual retry", "attacker replay"] if str(feature).lower() in {"withdrawal", "transfer"} else []
-    return {"engine": "Risk Generation Engine", "catalogue_first_selection_count": len(selected), "selected_context_variants": [row["risk_context_variant_id"] for row in selected], "bounded_contextual_candidates": candidates, "axes_considered": RISK_GENERATION_AXES, "pruning_policy": "one candidate per applicable axis; no literal Cartesian explosion", "withdrawal_transfer_regression": withdrawal, "promotion_policy": "canonical promotion only through candidate-risk workflow"}
 
-def economics_complexity_engine(contract: dict[str, Any]) -> dict[str, Any]:
-    cx = source4(); context = normalize_project_context(contract)
-    dims = [item["text"] for item in cx["economics_and_complexity"]["cost_dimensions"]]
-    lower = text_blob(contract); triggered = []
-    for dim in dims:
-        key = dim.lower()
-        if key in {"fixed cost", "variable cost", "cost of failure", "cost of engineering complexity", "cost of operational toil", "cost of migration"} or ("transaction" in key and context["money_movement"]) or ("gb" in key and ("storage" in lower or "file" in lower)) or ("support" in key and contract.get("support_required", True)) or ("ai" in key and contract.get("ai_functionality")):
-            triggered.append(dim)
-    return {"engine": "Economics and Complexity Engine", "cost_dimensions_available": len(dims), "triggered_cost_dimensions": triggered, "unit_economics_required": context["money_movement"] or bool(contract.get("subscriptions")), "complexity_tax_assessment": "HIGH" if len(context["architecture"]) >= 4 or context["money_movement"] else "LOW", "deferred_complexity_triggers": [item["text"] for item in cx["deferred_complexity_record"] if "trigger" in item["text"].lower() or "migration" in item["text"].lower()], "human_boundary": "Financial/tax/legal interpretation remains accountable-human authority"}
 
-def evolution_engine(contract: dict[str, Any]) -> dict[str, Any]:
-    cx = source4(); context = normalize_project_context(contract)
-    return {"engine": "Evolution Engine", "product_maturity_stages": cx["maturity_stages"], "threat_stages": cx["threat_stages"], "current_maturity_stage": context["maturity_stage"], "current_threat_stage": context["threat_stage"], "deferred_activation_rules": cx["evolution"]["states"], "review_triggers": ["maturity-stage-change", "threat-stage-change", "tenant-volume-threshold", "transaction-volume-threshold", "new-jurisdiction", "new-money-movement"], "non_scale_consequence_overrides": ["money_movement", "personal_data", "multi_tenancy", "regulated_jurisdiction"]}
 
-def nondeferrable_control_map() -> list[dict[str, Any]]:
-    controls = []
-    for item in source4()["nondeferrable_controls"]:
-        text = item["text"]; n = int(item["number"]); fs = f"FS-{n:03d}"; low = text.lower()
-        gate = "G5" if any(k in low for k in ("money", "monetary", "reconciliation")) else ("G3" if any(k in low for k in ("auth", "secret", "injection", "rate limiting")) else "G11")
-        controls.append({"nondeferrable_control_id": f"NDC-{n:02d}", "source4_number": n, "source4_text": text, "preos_control_id": fs, "evidence_id": f"EVIDENCE-{fs}", "gate": gate, "first_production_required": True})
-    return controls
 
-def evaluate_nondeferrable_controls(context: dict[str, Any], evidence: dict[str, Any] | None = None) -> dict[str, Any]:
-    evidence = evidence or {}; first_release = bool(context.get("first_production_release", False)); rows = []; blocked = False
-    for control in nondeferrable_control_map():
-        applicable = first_release
-        state = "NOT_APPLICABLE"
-        if applicable:
-            state = "SATISFIED" if evidence.get(control["evidence_id"]) == "CURRENT" else "BLOCKING_MISSING_EVIDENCE"; blocked = blocked or state.startswith("BLOCKING")
-        rows.append({**control, "applicable": applicable, "state": state, "rationale": "first production release requires nondeferrable controls" if applicable else "not a first production release"})
-    return {"blocked": blocked, "results": rows}
 
-def evidence_gate_engine(contract: dict[str, Any], evidence: dict[str, Any] | None = None) -> dict[str, Any]:
-    nondef = evaluate_nondeferrable_controls(contract, evidence)
-    state = "RED" if nondef["blocked"] else ("UNKNOWN" if not evidence else "GREEN")
-    return {"engine": "Evidence and Gate Engine", "nondeferrable": nondef, "gate_state": state, "blocker_behavior": "missing applicable nondeferrable evidence blocks first real production release", "acceptance_authority": "qualified human only", "acceptance_expiry_revocation": "validated by risk acceptance runtime"}
 
 def run_five_engines(contract: dict[str, Any], evidence: dict[str, Any] | None = None) -> dict[str, Any]:
     return {"context": context_engine(contract), "risk_generation": risk_generation_engine(contract), "economics_complexity": economics_complexity_engine(contract), "evolution": evolution_engine(contract), "evidence_gate": evidence_gate_engine(contract, evidence)}
@@ -290,6 +208,28 @@ def main() -> None:
     elif args.command == "query-graph": print(json.dumps(query_risk_graph(args.type, args.value, limit=args.limit), indent=2, ensure_ascii=True))
     elif args.command == "candidate":
         candidate = json.loads(Path(args.candidate_json).read_text(encoding="utf-8")); human = json.loads(Path(args.human_review_json).read_text(encoding="utf-8")) if args.human_review_json else None; print(json.dumps(evaluate_candidate_risk(candidate, human_review=human), indent=2, ensure_ascii=True))
+
+# Canonical runtime entry points. These replace the initial descriptive engine
+# prototypes; callers keep the public module/CLI surface while executing the
+# behavioral implementations.
+from assurance_engines import (normalize_project_context, context_engine,
+    risk_generation_engine, economics_complexity_engine, evolution_engine)
+from control_assurance import nondeferrable_control_map, evaluate_nondeferrable_controls, evidence_gate_engine
+
+
+def evaluate_candidate_risk(candidate, *, human_review=None):
+    """Compatibility intake: never infer a durable approval from caller flags."""
+    if not candidate.get('canonical_name') or candidate.get('provenance_class') not in PROVENANCE_CLASSES:
+        raise ValueError('candidate requires name and valid provenance')
+    return {'candidate_id':stable_id('CAND-RISK-',candidate),'promotion_allowed':False,
+            'canonicalization_decision':'QUEUE_HUMAN_REVIEW',
+            'workflow':'scripts/candidate_workflow.py: submit, prepare_promotion, promote',
+            'required_input':'definition, source provenance, versioned plan, durable scoped approval and executed regression'}
+
+
+def promote_candidate_risk(candidate, human_review=None):
+    raise ValueError('candidate cannot be promoted through caller booleans; use candidate_workflow.promote with durable scoped PREOS approval')
+
 
 if __name__ == "__main__": main()
 

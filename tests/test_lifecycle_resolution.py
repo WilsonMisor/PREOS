@@ -22,19 +22,19 @@ def build_fixture(repo):
     (repo/'test_app.py').write_text('import unittest\nfrom app import accept_port\nclass PortTests(unittest.TestCase):\n    def test_invalid_port(self):\n        self.assertFalse(accept_port(70000))\n        self.assertFalse(accept_port(True))\n        self.assertTrue(accept_port(443))\n')
     for args in [('init',),('config','user.email','fixture@example.invalid'),('config','user.name','Test Fixture'),('add','app.py','test_app.py'),('commit','-m','Disposable traceability regression')]:
         subprocess.run(['git',*args],cwd=repo,capture_output=True,check=True)
-    evidence=capture_control_evidence(repo,'test_app.PortTests.test_invalid_port','test_app.py',['app.py'],['FS-021'],repo/'evidence.json',project_id='trace-test',release_id='REL-test')
+    evidence=capture_control_evidence(repo,'test_app.PortTests.test_invalid_port','test_app.py',['app.py'],['FS-004'],repo/'evidence.json',project_id='trace-test',release_id='REL-test')
     corpus=ROOT/'references/risks/model2'
     raw=rows(corpus/'risk-corpus.jsonl')[0]
     variant=next(r for r in rows(corpus/'risk-context-variants.jsonl') if r['source_risk_id']==raw['risk_id'])
     definition=next(r for r in rows(corpus/'normalized-risk-definitions.jsonl') if r['risk_definition_id']==variant['risk_definition_id'])
-    control=next(r for r in load_source_json('baseline_75_controls.json',ROOT)['controls'] if r['no']==21)
+    control=next(r for r in load_source_json('baseline_75_controls.json',ROOT)['controls'] if r['no']==4)
     master=json.loads((ROOT.parent/'wed_dev_skill/references/pasv2/requirements.unassessed.json').read_text())
     requirement=next(r for r in master['requirements'] if r['parent_section']=='77')
     code_id='app.py::accept_port'; test_id='test_app.py::PortTests.test_invalid_port'
     records={
-        'assessment':{'assessment_id':'RA-test','project_id':'trace-test','risk_context_variant_id':variant['risk_context_variant_id'],'risk_definition_id':variant['risk_definition_id'],'control_ids':['FS-021'],'scope':'Disposable fixture only; not evidence of any production product.'},
+        'assessment':{'assessment_id':'RA-test','project_id':'trace-test','risk_context_variant_id':variant['risk_context_variant_id'],'risk_definition_id':variant['risk_definition_id'],'control_ids':['FS-004'],'scope':'Disposable fixture only; not evidence of any production product.'},
         'packet':{'task_packet_id':'TP-test','project_id':'trace-test','assessment_ids':['RA-test'],'requirement_ids':[requirement['requirement_id']],'implementation_refs':[code_id]},
-        'gate':{'gate_id':'G4','project_id':'trace-test','release_id':'REL-test','control_ids':['FS-021'],'evidence_ids':[evidence['evidence_id']],'state':'GREEN'},
+        'gate':{'gate_id':'G4','project_id':'trace-test','release_id':'REL-test','control_ids':['FS-004'],'evidence_ids':[evidence['evidence_id']],'state':'GREEN'},
         'release':{'release_id':'REL-test','project_id':'trace-test','gate_ids':['G4'],'production_authorized':False,'purpose':'Disposable test fixture'},
         'incident':{'incident_id':'INC-test','project_id':'trace-test','release_id':'REL-test','observed_failure':'accept_port accepted out-of-range input before the regression fix'},
     }
@@ -63,13 +63,13 @@ def build_fixture(repo):
     rid=definition['risk_definition_id']+'@'+definition['definition_version']
     catalogue('risk_definition',rid,'normalized-risk-definitions','risk_definition_id',definition)
     catalogue('risk_context_variant',variant['risk_context_variant_id'],'risk-context-variants','risk_context_variant_id',variant)
-    nodes.append({'id':'FS-021','type':'control','ref':{'record_sha256':canonical_hash(control)}})
+    nodes.append({'id':'FS-004','type':'control','ref':{'record_sha256':canonical_hash(control)}})
     nodes.append({'id':requirement['requirement_id'],'type':'master_requirement','ref':{'root':'wed_dev_skill','path':'references/pasv2/requirements.unassessed.json','format':'master_requirement','master_path':'references/pasv2/master-prompt.md'}})
     for kind,ident,name in [('risk_assessment','RA-test','assessment'),('task_packet','TP-test','packet'),('evidence',evidence['evidence_id'],'evidence'),('preos_gate','G4','gate'),('release','REL-test','release'),('incident','INC-test','incident'),('learning',learning_id,'learning')]:
         record(kind,ident,name,records.get(name,evidence))
     for kind,ident,path,symbol in [('implementation_artifact',code_id,'app.py','accept_port'),('test',test_id,'test_app.py','PortTests.test_invalid_port')]:
         nodes.append({'id':ident,'type':kind,'ref':{'root':'project','path':path,'format':'python','symbol':symbol,'sha256':sha((repo/path).read_bytes())}})
-    edges=[('PRESERVES',source_id,raw['risk_id']),('NORMALIZES',raw['risk_id'],rid),('VARIANT_OF',variant['risk_context_variant_id'],rid),('ASSESSES',variant['risk_context_variant_id'],'RA-test'),('MITIGATED_BY','RA-test','FS-021'),('ADDRESSES','RA-test','TP-test'),('IMPLEMENTS',requirement['requirement_id'],'TP-test'),('DELIVERS','TP-test',code_id),('TESTED_BY',code_id,test_id),('PRODUCES',test_id,evidence['evidence_id']),('SATISFIES',evidence['evidence_id'],'G4'),('DECIDES','G4','REL-test'),('OBSERVED_IN','REL-test','INC-test'),('LEARNS','INC-test',learning_id)]
+    edges=[('PRESERVES',source_id,raw['risk_id']),('NORMALIZES',raw['risk_id'],rid),('VARIANT_OF',variant['risk_context_variant_id'],rid),('ASSESSES',variant['risk_context_variant_id'],'RA-test'),('MITIGATED_BY','RA-test','FS-004'),('ADDRESSES','RA-test','TP-test'),('IMPLEMENTS',requirement['requirement_id'],'TP-test'),('DELIVERS','TP-test',code_id),('TESTED_BY',code_id,test_id),('PRODUCES',test_id,evidence['evidence_id']),('SATISFIES',evidence['evidence_id'],'G4'),('DECIDES','G4','REL-test'),('OBSERVED_IN','REL-test','INC-test'),('LEARNS','INC-test',learning_id)]
     graph={'project_id':'trace-test','unit_type':'operational','phase':'incident-learning','nodes':nodes,'edges':[{'type':k,'from':a,'to':b} for k,a,b in edges]}
     (repo/'graph.json').write_text(json.dumps(graph))
     return graph
@@ -97,7 +97,7 @@ class LifecycleResolutionTests(unittest.TestCase):
             if mutation=='missing': graph['edges'].pop()
             if mutation=='type': graph['edges'][0]['type']='TRACE_TO'
             if mutation=='flag': graph['nodes'][0]['resolves']=True
-            if mutation=='join': graph['edges'][0]['to']='FS-021'
+            if mutation=='join': graph['edges'][0]['to']='FS-004'
             with self.assertRaises(ValueError,msg=mutation):
                 validate_operational_graph(graph,self.roots)
 

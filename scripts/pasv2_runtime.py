@@ -141,18 +141,31 @@ def high_assurance_fixture() -> dict[str, Any]:
 def low_risk_fixture() -> dict[str, Any]:
     return {"product_type": "documentation-only", "profiles": [], "tenant_model": "not_applicable", "payments": False, "personal_data": False, "architecture": [], "features": ["README typo"], "actors": ["maintainer"], "maturity_stage": "Stage 0 Prototype", "threat_stage": "Stage 0", "documentation_only": True}
 
-def readiness_specialists() -> list[str]:
-    return sorted({row["gstack_specialist_route"] for row in load_jsonl(READINESS / "source2-readiness-units.jsonl")})
 
-def evaluate_high_assurance_acceptance() -> dict[str, Any]:
-    fixture = high_assurance_fixture(); engines = run_five_engines(fixture, evidence={}); risk = engines["risk_generation"]; selected = json.dumps(risk["selected_context_variants"]).lower()
-    outcomes = {"blueprint_profiles": set(fixture["profiles"]) >= {"saas", "web", "api", "data", "infrastructure"}, "universal_risks": any(v["dimension"] == "universal" for v in model2_data()["variants"]), "payment_finance_risks": "payment" in selected or fixture["payments"], "saas_risks": "saas" in fixture["profiles"], "nigeria_risks": "Nigeria" in fixture["jurisdictions"], "architecture_risks": all(a in fixture["architecture"] for a in ["REST", "relational database", "queue"]), "contextual_risk_generation": bool(risk["bounded_contextual_candidates"]), "financial_correctness": "financial reconciliation" in fixture["business_rules"], "cross_tenant_isolation": fixture["tenant_model"] == "multi-tenant", "payment_idempotency": "payment idempotency" in fixture["business_rules"], "reconciliation": "reconciliation" in json.dumps(engines).lower(), "gstack_specialists": {"gstack-cso", "gstack-qa", "gstack-benchmark"} <= set(readiness_specialists()), "missing_evidence_unknown_red": engines["evidence_gate"]["gate_state"] in {"RED", "UNKNOWN"}, "production_not_auto_approved": engines["evidence_gate"]["acceptance_authority"] == "qualified human only"}
-    return {"fixture": fixture, "outcomes": outcomes, "pass": all(outcomes.values()), "engines": engines}
 
-def evaluate_low_risk_proportionality() -> dict[str, Any]:
-    fixture = low_risk_fixture(); context = normalize_project_context(fixture); full_scan = False; specialists: list[str] = []
-    return {"fixture": fixture, "outcomes": {"no_full_4337_scan": not full_scan, "no_unnecessary_architecture_review": not context["architecture"], "no_expensive_specialist_routing": specialists == [], "bounded_minimal_preos": fixture["documentation_only"] is True, "no_4337_risk_context_load": not full_scan}, "loaded_risk_count": 0, "specialist_routes": specialists, "pass": True}
 
+
+
+def _suite_acceptance(case):
+    import os
+    import subprocess
+    blueprint = Path(os.environ.get('PASV2_BLUEPRINT_ROOT', WORKSPACE/'wed_dev_skill'))
+    gstack = Path(os.environ.get('PASV2_GSTACK_ROOT', WORKSPACE/'gstack'))
+    command = [sys.executable, str(blueprint/'scripts/pasv2_acceptance.py'),
+               '--preos', str(ROOT), '--gstack', str(gstack), '--case', case]
+    proc = subprocess.run(command, cwd=blueprint, capture_output=True, text=True,
+                          encoding='utf-8', errors='replace', timeout=120)
+    if proc.returncode:
+        raise ValueError('three-repository acceptance failed: '+proc.stderr)
+    return json.loads(proc.stdout)[case]
+
+
+def evaluate_high_assurance_acceptance():
+    return _suite_acceptance('high')
+
+
+def evaluate_low_risk_proportionality():
+    return _suite_acceptance('low')
 
 def validate_all_runtime() -> dict[str, Any]:
     s4 = validate_source4_completeness(); trace = validate_lifecycle_traceability(); high = evaluate_high_assurance_acceptance(); low = evaluate_low_risk_proportionality(); bench = performance_benchmark()

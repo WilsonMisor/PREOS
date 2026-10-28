@@ -58,3 +58,35 @@ Do not delete candidate history or infer approval during rollback. A definition
 correction or changed regression invalidates the proposed promotion scope and
 requires fresh review. No production release or Model2 default activation is
 authorized by these changes.
+# Resolvable project graph and incident learning
+
+The benchmark command is `python scripts/assurance_benchmark.py --output <file>`.
+It measures a cold graph query, bounded selection, context generation,
+serialization/compression, source validation, Python allocation peak, and an
+actual engine test subprocess. All nine budgets in
+`references/integration/performance-budgets.json` are enforced. Allocation peak
+is explicitly distinguished from operating-system RSS; a source checkout is
+required for the representative CI tests.
+
+`scripts/risk_graph.py` resolves canonical relationship endpoints before query.
+Context hints do not establish mitigation, gates, evidence or incidents. Those
+queries remain empty until a project supplies validated lifecycle links.
+
+`python scripts/pasv2_runtime.py validate-project-trace <project/graph.json>`
+checks artifact identities, content hashes, exact Python symbols, actual test
+calls, executed evidence, project/release scopes and joins across the declared
+edges. `query-graph --type evidence --project-graph <project/graph.json>` consumes
+the same validator. The generated catalogue-level historical traceability still
+needs the separate source-unit migration; a project graph does not prove it.
+
+Incident learning uses `scripts/production_feedback.py`. All twelve Source-4
+feedback actions require recorded results or, for conditional architecture,
+cost and security updates, an explicit rationale and review trigger. Tests,
+monitoring and runbook references resolve to current project files. Proposed
+risks enter the existing candidate queue and cannot mutate the canonical corpus.
+
+`source-package/four-sources` preserves the four governing inputs as gzip files.
+`python scripts/canonical_sources.py` verifies archive hashes and decompressed
+bytes against the immutable input hashes. This works outside the migration
+workspace. Tests cover corruption and manifest tampering.
+

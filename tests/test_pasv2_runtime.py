@@ -57,7 +57,7 @@ class PASV2RuntimeTests(unittest.TestCase):
         self.assertGreaterEqual(relation["total_matches"], 4503)
         self.assertIn(relation["results"][0]["relationship_type"], {"VARIANT_OF", "SAME_AS", "SPECIALIZES"})
         controls = rt.query_risk_graph("mitigated-by", "FS-004", limit=3)
-        self.assertGreater(controls["total_matches"], 0)
+        self.assertEqual(controls["total_matches"], 0)  # A contextual FS-004 hint is not a validated mitigation edge.
         causes = rt.query_risk_graph("causes", limit=3)
         self.assertEqual(causes["total_matches"], 0)
         self.assertEqual(causes["empty_result_policy"], "NO_VALIDATED_RELATION_EXISTS")

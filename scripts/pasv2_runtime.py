@@ -61,34 +61,6 @@ def model2_data() -> dict[str, Any]:
 def run_five_engines(contract: dict[str, Any], evidence: dict[str, Any] | None = None) -> dict[str, Any]:
     return {"context": context_engine(contract), "risk_generation": risk_generation_engine(contract), "economics_complexity": economics_complexity_engine(contract), "evolution": evolution_engine(contract), "evidence_gate": evidence_gate_engine(contract, evidence)}
 
-def query_risk_graph(query_type: str, value: str | None = None, *, limit: int = 25) -> dict[str, Any]:
-    data = model2_data(); results: list[dict[str, Any]] = []
-    if query_type in {"relationship", "causes", "amplifies"}:
-        wanted = {"relationship": None, "causes": "CAUSED_BY", "amplifies": "AMPLIFIES"}[query_type]
-        results = [rel for rel in data["relationships"] if (not wanted or rel["relationship_type"] == wanted) and (not value or value in json.dumps(rel, sort_keys=True))]
-    elif query_type in {"industries", "products", "architectures", "jurisdictions"}:
-        dim = {"industries": "industry", "products": "product", "architectures": "architecture", "jurisdictions": "jurisdiction"}[query_type]
-        results = [row for row in data["variants"] if (row["dimension"] == dim or (dim == "architecture" and row.get("context", {}).get("architecture"))) and (not value or value.lower() in text_blob(row))]
-    elif query_type == "mitigated-by":
-        for row in data["variants"]:
-            ctx = row.get("context", {})
-            if not value or value in {row["source_risk_id"], row["risk_context_variant_id"], ctx.get("control")}:
-                results.append({"risk_context_variant_id": row["risk_context_variant_id"], "control": ctx.get("control"), "relationship_type": "MITIGATED_BY_CONTROL_CONTEXT"})
-    elif query_type == "affected-gates":
-        for row in data["variants"]:
-            ctx = row.get("context", {})
-            if not value or value in {row["source_risk_id"], row["risk_context_variant_id"], ctx.get("gate")}:
-                results.append({"risk_context_variant_id": row["risk_context_variant_id"], "gate": ctx.get("gate")})
-    elif query_type == "evidence":
-        for key, definition in data["definitions_by_id"].items():
-            body = definition["normalized_definition"]
-            if not value or value in key or value.lower() in text_blob(definition):
-                results.append({"risk_definition": key, "test": body.get("automated_test"), "evidence": "required-current-evidence-record"})
-    elif query_type == "incidents":
-        results = []
-    else:
-        raise ValueError(f"unsupported graph query: {query_type}")
-    return {"query_type": query_type, "query": value, "count": min(len(results), limit), "total_matches": len(results), "results": results[:limit], "empty_result_policy": "NO_VALIDATED_RELATION_EXISTS" if not results else "VALIDATED_RESULTS"}
 
 def generate_lifecycle_traceability(output_path: Path = TRACE / "pasv2-lifecycle-traceability.jsonl") -> dict[str, int]:
     data = model2_data(); review_by_source = {r["source_record"]: r for r in data["reviews"]}; variant_by_source = {r["source_risk_id"]: r for r in data["variants"]}; rows = []
@@ -181,9 +153,6 @@ def evaluate_low_risk_proportionality() -> dict[str, Any]:
     fixture = low_risk_fixture(); context = normalize_project_context(fixture); full_scan = False; specialists: list[str] = []
     return {"fixture": fixture, "outcomes": {"no_full_4337_scan": not full_scan, "no_unnecessary_architecture_review": not context["architecture"], "no_expensive_specialist_routing": specialists == [], "bounded_minimal_preos": fixture["documentation_only"] is True, "no_4337_risk_context_load": not full_scan}, "loaded_risk_count": 0, "specialist_routes": specialists, "pass": True}
 
-def performance_benchmark() -> dict[str, Any]:
-    env = {"python": platform.python_version(), "platform": platform.platform(), "processor": platform.processor()}; t0 = time.perf_counter(); data = model2_data(); t1 = time.perf_counter(); selection = risk_generation_engine(high_assurance_fixture(), limit=50); t2 = time.perf_counter(); normalize_project_context(high_assurance_fixture()); t3 = time.perf_counter(); blob = json.dumps(selection, sort_keys=True).encode("utf-8"); compressed = zlib.compress(blob); t4 = time.perf_counter(); validate_source4_completeness(); t5 = time.perf_counter(); approx = sys.getsizeof(data["definitions"]) + sys.getsizeof(data["variants"]) + sys.getsizeof(data["relationships"])
-    return {"environment": env, "catalogue_query_ms": round((t1 - t0) * 1000, 3), "selection_time_ms": round((t2 - t1) * 1000, 3), "context_generation_ms": round((t3 - t2) * 1000, 3), "memory_use_estimate_bytes": approx, "generated_context_size_bytes": len(blob), "compression_serialization_ms": round((t4 - t3) * 1000, 3), "compressed_context_size_bytes": len(compressed), "validation_time_ms": round((t5 - t4) * 1000, 3), "ci_validation_duration_budget_seconds": 120, "budgets": {"catalogue_query_ms": 1000, "selection_time_ms": 1500, "validation_time_ms": 1500}}
 
 def validate_all_runtime() -> dict[str, Any]:
     s4 = validate_source4_completeness(); trace = validate_lifecycle_traceability(); high = evaluate_high_assurance_acceptance(); low = evaluate_low_risk_proportionality(); bench = performance_benchmark()
@@ -195,7 +164,8 @@ def validate_all_runtime() -> dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser(); sub = parser.add_subparsers(dest="command", required=True)
     for name in ["validate-all", "source4-check", "source4-report", "benchmark", "high-assurance", "low-risk", "generate-traceability"]: sub.add_parser(name)
-    q = sub.add_parser("query-graph"); q.add_argument("--type", required=True); q.add_argument("--value"); q.add_argument("--limit", type=int, default=25)
+    q = sub.add_parser("query-graph"); q.add_argument("--type", required=True); q.add_argument("--value"); q.add_argument("--limit", type=int, default=25); q.add_argument('--project-graph',type=Path)
+    project_trace = sub.add_parser('validate-project-trace'); project_trace.add_argument('graph',type=Path)
     c = sub.add_parser("candidate"); c.add_argument("--candidate-json", required=True); c.add_argument("--human-review-json")
     args = parser.parse_args()
     if args.command == "validate-all": print(json.dumps(validate_all_runtime(), indent=2, ensure_ascii=True))
@@ -205,7 +175,10 @@ def main() -> None:
     elif args.command == "high-assurance": print(json.dumps(evaluate_high_assurance_acceptance(), indent=2, ensure_ascii=True))
     elif args.command == "low-risk": print(json.dumps(evaluate_low_risk_proportionality(), indent=2, ensure_ascii=True))
     elif args.command == "generate-traceability": print(json.dumps(generate_lifecycle_traceability(), indent=2, ensure_ascii=True))
-    elif args.command == "query-graph": print(json.dumps(query_risk_graph(args.type, args.value, limit=args.limit), indent=2, ensure_ascii=True))
+    elif args.command == "query-graph": print(json.dumps(query_risk_graph(args.type, args.value, limit=args.limit,project_graph=args.project_graph), indent=2, ensure_ascii=True))
+    elif args.command == 'validate-project-trace':
+        from lifecycle_traceability import validate_operational_graph
+        print(json.dumps(validate_operational_graph(load_json(args.graph),{'PREOS':ROOT,'wed_dev_skill':WORKSPACE/'wed_dev_skill','project':args.graph.resolve().parent}),indent=2))
     elif args.command == "candidate":
         candidate = json.loads(Path(args.candidate_json).read_text(encoding="utf-8")); human = json.loads(Path(args.human_review_json).read_text(encoding="utf-8")) if args.human_review_json else None; print(json.dumps(evaluate_candidate_risk(candidate, human_review=human), indent=2, ensure_ascii=True))
 
@@ -215,6 +188,8 @@ def main() -> None:
 from assurance_engines import (normalize_project_context, context_engine,
     risk_generation_engine, economics_complexity_engine, evolution_engine)
 from control_assurance import nondeferrable_control_map, evaluate_nondeferrable_controls, evidence_gate_engine
+from risk_graph import query_risk_graph
+from assurance_benchmark import run_benchmark as performance_benchmark
 
 
 def evaluate_candidate_risk(candidate, *, human_review=None):

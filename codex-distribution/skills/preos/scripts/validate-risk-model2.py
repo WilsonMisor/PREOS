@@ -142,6 +142,9 @@ def validate_concern_separation() -> None:
     if not path.is_file():
         fail('missing concern-separation crosswalk')
     data = load_json(path)
+    from risk_field_crosswalk import manifest
+    if data.get('sources') != manifest()['sources']:
+        fail('37/40 field crosswalk is stale or differs from schema-bound lossless projection')
     concerns = data.get('concerns', {})
     required = ['risk_definition', 'risk_assessment', 'risk_economics', 'risk_evolution', 'risk_evidence', 'risk_acceptance']
     for concern in required:

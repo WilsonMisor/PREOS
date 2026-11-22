@@ -11,7 +11,7 @@ import sys
 from assurance_engines import normalize_project_context, source4
 from preos_common import load_source_json
 from runtime_state import atomic_write_json, evidence_binding_reasons, environment_binding, git_snapshot
-from risk_concern_runtime import validate_acceptance_record
+from risk_concern_runtime import verify_acceptance_authority
 from schema_validation import validate_instance
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -61,6 +61,9 @@ def file_binding(repo, relative):
 
 def capture_control_evidence(repo, selector, test_file, source_files, control_ids, output, *, environment='test', project_id=None, release_id=None):
     repo=Path(repo).resolve()
+    artifact=Path(output).with_suffix('.execution.json')
+    if Path(output).exists() or artifact.exists():
+        raise ValueError('evidence history is immutable; use a new output for replacement evidence')
     if not re.fullmatch(r'[A-Za-z_]\w*(?:\.[A-Za-z_]\w*){2,}',selector):
         raise ValueError('exact unittest method selector required')
     if not source_files or not control_ids:
@@ -69,7 +72,6 @@ def capture_control_evidence(repo, selector, test_file, source_files, control_id
     if not before['git_head']:
         raise ValueError('evidence requires a Git commit binding')
     proc=subprocess.run([sys.executable,'-m','unittest',selector],cwd=repo,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=300)
-    artifact=Path(output).with_suffix('.execution.json')
     execution={'selector':selector,'returncode':proc.returncode,'stdout':proc.stdout,'stderr':proc.stderr,'tests_executed':not bool(re.search(r'Ran 0 tests|OK \(skipped=',proc.stderr))}
     atomic_write_json(artifact,execution)
     record={'evidence_id':'E-'+hashlib.sha256((selector+str(artifact)).encode()).hexdigest()[:20],'project_id':project_id,'release_id':release_id,'produced_at':datetime.now(timezone.utc).isoformat(),'producer':'PREOS/scripts/control_assurance.py::capture_control_evidence','environment':environment,'artifact_location':str(artifact.resolve()),'artifact_sha256':hashlib.sha256(artifact.read_bytes()).hexdigest(),'validity':'CURRENT','commit_sha':before['git_head'],'control_ids':control_ids,'bindings':before}
@@ -135,19 +137,22 @@ def evaluate_nondeferrable_controls(contract, evidence=None, *, repo=None):
     return {'blocked':any(r['blockers'] for r in results),'results':results}
 
 
-def evidence_gate_engine(contract, evidence=None, *, repo=None):
+def evidence_gate_engine(contract, evidence=None, *, repo=None, approval_root=None):
+    from readiness_assurance import evaluate as evaluate_readiness
     controls=evaluate_nondeferrable_controls(contract,evidence,repo=repo)
+    readiness=evaluate_readiness(contract,evidence,repo=repo,approval_root=approval_root)
     blockers=[{'control':r['nondeferrable_control_id'],'gate':r['gate'],'reasons':r['blockers']} for r in controls['results'] if r['blockers']]
+    blockers.extend({'requirement':r['source_unit_id'],'gate':gate,'reasons':r['reasons']} for r in readiness['results'] if r['blocking'] and r['state'] in {'RED','UNKNOWN','HUMAN REVIEW'} for gate in r['gates'])
     for acceptance in contract.get('risk_acceptances',[]):
         try:
-            if not validate_acceptance_record(acceptance):
+            if not verify_acceptance_authority(acceptance, approval_root):
                 blockers.append({'gate':'G11','reasons':['risk acceptance expired, revoked or stale']})
         except ValueError as exc:
             blockers.append({'gate':'G11','reasons':[str(exc)]})
     states=contract.get('required_assurance_states',[])
     if any(state not in {'GREEN','AMBER'} for state in states):
         blockers.append({'gate':'G11','reasons':['required RED, UNKNOWN or HUMAN REVIEW remains unresolved']})
-    state='RED' if blockers else ('AMBER' if 'AMBER' in states else 'GREEN')
+    state='RED' if blockers else ('AMBER' if 'AMBER' in states or readiness['conditional'] else 'GREEN')
     if not evidence and not all(r['applicability']=='NOT_APPLICABLE' for r in controls['results']):
         state='RED'
-    return {'engine':'Evidence and Gate Engine','nondeferrable':controls,'gate_state':state,'blockers':blockers,'production_authorized':False,'acceptance_authority':'qualified human only','release_boundary':'Technical evidence never grants PRODUCTION_RELEASE_AUTHORITY.'}
+    return {'engine':'Evidence and Gate Engine','nondeferrable':controls,'readiness':readiness,'gate_state':state,'blockers':blockers,'production_authorized':False,'acceptance_authority':'qualified human only','release_boundary':'Technical evidence never grants PRODUCTION_RELEASE_AUTHORITY.'}

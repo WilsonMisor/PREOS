@@ -3,8 +3,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import hashlib
 from pathlib import Path
 from typing import Any
+from semantic_screening import screen_corpus
 
 ROOT = Path(__file__).resolve().parents[1]
 MODEL2 = ROOT / "references" / "risks" / "model2"
@@ -33,6 +35,9 @@ def normalized_body(record: dict[str, Any]) -> str:
 
 
 def validate_semantics(definitions_path: Path = DEFAULT_DEFINITIONS, reviews_path: Path = DEFAULT_REVIEWS) -> dict[str, int]:
+    raw = {r['risk_id']:r for _,r in iter_jsonl(MODEL2/'risk-corpus.jsonl')}
+    screening = screen_corpus(list(raw.values()))
+    def digest(value): return hashlib.sha256(json.dumps(value,sort_keys=True,ensure_ascii=False,separators=(',',':')).encode()).hexdigest()
     definitions: dict[str, dict[str, Any]] = {}
     source_records: set[str] = set()
     for line_no, record in iter_jsonl(definitions_path):
@@ -44,6 +49,11 @@ def validate_semantics(definitions_path: Path = DEFAULT_DEFINITIONS, reviews_pat
         if key in definitions:
             raise ValueError(f"{definitions_path}:{line_no}: duplicate definition {key}")
         definitions[key] = record
+        if digest(record['normalized_definition'])!=record['definition_content_sha256']:
+            raise ValueError('definition content hash mismatch: '+key)
+        forbidden={'Final status','Existing protections','current_status','assurance_state','acceptance','evidence_freshness'}
+        if forbidden.intersection(record['normalized_definition']):
+            raise ValueError('source defaults contaminated reusable definition: '+key)
         records = record.get("source_records", [])
         if not isinstance(records, list) or not records:
             raise ValueError(f"{definitions_path}:{line_no}: definition has no source_records")
@@ -65,6 +75,12 @@ def validate_semantics(definitions_path: Path = DEFAULT_DEFINITIONS, reviews_pat
         if source_record in review_sources:
             raise ValueError(f"{reviews_path}:{line_no}: duplicate semantic review for {source_record}")
         review_sources.add(source_record)
+        if source_record not in raw or record.get('semantic_checks') != screening[source_record]:
+            raise ValueError('semantic screening evidence is missing or changed: '+source_record)
+        if record.get('source_record_sha256')!=digest(raw[source_record]) or record.get('normalized_definition_sha256')!=digest(record['normalized_definition']):
+            raise ValueError('semantic review source/normalization hash mismatch: '+source_record)
+        if set(record.get('rules_evaluated',[])) != {c['rule_id'] for c in screening[source_record]} | set(record.get('deterministic_acceptance_basis',[])):
+            raise ValueError('semantic review claims unevaluated rules: '+source_record)
         if not record.get("rules_evaluated"):
             raise ValueError(f"{reviews_path}:{line_no}: semantic review has no evaluated rule IDs")
         if record["semantic_review_status"] == "ACCEPTED_AS_SOURCE_SEMANTICS" and not record.get("deterministic_acceptance_basis"):

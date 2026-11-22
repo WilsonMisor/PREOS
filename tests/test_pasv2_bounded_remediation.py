@@ -36,7 +36,8 @@ class PASV2BoundedRemediationTests(unittest.TestCase):
         self.assertEqual(result["definitions"], 3)
         self.assertEqual(result["assessments"], 3)
         self.assertGreaterEqual(result["independent_definitions"], 1)
-        self.assertEqual(result["current_acceptances"], 1)
+        self.assertEqual(result["current_acceptances"], 0)
+        self.assertEqual(result["temporally_eligible_acceptances"], 1)
         versions = {item["definition_version"] for item in data["definitions"] if item["risk_definition_id"] == data["definitions"][0]["risk_definition_id"]}
         self.assertEqual(versions, {"1.0.0", "1.1.0"})
 
@@ -145,10 +146,10 @@ class PASV2BoundedRemediationTests(unittest.TestCase):
         self.assertIn("required_evidence_item", {row["classification"] for row in rows})
         self.assertTrue(all(row["target_artifacts"] for row in rows))
         deterministic = [row for row in rows if row.get("mapping_status") != "HUMAN_REVIEW_REQUIRED"]
-        human_review = [row for row in rows if row.get("mapping_status") == "HUMAN_REVIEW_REQUIRED"]
-        self.assertTrue(all(row["preos_gates"] and row["preos_control_ids"] for row in deterministic))
-        self.assertTrue(human_review)
-        self.assertTrue(all(not row["preos_gates"] and not row["preos_control_ids"] for row in human_review))
+        supplemental = [row for row in rows if row.get("mapping_policy_id") == "SOURCE2-CONTEXTUAL-REQUIREMENT"]
+        self.assertTrue(all(row["preos_gates"] and (row["preos_control_ids"] or row.get('supplemental_requirement_id')==row['source_unit_id']) for row in deterministic))
+        self.assertTrue(supplemental)
+        self.assertTrue(all(row['preos_gates']==['G11'] and not row['preos_control_ids'] and row['supplemental_requirement_id']==row['source_unit_id'] for row in supplemental))
         self.assertIn("gstack-cso", {row["gstack_specialist_route"] for row in deterministic})
         self.assertIn("gstack-benchmark", {row["gstack_specialist_route"] for row in deterministic})
         self.assertIn("gstack-design-review", {row["gstack_specialist_route"] for row in deterministic})
@@ -197,8 +198,8 @@ class PASV2BoundedRemediationTests(unittest.TestCase):
                 canonical_jsonl(readiness / "source2-readiness-units.jsonl"),
             )
             generated = jsonl(output_dir / "source2-readiness-units.jsonl")
-            self.assertTrue(any(row.get("mapping_status") == "HUMAN_REVIEW_REQUIRED" for row in generated))
-            self.assertTrue(all(not row["preos_gates"] and not row["preos_control_ids"] for row in generated if row.get("mapping_status") == "HUMAN_REVIEW_REQUIRED"))
+            self.assertTrue(any(row.get("mapping_policy_id") == "SOURCE2-CONTEXTUAL-REQUIREMENT" for row in generated))
+            self.assertTrue(all(row['preos_gates']==['G11'] and not row['preos_control_ids'] for row in generated if row.get('mapping_policy_id')=='SOURCE2-CONTEXTUAL-REQUIREMENT'))
 
     def test_selector_filters_and_retrieval_levels_are_bounded(self):
         one = run_script("select-risk-model2.py", "--id", "4.1.21", "--retrieval-level", "1", "--limit", "1")
@@ -265,7 +266,9 @@ class PASV2BoundedRemediationTests(unittest.TestCase):
     def test_traceability_chain_reaches_release_incident_learning_with_explicit_na(self):
         proc = run_script("validate-traceability-chain.py")
         self.assertIn("PASS traceability chain", proc.stdout)
-        self.assertIn("8556 graph records", proc.stdout)
+        result=json.loads(proc.stdout.split('PASS traceability chain: ',1)[1])
+        self.assertEqual(result['records'],8556)
+        self.assertTrue(result['unbound_project_links_explicit'])
 
 
 if __name__ == "__main__":

@@ -26,6 +26,7 @@ EXPECTED_CLASSES = {
     "applicability_rule",
 }
 ALLOWED_POLICIES = {
+    "SOURCE2-CONTEXTUAL-REQUIREMENT",
     "SOURCE2-HUMAN-REVIEW-NO-DETERMINISTIC-MAP",
     "SOURCE2-EXISTING-KEYWORD-MAP",
     "SOURCE2-DATA-FLOW-PRIVILEGE",
@@ -107,7 +108,7 @@ def validate_source2_units(path: Path = READINESS / "source2-readiness-units.jso
             "review_status",
         ):
             if row.get(field) in (None, "", []):
-                if row.get("mapping_status") == "HUMAN_REVIEW_REQUIRED" and field in {"preos_gates", "preos_control_ids"}:
+                if (row.get("mapping_status") == "HUMAN_REVIEW_REQUIRED" and field in {"preos_gates", "preos_control_ids"}) or (field=='preos_control_ids' and row.get('supplemental_requirement_id')==unit_id):
                     pass
                 else:
                     fail(f"{unit_id} missing {field}")
@@ -123,7 +124,7 @@ def validate_source2_units(path: Path = READINESS / "source2-readiness-units.jso
         else:
             if policy == "SOURCE2-HUMAN-REVIEW-NO-DETERMINISTIC-MAP":
                 fail(f"{unit_id} deterministic row uses human-review policy")
-            if not row.get("preos_gates") or not row.get("preos_control_ids"):
+            if not row.get("preos_gates") or not (row.get("preos_control_ids") or row.get('supplemental_requirement_id')==unit_id):
                 fail(f"{unit_id} deterministic row lacks gates or controls")
         if not set(row["preos_gates"]) <= gates:
             fail(f"{unit_id} maps to unknown PREOS gate")
@@ -138,8 +139,8 @@ def validate_source2_units(path: Path = READINESS / "source2-readiness-units.jso
         fail("Source 2 readiness ledger does not cover all 36 RD domains")
     if not EXPECTED_CLASSES <= set(classes):
         fail("Source 2 readiness ledger is missing one or more required classifications")
-    if not policies.get("SOURCE2-HUMAN-REVIEW-NO-DETERMINISTIC-MAP"):
-        fail("Source 2 readiness ledger must preserve human-review-required rows")
+    if not policies.get("SOURCE2-CONTEXTUAL-REQUIREMENT"):
+        fail("Source 2 readiness ledger must preserve supplemental contextual requirements without inventing baseline control equivalence")
     return {"units": len(rows), "domains": len(observed_domains), "classifications": len(classes), "policies": len(policies)}
 
 

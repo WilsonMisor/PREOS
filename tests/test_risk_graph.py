@@ -13,8 +13,10 @@ class RiskGraphTests(unittest.TestCase):
     def setUpClass(cls): cls.graph=RiskGraph()
 
     def test_relationships_resolve_without_inventing_control_evidence_or_incident_edges(self):
-        total=len(self.graph.relationships)
+        total=sum(r['review_status'] in {'VALIDATED_BY_RULE','ACCEPTED_BY_HUMAN'} for r in self.graph.relationships)
         self.assertEqual(self.graph.query('relationship',limit=3)['total_matches'],total)
+        pending=next(r for r in self.graph.relationships if r['review_status']=='HUMAN_REVIEW_REQUIRED')
+        self.assertEqual(self.graph.query('relationship',pending['relationship_id'])['total_matches'],0)
         for kind in ('causes','amplifies','mitigated-by','affected-gates','evidence','incidents'):
             result=self.graph.query(kind)
             self.assertEqual(result['total_matches'],0,kind)

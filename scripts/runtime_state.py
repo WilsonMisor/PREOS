@@ -362,7 +362,7 @@ def evidence_binding_reasons(item: dict, actual_git: dict, repo: Path) -> list[s
     if not isinstance(bindings, dict): raise ValueError("evidence bindings are invalid")
     expected_head = bindings.get("git_head") or item.get("commit_sha")
     if expected_head and expected_head != actual_git["head"]: reasons.append("commit changed")
-    for label in ("project_contract", "task_packet"):
+    for label in ("project_contract", "task_packet", "artifact"):
         b = bindings.get(label)
         if b and binding_conflict(label.upper(), b, repo): reasons.append(f"{label} changed")
     source_hashes = bindings.get("source_hashes", [])
@@ -402,7 +402,7 @@ def stale_evidence(root: Path, actual_git: dict, state: dict, repo: Path) -> lis
         if eid in seen: raise ValueError(f"duplicate evidence_id: {eid}")
         seen.add(eid)
         explicit = str(item.get("validity") or item.get("status") or "").upper()
-        if explicit in {"STALE", "EXPIRED"}:
+        if explicit != "CURRENT":
             stale.append(eid); continue
         if evidence_binding_reasons(item, actual_git, repo): stale.append(eid)
     return sorted(set(stale))

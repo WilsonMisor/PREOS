@@ -339,187 +339,483 @@
     {
       "line": 1597,
       "number": 1,
-      "text": "Check ID"
+      "text": "Check ID",
+      "projection": {
+        "source_field_number": 1,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "source_records",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1598,
       "number": 2,
-      "text": "Domain"
+      "text": "Domain",
+      "projection": {
+        "source_field_number": 2,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "category",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1599,
       "number": 3,
-      "text": "Feature"
+      "text": "Feature",
+      "projection": {
+        "source_field_number": 3,
+        "concern": "risk_assessment",
+        "schema": "risk-assessment.schema.json",
+        "destination": "context.feature",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1600,
       "number": 4,
-      "text": "Actor"
+      "text": "Actor",
+      "projection": {
+        "source_field_number": 4,
+        "concern": "risk_assessment",
+        "schema": "risk-assessment.schema.json",
+        "destination": "context.actor",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1601,
       "number": 5,
-      "text": "Preconditions"
+      "text": "Preconditions",
+      "projection": {
+        "source_field_number": 5,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.preconditions",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1602,
       "number": 6,
-      "text": "Failure scenario"
+      "text": "Failure scenario",
+      "projection": {
+        "source_field_number": 6,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.failure_mechanism",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1603,
       "number": 7,
-      "text": "Trigger"
+      "text": "Trigger",
+      "projection": {
+        "source_field_number": 7,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.trigger_conditions",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1604,
       "number": 8,
-      "text": "Root mechanism"
+      "text": "Root mechanism",
+      "projection": {
+        "source_field_number": 8,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.root_cause",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1605,
       "number": 9,
-      "text": "Business invariant"
+      "text": "Business invariant",
+      "projection": {
+        "source_field_number": 9,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.business_invariant",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1606,
       "number": 10,
-      "text": "Expected correct behaviour"
+      "text": "Expected correct behaviour",
+      "projection": {
+        "source_field_number": 10,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.expected_correct_behaviour",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1607,
       "number": 11,
-      "text": "Severity"
+      "text": "Severity",
+      "projection": {
+        "source_field_number": 11,
+        "concern": "risk_assessment",
+        "schema": "risk-assessment.schema.json",
+        "destination": "source_projection.severity",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1608,
       "number": 12,
-      "text": "Likelihood"
+      "text": "Likelihood",
+      "projection": {
+        "source_field_number": 12,
+        "concern": "risk_assessment",
+        "schema": "risk-assessment.schema.json",
+        "destination": "source_projection.likelihood",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1609,
       "number": 13,
-      "text": "Blast radius"
+      "text": "Blast radius",
+      "projection": {
+        "source_field_number": 13,
+        "concern": "risk_assessment",
+        "schema": "risk-assessment.schema.json",
+        "destination": "source_projection.blast_radius",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1610,
       "number": 14,
-      "text": "Customer impact"
+      "text": "Customer impact",
+      "projection": {
+        "source_field_number": 14,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.default_consequences.customer",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1611,
       "number": 15,
-      "text": "Security impact"
+      "text": "Security impact",
+      "projection": {
+        "source_field_number": 15,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.default_consequences.security",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1612,
       "number": 16,
-      "text": "Financial impact"
+      "text": "Financial impact",
+      "projection": {
+        "source_field_number": 16,
+        "concern": "risk_economics",
+        "schema": "risk-economics.schema.json",
+        "destination": "source_projection.financial_impact",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1613,
       "number": 17,
-      "text": "Privacy impact"
+      "text": "Privacy impact",
+      "projection": {
+        "source_field_number": 17,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.default_consequences.privacy",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1614,
       "number": 18,
-      "text": "Legal or contractual exposure"
+      "text": "Legal or contractual exposure",
+      "projection": {
+        "source_field_number": 18,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.default_consequences.legal",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1615,
       "number": 19,
-      "text": "Operational impact"
+      "text": "Operational impact",
+      "projection": {
+        "source_field_number": 19,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.default_consequences.operations",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1616,
       "number": 20,
-      "text": "Cost impact"
+      "text": "Cost impact",
+      "projection": {
+        "source_field_number": 20,
+        "concern": "risk_economics",
+        "schema": "risk-economics.schema.json",
+        "destination": "source_projection.cost_impact",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1617,
       "number": 21,
-      "text": "Current status"
+      "text": "Current status",
+      "projection": {
+        "source_field_number": 21,
+        "concern": "risk_assessment",
+        "schema": "risk-assessment.schema.json",
+        "destination": "source_projection.source_status",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1618,
       "number": 22,
-      "text": "Prevention"
+      "text": "Prevention",
+      "projection": {
+        "source_field_number": 22,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.control_patterns.prevention",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1619,
       "number": 23,
-      "text": "Implementation pattern"
+      "text": "Implementation pattern",
+      "projection": {
+        "source_field_number": 23,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.control_patterns.implementation",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1620,
       "number": 24,
-      "text": "Required test"
+      "text": "Required test",
+      "projection": {
+        "source_field_number": 24,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.testing_patterns.required",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1621,
       "number": 25,
-      "text": "Failure test"
+      "text": "Failure test",
+      "projection": {
+        "source_field_number": 25,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.testing_patterns.failure",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1622,
       "number": 26,
-      "text": "Monitoring"
+      "text": "Monitoring",
+      "projection": {
+        "source_field_number": 26,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.monitoring_patterns",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1623,
       "number": 27,
-      "text": "Recovery"
+      "text": "Recovery",
+      "projection": {
+        "source_field_number": 27,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.recovery_patterns",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1624,
       "number": 28,
-      "text": "Reconciliation"
+      "text": "Reconciliation",
+      "projection": {
+        "source_field_number": 28,
+        "concern": "risk_definition",
+        "schema": "risk-definition.schema.json",
+        "destination": "normalized_definition.reconciliation",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1625,
       "number": 29,
-      "text": "Cost now"
+      "text": "Cost now",
+      "projection": {
+        "source_field_number": 29,
+        "concern": "risk_economics",
+        "schema": "risk-economics.schema.json",
+        "destination": "source_projection.cost_now",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1626,
       "number": 30,
-      "text": "Cost at scale"
+      "text": "Cost at scale",
+      "projection": {
+        "source_field_number": 30,
+        "concern": "risk_economics",
+        "schema": "risk-economics.schema.json",
+        "destination": "source_projection.cost_at_scale",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1627,
       "number": 31,
-      "text": "Complexity tax"
+      "text": "Complexity tax",
+      "projection": {
+        "source_field_number": 31,
+        "concern": "risk_economics",
+        "schema": "risk-economics.schema.json",
+        "destination": "source_projection.complexity_tax",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1628,
       "number": 32,
-      "text": "Production maturity stage"
+      "text": "Production maturity stage",
+      "projection": {
+        "source_field_number": 32,
+        "concern": "risk_evolution",
+        "schema": "risk-evolution.schema.json",
+        "destination": "source_projection.maturity_stage",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1629,
       "number": 33,
-      "text": "Deferral status"
+      "text": "Deferral status",
+      "projection": {
+        "source_field_number": 33,
+        "concern": "risk_evolution",
+        "schema": "risk-evolution.schema.json",
+        "destination": "source_projection.deferral_status",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1630,
       "number": 34,
-      "text": "Activation trigger"
+      "text": "Activation trigger",
+      "projection": {
+        "source_field_number": 34,
+        "concern": "risk_evolution",
+        "schema": "risk-evolution.schema.json",
+        "destination": "source_projection.activation_trigger",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1631,
       "number": 35,
-      "text": "Human owner"
+      "text": "Human owner",
+      "projection": {
+        "source_field_number": 35,
+        "concern": "risk_acceptance",
+        "schema": "risk-acceptance.schema.json",
+        "destination": "source_projection.proposed_owner_not_approval",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1632,
       "number": 36,
-      "text": "Evidence"
+      "text": "Evidence",
+      "projection": {
+        "source_field_number": 36,
+        "concern": "risk_evidence",
+        "schema": "risk-evidence-binding.schema.json",
+        "destination": "source_projection.evidence_not_verified",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     },
     {
       "line": 1633,
       "number": 37,
-      "text": "Gate result"
+      "text": "Gate result",
+      "projection": {
+        "source_field_number": 37,
+        "concern": "risk_assessment",
+        "schema": "risk-assessment.schema.json",
+        "destination": "source_projection.gate_result_not_verified",
+        "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+        "cardinality": "one-to-one lossless projection"
+      }
     }
   ],
   "blast_radius_dimensions": [
@@ -6227,99 +6523,291 @@
   "risk_generation": {
     "combinatorial_rule_line": 192,
     "example": "A withdrawal feature should be tested against duplicate clicks, simultaneous devices, stale balances, provider timeouts, duplicate provider events, missing provider events, out of order events, worker retries, user suspension during processing, fraud review during processing, admin freeze, provider outage, database failure, queue retry, regional failure, reconciliation mismatch, support manual retry, and attacker replay.",
-    "rule": "Feature \u00d7 actor \u00d7 input \u00d7 state \u00d7 time \u00d7 concurrency \u00d7 retry \u00d7 network condition \u00d7 dependency condition \u00d7 storage condition \u00d7 permission condition \u00d7 attack condition \u00d7 scale condition \u00d7 cost condition \u00d7 human action \u00d7 business rule \u00d7 legal consequence \u00d7 recovery condition.",
+    "rule": "Feature × actor × input × state × time × concurrency × retry × network condition × dependency condition × storage condition × permission condition × attack condition × scale condition × cost condition × human action × business rule × legal consequence × recovery condition.",
     "withdrawal_regression_example_line": 202
   },
   "role_crosswalk": [
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "principal software architect",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R17-cloud-architect",
+        "VT-R13-data-architect",
+        "VT-R10-backend-engineer"
+      ],
+      "virtual_team_agents": [
+        "vt_application_engineering",
+        "vt_data",
+        "vt_infrastructure_and_operations"
+      ],
+      "mapping_kind": "RESPONSIBILITY_EQUIVALENT",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "staff engineer",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R10-backend-engineer",
+        "VT-R18-platform-engineer"
+      ],
+      "virtual_team_agents": [
+        "vt_application_engineering",
+        "vt_infrastructure_and_operations"
+      ],
+      "mapping_kind": "RESPONSIBILITY_EQUIVALENT",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "site reliability engineer",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R20-site-reliability-engineer"
+      ],
+      "virtual_team_agents": [
+        "vt_infrastructure_and_operations"
+      ],
+      "mapping_kind": "EXACT_ROLE",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "application security engineer",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R24-application-security-engineer"
+      ],
+      "virtual_team_agents": [
+        "vt_security_and_trust"
+      ],
+      "mapping_kind": "EXACT_ROLE",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "database architect",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R13-data-architect",
+        "VT-R14-database-engineer"
+      ],
+      "virtual_team_agents": [
+        "vt_data"
+      ],
+      "mapping_kind": "RESPONSIBILITY_EQUIVALENT",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "cloud architect",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R17-cloud-architect"
+      ],
+      "virtual_team_agents": [
+        "vt_infrastructure_and_operations"
+      ],
+      "mapping_kind": "EXACT_ROLE",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "DevOps engineer",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R19-devops-engineer"
+      ],
+      "virtual_team_agents": [
+        "vt_infrastructure_and_operations"
+      ],
+      "mapping_kind": "EXACT_ROLE",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "FinOps specialist",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R23-finops-specialist"
+      ],
+      "virtual_team_agents": [
+        "vt_infrastructure_and_operations"
+      ],
+      "mapping_kind": "EXACT_ROLE",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "product engineer",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R01-product-manager",
+        "VT-R10-backend-engineer"
+      ],
+      "virtual_team_agents": [
+        "vt_application_engineering",
+        "vt_product_and_business"
+      ],
+      "mapping_kind": "RESPONSIBILITY_EQUIVALENT",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "payments engineer",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R30-payments-engineer"
+      ],
+      "virtual_team_agents": [
+        "vt_transaction_and_commerce"
+      ],
+      "mapping_kind": "EXACT_ROLE",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "identity engineer",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R25-identity-and-access-engineer"
+      ],
+      "virtual_team_agents": [
+        "vt_security_and_trust"
+      ],
+      "mapping_kind": "RESPONSIBILITY_EQUIVALENT",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "trust and safety engineer",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R27-trust-and-safety-engineer"
+      ],
+      "virtual_team_agents": [
+        "vt_security_and_trust"
+      ],
+      "mapping_kind": "EXACT_ROLE",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "privacy engineer",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R26-privacy-engineer"
+      ],
+      "virtual_team_agents": [
+        "vt_security_and_trust"
+      ],
+      "mapping_kind": "EXACT_ROLE",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "QA engineer",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R33-qa-engineer"
+      ],
+      "virtual_team_agents": [
+        "vt_quality"
+      ],
+      "mapping_kind": "EXACT_ROLE",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "performance engineer",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R22-performance-engineer"
+      ],
+      "virtual_team_agents": [
+        "vt_infrastructure_and_operations"
+      ],
+      "mapping_kind": "EXACT_ROLE",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "support engineer",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R38-support-engineer"
+      ],
+      "virtual_team_agents": [
+        "vt_release_and_support"
+      ],
+      "mapping_kind": "EXACT_ROLE",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "incident commander",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R39-incident-commander"
+      ],
+      "virtual_team_agents": [
+        "vt_release_and_support"
+      ],
+      "mapping_kind": "EXACT_ROLE",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     },
     {
       "mapped_authority": "advisory_or_evidence_owner_not_release_authority",
       "role": "software operations strategist",
-      "source_line": 5
+      "source_line": 5,
+      "canonical_role_ids": [
+        "VT-R04-product-operations-specialist",
+        "VT-R20-site-reliability-engineer",
+        "VT-R23-finops-specialist"
+      ],
+      "virtual_team_agents": [
+        "vt_infrastructure_and_operations",
+        "vt_product_and_business"
+      ],
+      "mapping_kind": "RESPONSIBILITY_EQUIVALENT",
+      "registry": "wed_dev_skill/references/virtual-team/role-registry.json",
+      "authority": "read-only specialist by default; implementation only through bounded Blueprint AI Task Packet; no release or risk acceptance authority",
+      "missing_context_behavior": "BLOCKED_MISSING_ROLE_CONTEXT; UNKNOWN and ROLE GAP remain explicit"
     }
   ],
   "routing_policy": "map Source 4 conceptual specialists to namespaced gstack routes; do not create competing top-level release authority",
@@ -6507,6 +6995,162 @@
       "description": "Strategic attacks, supply chain compromise, extortion, highly targeted social engineering, advanced fraud",
       "source_line": 1339,
       "stage": 4
+    }
+  ],
+  "conflict_and_supersession_register": [
+    {
+      "source_concept": "single 37-field Atomic Risk Record",
+      "decision": "Lossless input projection into existing six concern schemas; no monolithic mutable runtime authority",
+      "artifact": "references/risks/model2/concern-separation-crosswalk.json"
+    },
+    {
+      "source_concept": "standalone production gates",
+      "decision": "Feed PREOS G0-G11; no competing release namespace",
+      "artifact": "scripts/control_assurance.py"
+    },
+    {
+      "source_concept": "generated risks become catalogue entries",
+      "decision": "Candidates require versioned promotion and durable scoped human approval",
+      "artifact": "scripts/candidate_workflow.py"
+    },
+    {
+      "source_concept": "large combined specialist role",
+      "decision": "Map to canonical Blueprint roles; selectively route relevant specialist context",
+      "artifact": "wed_dev_skill/references/virtual-team/role-registry.json"
+    },
+    {
+      "source_concept": "template status and owner fields",
+      "decision": "Preserve source provenance; never infer project status or human approval",
+      "artifact": "scripts/risk_field_crosswalk.py"
+    }
+  ],
+  "semantic_coverage": {
+    "units": 1459,
+    "sections": 92,
+    "runtime_destinations": {
+      "economics_complexity_engine": 78,
+      "risk_generation_engine": 1153,
+      "context_engine": 44,
+      "evolution_engine": 80,
+      "evidence_gate_engine": 89,
+      "validate_learning": 15
+    },
+    "missing_source_units": 0
+  },
+  "transformation_artifacts": [
+    {
+      "required_name": "source-4-original-master-prompt.source-manifest.json",
+      "canonical_path": "source-package/four-sources/manifest.json",
+      "selector": "/sources/3",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-original-master-prompt.semantic-units.jsonl",
+      "canonical_path": "references/source-units/PASV2_V5_SOURCE_SEMANTIC_UNITS.jsonl",
+      "selector": "source_id=source-4-original-master-prompt",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-semantic-coverage-report.md",
+      "canonical_path": "references/integration/source4-transformation-report.md",
+      "selector": "Semantic coverage",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-semantic-coverage-summary.json",
+      "canonical_path": "references/integration/source4-production-assurance-crosswalk.json",
+      "selector": "/semantic_coverage",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-role-crosswalk.json",
+      "canonical_path": "references/integration/source4-production-assurance-crosswalk.json",
+      "selector": "/role_crosswalk",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-role-crosswalk.md",
+      "canonical_path": "references/integration/source4-transformation-report.md",
+      "selector": "Canonical roles",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-primary-objective-crosswalk.json",
+      "canonical_path": "references/integration/source4-production-assurance-crosswalk.json",
+      "selector": "/production_questions",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-context-engine-crosswalk.json",
+      "canonical_path": "references/integration/source4-production-assurance-crosswalk.json",
+      "selector": "/context_dimensions",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-full-stack-domain-crosswalk.json",
+      "canonical_path": "references/integration/source4-production-assurance-crosswalk.json",
+      "selector": "/full_stack_domains",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-full-stack-domain-crosswalk.md",
+      "canonical_path": "references/integration/source4-transformation-report.md",
+      "selector": "Full-stack domains",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-threat-stage-crosswalk.json",
+      "canonical_path": "references/integration/source4-production-assurance-crosswalk.json",
+      "selector": "/threat_stages",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-maturity-stage-crosswalk.json",
+      "canonical_path": "references/integration/source4-production-assurance-crosswalk.json",
+      "selector": "/maturity_stages",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-nondeferrable-control-crosswalk.json",
+      "canonical_path": "references/integration/source4-production-assurance-crosswalk.json",
+      "selector": "/nondeferrable_controls",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-testing-framework-crosswalk.json",
+      "canonical_path": "references/integration/source4-production-assurance-crosswalk.json",
+      "selector": "/test_families",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-atomic-risk-record-crosswalk.json",
+      "canonical_path": "references/integration/source4-production-assurance-crosswalk.json",
+      "selector": "/atomic_field_crosswalk",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-output-structure-crosswalk.json",
+      "canonical_path": "references/integration/source4-production-assurance-crosswalk.json",
+      "selector": "/output_structure",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-skill-capability-crosswalk.json",
+      "canonical_path": "references/integration/source4-production-assurance-crosswalk.json",
+      "selector": "/skill_capability_crosswalk",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-conflict-and-supersession-register.json",
+      "canonical_path": "references/integration/source4-production-assurance-crosswalk.json",
+      "selector": "/conflict_and_supersession_register",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
+    },
+    {
+      "required_name": "source-4-transformation-report.md",
+      "canonical_path": "references/integration/source4-transformation-report.md",
+      "selector": "Source 4 transformation",
+      "decision": "Extend the existing canonical crosswalk/ledger/report; do not create competing copies."
     }
   ]
 }

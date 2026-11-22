@@ -3,10 +3,11 @@ from __future__ import annotations
 
 import argparse
 import datetime
+import hashlib
 from pathlib import Path
 
 from preos_common import dump_json, load_json
-from runtime_state import evidence_binding_reasons, git_snapshot
+from runtime_state import evidence_binding_reasons, git_snapshot, atomic_write_json
 
 
 def compare_supplied_bindings(evidence: dict, current: dict) -> list[str]:
@@ -40,11 +41,23 @@ def main() -> None:
                 reasons.append("validity period expired")
         except ValueError:
             reasons.append("invalid validity period")
+    out = Path(args.output or args.evidence).resolve()
+    source = Path(args.evidence).resolve()
+    if out != source and out.exists():
+        raise ValueError('replacement output already exists; evidence history must be retained')
     if reasons:
+        previous = source.read_bytes()
+        digest = hashlib.sha256(previous).hexdigest()
+        history = source.parent / '.evidence-history' / (digest + '.json')
+        history.parent.mkdir(exist_ok=True)
+        if history.exists() and history.read_bytes() != previous:
+            raise ValueError('evidence history hash conflict')
+        if not history.exists(): history.write_bytes(previous)
         evidence["validity"] = "STALE"
         evidence["stale_reasons"] = sorted(set(reasons))
-    out = args.output or args.evidence
-    dump_json(out, evidence)
+        evidence['previous_version'] = {'path': str(history), 'sha256': digest}
+        evidence['invalidated_at'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    if reasons or out != source: atomic_write_json(out, evidence)
     print(("STALE: " + ", ".join(evidence["stale_reasons"])) if reasons else "UNCHANGED")
 
 

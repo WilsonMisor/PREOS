@@ -62,56 +62,19 @@ def run_five_engines(contract: dict[str, Any], evidence: dict[str, Any] | None =
     return {"context": context_engine(contract), "risk_generation": risk_generation_engine(contract), "economics_complexity": economics_complexity_engine(contract), "evolution": evolution_engine(contract), "evidence_gate": evidence_gate_engine(contract, evidence)}
 
 
-def generate_lifecycle_traceability(output_path: Path = TRACE / "pasv2-lifecycle-traceability.jsonl") -> dict[str, int]:
-    data = model2_data(); review_by_source = {r["source_record"]: r for r in data["reviews"]}; variant_by_source = {r["source_risk_id"]: r for r in data["variants"]}; rows = []
-    for source_id, review in review_by_source.items():
-        variant = variant_by_source[source_id]; rid = f"{review['risk_definition_id']}@{review['definition_version']}"; terminal = "HUMAN_REVIEW" if review["semantic_review_status"] == "HUMAN_REVIEW_REQUIRED" else "NOT_APPLICABLE"
-        nodes = [{"id": f"SOURCE:source-1:{source_id}", "type": "source_item", "resolves": True}, {"id": f"SEMANTIC_REVIEW:{review['semantic_review_id']}", "type": "semantic_review", "resolves": True}, {"id": f"RISK_DEFINITION:{rid}", "type": "risk_definition", "resolves": True}, {"id": f"RISK_CONTEXT_VARIANT:{variant['risk_context_variant_id']}", "type": "risk_context_variant", "resolves": True}, {"id": f"CONTROL:{variant['context']['control']}", "type": "control", "resolves": True}, {"id": "TEST:PREOS/scripts/semantic-risk-validator.py", "type": "test", "resolves": True}, {"id": f"EVIDENCE:{review['semantic_review_id']}", "type": "evidence", "resolves": True}, {"id": "GATE:PREOS_MODEL2_CROSSWALK_APPROVAL", "type": "preos_gate", "state": "OPEN", "resolves": True}, {"id": f"RELEASE:{terminal}", "type": "release", "disposition": terminal, "resolves": True}, {"id": "INCIDENT:NOT_APPLICABLE", "type": "incident", "disposition": "NOT_APPLICABLE", "resolves": True}, {"id": "LEARNING:NOT_APPLICABLE", "type": "learning", "disposition": "NOT_APPLICABLE", "resolves": True}]
-        rows.append({"trace_id": f"TRACE-S1-{source_id}", "source_document": "source-1-five-dimension-risk-catalogue", "source_item": source_id, "nodes": nodes, "edges": [{"from": nodes[i]["id"], "to": nodes[i + 1]["id"], "type": "TRACE_TO"} for i in range(len(nodes) - 1)], "terminal_disposition": terminal})
-    for row in load_jsonl(READINESS / "source2-readiness-units.jsonl"):
-        unit = row["source_unit_id"]; terminal = "HUMAN_REVIEW" if row["mapping_status"] == "HUMAN_REVIEW_REQUIRED" else "GOVERNANCE_RUNTIME_CONTRACT"
-        nodes = [{"id": f"SOURCE:source-2:{unit}", "type": "source_item", "resolves": True}, {"id": f"READINESS_UNIT:{unit}", "type": "normalized_runtime_record", "resolves": True}, {"id": f"BLUEPRINT_ARTIFACT:{row['blueprint_artifact']}", "type": "implementation_contract", "resolves": True}, {"id": f"TERMINAL:{terminal}", "type": "terminal_disposition", "disposition": terminal, "resolves": True}]
-        rows.append({"trace_id": f"TRACE-S2-{unit}", "source_document": "source-2-readiness-framework", "source_item": unit, "nodes": nodes, "edges": [{"from": nodes[i]["id"], "to": nodes[i + 1]["id"], "type": "TRACE_TO"} for i in range(len(nodes) - 1)], "terminal_disposition": terminal})
-    write_jsonl(output_path, rows); graph_path = f"PREOS/{output_path.relative_to(ROOT).as_posix()}" if output_path.is_relative_to(ROOT) else output_path.as_posix(); coverage = {"schema_version": "pasv2-lifecycle-traceability-coverage-v1", "graph": graph_path, "source_counts": dict(Counter(row["source_document"] for row in rows)), "terminal_dispositions": dict(Counter(row["terminal_disposition"] for row in rows)), "total_records": len(rows)}
-    coverage_path = TRACE / "pasv2-lifecycle-traceability-coverage.json" if output_path.is_relative_to(ROOT) else output_path.with_suffix(".coverage.json")
-    write_json(coverage_path, coverage)
-    return {"records": len(rows), **coverage["source_counts"]}
+def generate_lifecycle_traceability(output_path: Path = TRACE / "pasv2-traceability-graph.jsonl"):
+    from catalogue_traceability import generate
+    return generate(output_path)
 
-def validate_lifecycle_traceability(path: Path = TRACE / "pasv2-lifecycle-traceability.jsonl") -> dict[str, int]:
-    if not path.exists(): generate_lifecycle_traceability(path)
-    rows = load_jsonl(path)
-    if len(rows) < 4337 + 1148: raise ValueError("lifecycle traceability must cover Source 1 and Source 2 operational/runtime units")
-    node_types = Counter(); terminals = Counter()
-    for idx, row in enumerate(rows, 1):
-        nodes = {node["id"]: node for node in row.get("nodes", [])}
-        if not nodes: raise ValueError(f"trace row {idx} has no nodes")
-        for node in nodes.values():
-            if node.get("resolves") is not True: raise ValueError(f"trace row {idx} node does not resolve: {node}")
-            node_types[node["type"]] += 1
-        for edge in row.get("edges", []):
-            if edge.get("from") not in nodes or edge.get("to") not in nodes: raise ValueError(f"trace row {idx} edge has unresolved endpoint")
-        if row.get("terminal_disposition") not in {"HUMAN_REVIEW", "NOT_APPLICABLE", "GOVERNANCE_RUNTIME_CONTRACT"}: raise ValueError(f"trace row {idx} has unsupported terminal disposition")
-        terminals[row["terminal_disposition"]] += 1
-    required = {"source_item", "normalized_runtime_record", "risk_definition", "risk_context_variant", "control", "test", "evidence", "preos_gate", "release", "incident", "learning", "terminal_disposition"}
-    missing = required - set(node_types)
-    if missing: raise ValueError(f"lifecycle traceability missing node types: {sorted(missing)}")
-    all_source_coverage = load_json(TRACE / "pasv2-traceability-coverage.json")
-    expected_sources = {
-        "source-1-five-dimension-risk-catalogue": 4337,
-        "source-2-readiness-framework": 1148,
-        "source-3-operating-system": 1612,
-        "source-4-original-master-prompt": 1459,
-    }
-    if all_source_coverage.get("expected_source_counts") != expected_sources:
-        raise ValueError("all-source traceability coverage has stale expected source counts")
-    if all_source_coverage.get("observed_source_counts") != expected_sources:
-        raise ValueError("all-source traceability coverage does not cover all four sources")
-    if all_source_coverage.get("total_graph_records") != sum(expected_sources.values()):
-        raise ValueError("all-source traceability total does not match expected source counts")
-    return {"records": len(rows), "node_types": len(node_types), "human_review": terminals.get("HUMAN_REVIEW", 0), "all_source_graph_records": all_source_coverage["total_graph_records"], "all_source_count": len(expected_sources)}
+def validate_lifecycle_traceability(path: Path = TRACE / "pasv2-traceability-graph.jsonl"):
+    from catalogue_traceability import validate
+    return validate(path)
 
 def validate_source4_completeness() -> dict[str, Any]:
-    cx = source4(); checks: dict[str, dict[str, Any]] = {}; source_bytes = SOURCE4_TEXT.read_bytes() if SOURCE4_TEXT.exists() else b""; source_text = source_bytes.decode("utf-8", errors="replace") if source_bytes else ""; actual_hash = hashlib.sha256(source_bytes).hexdigest() if source_bytes else cx.get("source_sha256")
+    from canonical_sources import source_bytes as preserved_bytes
+    from four_source_audit import verify_source4_crosswalk, verify_semantic_units
+    verify_source4_crosswalk(); verify_semantic_units()
+    cx = source4(); checks: dict[str, dict[str, Any]] = {}; source_bytes = preserved_bytes('source-4'); source_text = source_bytes.decode('utf-8'); actual_hash = hashlib.sha256(source_bytes).hexdigest()
     def add(name: str, passed: bool, detail: Any) -> None: checks[name] = {"status": "PASS" if passed else "FAIL", "detail": detail}
     counts = cx["counts"]
     add("source_hash_and_preservation", actual_hash == cx["source_sha256"], {"expected": cx["source_sha256"], "actual": actual_hash, "bytes": len(source_bytes) or cx.get("source_bytes")})

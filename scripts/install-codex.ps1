@@ -13,6 +13,9 @@ New-Item -ItemType Directory -Force -Path $SkillRoot | Out-Null
 $BackupRoot = Join-Path $CodexHome ('framework-install-backups\preos-' + (Get-Date -Format 'yyyyMMddTHHmmssZ'))
 function Backup-ExistingPath([string]$Path) {
     if (Test-Path $Path) {
+        $ResolvedTarget = [System.IO.Path]::GetFullPath($Path)
+        $Prefix = [System.IO.Path]::GetFullPath($SkillRoot).TrimEnd('\','/') + [System.IO.Path]::DirectorySeparatorChar
+        if (-not $ResolvedTarget.StartsWith($Prefix, [System.StringComparison]::OrdinalIgnoreCase)) { throw 'Backup target escapes PREOS skill root' }
         New-Item -ItemType Directory -Force -Path $BackupRoot | Out-Null
         $Name = Split-Path $Path -Leaf
         Move-Item -LiteralPath $Path -Destination (Join-Path $BackupRoot $Name)

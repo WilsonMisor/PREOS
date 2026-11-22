@@ -54,7 +54,7 @@ class PASV2RuntimeTests(unittest.TestCase):
 
     def test_graph_queries_return_real_edges_or_honest_empty_results(self):
         relation = rt.query_risk_graph("relationship", limit=3)
-        self.assertGreaterEqual(relation["total_matches"], 4503)
+        self.assertEqual(relation["total_matches"], 4337)  # Only structural VARIANT_OF links are validated.
         self.assertIn(relation["results"][0]["relationship_type"], {"VARIANT_OF", "SAME_AS", "SPECIALIZES"})
         controls = rt.query_risk_graph("mitigated-by", "FS-004", limit=3)
         self.assertEqual(controls["total_matches"], 0)  # A contextual FS-004 hint is not a validated mitigation edge.
@@ -74,10 +74,11 @@ class PASV2RuntimeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             path = Path(td) / "trace.jsonl"
             generated = rt.generate_lifecycle_traceability(path)
-            self.assertEqual(generated["records"], 5485)
+            self.assertEqual(generated["records"], 8556)
             self.assertTrue(path.with_suffix(".coverage.json").is_file())
             result = rt.validate_lifecycle_traceability(path)
-            self.assertGreaterEqual(result["node_types"], 12)
+            self.assertTrue(result["unbound_project_links_explicit"])
+            self.assertGreater(result["resolved_unique_nodes"], 8556)
             self.assertGreater(result["human_review"], 0)
             self.assertEqual(result["all_source_graph_records"], 8556)
             self.assertEqual(result["all_source_count"], 4)

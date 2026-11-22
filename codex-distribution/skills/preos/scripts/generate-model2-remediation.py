@@ -9,10 +9,12 @@ import hashlib
 import json
 import re
 import shutil
+from semantic_screening import screen_corpus
+from canonical_sources import SOURCES
 
 ROOT = Path(__file__).resolve().parents[1]
 MODEL2 = ROOT / "references" / "risks" / "model2"
-TRANSFORMATION_VERSION = "pasv2-remediation-normalization-v1"
+TRANSFORMATION_VERSION = "pasv2-remediation-normalization-v2"
 REL_TYPES = ["SAME_AS", "VARIANT_OF", "SPECIALIZES", "GENERALIZES", "OVERLAPS", "CAUSED_BY", "AMPLIFIES", "TRIGGERS", "MITIGATED_BY", "DEPENDS_ON", "SUPERSEDES", "RELATED_TO"]
 RULES_EVALUATED = [
     "SEM-NAME-MECHANISM-CONSISTENCY",
@@ -34,12 +36,12 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
 
 def write_json(path: Path, obj: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(obj, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(obj, indent=2, ensure_ascii=True) + "\n", encoding="utf-8", newline="\n")
 
 
 def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("".join(json.dumps(row, ensure_ascii=True, separators=(",", ":")) + "\n" for row in rows), encoding="utf-8")
+    path.write_text("".join(json.dumps(row, ensure_ascii=True, separators=(",", ":")) + "\n" for row in rows), encoding="utf-8", newline="\n")
 
 
 def digest(value: Any) -> str:
@@ -116,6 +118,7 @@ def normalize(record: dict[str, Any]) -> tuple[dict[str, Any], str, str, float, 
 
 def build(input_dir: Path = MODEL2, output_dir: Path = MODEL2) -> dict[str, int]:
     risks = read_jsonl(input_dir / "risk-corpus.jsonl")
+    screening = screen_corpus(risks)
     groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     normalized_by_source: dict[str, dict[str, Any]] = {}
     review_by_source: dict[str, tuple[str, str, float, list[str], list[str], list[str]]] = {}
@@ -148,6 +151,11 @@ def build(input_dir: Path = MODEL2, output_dir: Path = MODEL2) -> dict[str, int]
     for order, risk in enumerate(risks, 1):
         definition = by_source[risk["risk_id"]]
         status, rationale, confidence, rules, flags, acceptance_basis = review_by_source[risk["risk_id"]]
+        checks=screening[risk['risk_id']]
+        rules=[check['rule_id'] for check in checks]+acceptance_basis
+        flags=[check['rule_id'] for check in checks if check['state'] in {'REVIEW','HUMAN_REVIEW'}]
+        if status=='HUMAN_REVIEW_REQUIRED':
+            rationale='Measured template reuse and name/mechanism screening are recorded in semantic_checks. These tests detect suspect text but cannot establish domain correctness; retain qualified review before authoritative Model 2 use.'
         normalized = normalized_by_source[risk["risk_id"]]
         fields = risk["fields"]
         field_text = json.dumps(fields, ensure_ascii=False).lower()
@@ -167,10 +175,11 @@ def build(input_dir: Path = MODEL2, output_dir: Path = MODEL2) -> dict[str, int]
             "raw_source_preserved": True,
             "semantic_review_outcome": status,
             "rules_evaluated": rules,
+            "semantic_checks": checks,
             "semantic_flags": flags,
             "deterministic_acceptance_basis": acceptance_basis,
-            "source_record_sha256": "RECORDED_IN_RISK_CORPUS",
-            "normalized_definition_sha256": "RECORDED_IN_NORMALIZED_DEFINITION",
+            "source_record_sha256": digest(risk),
+            "normalized_definition_sha256": digest(normalized),
         })
         dimension, category = risk["dimension"], risk["category"]
         variants.append({
@@ -179,6 +188,15 @@ def build(input_dir: Path = MODEL2, output_dir: Path = MODEL2) -> dict[str, int]
             "definition_version": definition["definition_version"],
             "source_risk_id": risk["risk_id"],
             "source_record_sha256": digest(risk),
+            "source_document": SOURCES['source-1'][0],
+            "source_sha256": SOURCES['source-1'][1],
+            "source_version": SOURCES['source-1'][1],
+            "transformation_version": TRANSFORMATION_VERSION,
+            "source_name": risk['canonical_name'],
+            "aliases": fields.get('Known aliases'),
+            "raw_source_ref": 'risk-corpus.jsonl#risk_id='+risk['risk_id'],
+            "normalized_semantics_ref": 'semantic-review-ledger.jsonl#semantic_review_id='+f'SRV-S1-{order:04d}',
+            "semantic_review_state": status,
             "dimension": dimension,
             "category": category,
             "context": {
@@ -187,14 +205,16 @@ def build(input_dir: Path = MODEL2, output_dir: Path = MODEL2) -> dict[str, int]
                 "jurisdiction": category if dimension == "jurisdiction" else None,
                 "architecture": category if dimension == "architecture" else fields.get("Architecture or component affected"),
                 "feature": fields.get("Architecture or component affected"),
-                "actor": fields.get("Owner"),
-                "data_sensitivity": "personal-or-tenant-data" if "personal" in field_text or "privacy" in category.lower() else "context-dependent",
-                "tenant_model": "multi-tenant" if "tenant" in field_text else "unspecified",
-                "money_movement": "applicable" if any(w in field_text for w in ("payment", "money", "financial", "billing")) else "not-explicit",
-                "maturity_stage": "release-candidate",
-                "threat_stage": "design-to-operation",
-                "gate": "G11" if "acceptance" in field_text else "G1",
-                "control": "FS-004" if "validation" in field_text else "FS-001",
+                "actor": "UNKNOWN",
+                "source_owner": fields.get('Owner'),
+                "data_sensitivity": "personal-or-tenant-data" if any(w in (risk['canonical_name']+' '+category).lower() for w in ('personal','privacy','tenant')) else "context-dependent",
+                "tenant_model": "multi-tenant" if 'tenant' in (risk['canonical_name']+' '+category).lower() else "context-dependent",
+                "money_movement": "applicable" if any(w in (risk['canonical_name']+' '+category).lower() for w in ('payment','money','financial','billing','wallet','banking')) else "context-dependent",
+                "maturity_stage": "context-dependent",
+                "threat_stage": "context-dependent",
+                "gate": "G1",
+                "control": "UNKNOWN",
+                "mapping_policy": "Source facets only; assessment applicability, control mitigation and release gates require project-specific evaluation.",
             },
             "source_location": {"source_heading_name": risk.get("source_heading_name"), "source_line_start": risk.get("source_line_start")},
         })
@@ -206,10 +226,10 @@ def build(input_dir: Path = MODEL2, output_dir: Path = MODEL2) -> dict[str, int]
     for records in [items for items in groups.values() if len(items) > 1]:
         base = records[0]
         for item in records[1:]:
-            relationships.append({"relationship_id": f"REL-{rel_no:06d}", "relationship_type": "SAME_AS", "source": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(item["risk_id"])}, "target": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(base["risk_id"])}, "rationale": "Contextual variants share a canonical normalized problem name while retaining source-specific context.", "provenance_class": "exact-name identity", "evidence_reference": f"SAME_AS::REL-{rel_no:06d}", "confidence": 0.9, "review_status": "VALIDATED_BY_RULE"})
+            relationships.append({"relationship_id": f"REL-{rel_no:06d}", "relationship_type": "RELATED_TO", "source": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(item["risk_id"])}, "target": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(base["risk_id"])}, "rationale": "Exact-name grouping is a candidate relationship, not proof that contextual meanings are identical.", "provenance_class": "exact-name candidate", "evidence_reference": f"NAME-MATCH::REL-{rel_no:06d}", "confidence": 0.5, "review_status": "HUMAN_REVIEW_REQUIRED"})
             rel_no += 1
             if base["dimension"] == "universal" and item["dimension"] != "universal":
-                relationships.append({"relationship_id": f"REL-{rel_no:06d}", "relationship_type": "SPECIALIZES", "source": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(item["risk_id"])}, "target": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(base["risk_id"])}, "rationale": "Context-specific variant specializes a universal canonical risk.", "provenance_class": "deterministic semantic rule", "evidence_reference": f"SPECIALIZES::REL-{rel_no:06d}", "confidence": 0.84, "review_status": "VALIDATED_BY_RULE"})
+                relationships.append({"relationship_id": f"REL-{rel_no:06d}", "relationship_type": "SPECIALIZES", "source": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(item["risk_id"])}, "target": {"type": "RISK_CONTEXT_VARIANT", "id": "RCV-S1-" + slug(base["risk_id"])}, "rationale": "Context-specific name match is a candidate specialization requiring semantic review.", "provenance_class": "contextual name-match candidate", "evidence_reference": f"SPECIALIZES::REL-{rel_no:06d}", "confidence": 0.5, "review_status": "HUMAN_REVIEW_REQUIRED"})
                 rel_no += 1
 
     human_review = [row for row in reviews if row["semantic_review_status"] == "HUMAN_REVIEW_REQUIRED"]
@@ -237,7 +257,7 @@ def build(input_dir: Path = MODEL2, output_dir: Path = MODEL2) -> dict[str, int]
     write_json(output_dir / "risk-relationship-types.json", {"schema_version": "pasv2-risk-relationships-v1", "relationship_types": REL_TYPES})
 
     concern_source = input_dir / "concern-runtime-evidence.json"
-    if concern_source.is_file():
+    if concern_source.is_file() and concern_source.resolve() != (output_dir / 'concern-runtime-evidence.json').resolve():
         output_dir.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(concern_source, output_dir / "concern-runtime-evidence.json")
     return {"definitions": len(definitions), "reviews": len(reviews), "human_review_required": len(human_review), "variants": len(variants), "relationships": len(relationships)}

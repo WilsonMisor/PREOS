@@ -1,18 +1,18 @@
 {
-  "schema_version": "pasv2-traceability-coverage-v1",
-  "graph": "PREOS/references/traceability/pasv2-traceability-graph.jsonl",
+  "schema_version": "pasv2-resolved-catalogue-lineage-v2",
+  "total_graph_records": 8556,
   "expected_source_counts": {
-    "source-1-five-dimension-risk-catalogue": 4337,
-    "source-2-readiness-framework": 1148,
-    "source-3-operating-system": 1612,
-    "source-4-original-master-prompt": 1459
+    "source-1": 4337,
+    "source-2": 1148,
+    "source-3": 1612,
+    "source-4": 1459
   },
   "observed_source_counts": {
-    "source-1-five-dimension-risk-catalogue": 4337,
-    "source-2-readiness-framework": 1148,
-    "source-3-operating-system": 1612,
-    "source-4-original-master-prompt": 1459
+    "source-1": 4337,
+    "source-2": 1148,
+    "source-3": 1612,
+    "source-4": 1459
   },
-  "total_graph_records": 8556,
-  "release_policy": "No production deployment or release authority was exercised."
+  "project_lifecycle_validator": "scripts/lifecycle_traceability.py::validate_operational_graph",
+  "policy": "Catalogue lineage is not proof of application implementation, evidence or release approval."
 }

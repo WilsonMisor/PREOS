@@ -68,10 +68,21 @@ class Resolver:
             sid=ref['source_id']
             if sid not in self.sources:
                 self.sources[sid]=source_bytes(sid)
+                self.cache[(sid,'source_sha256')]=sha(self.sources[sid])
             raw=self.sources[sid]
-            if ref.get('source_sha256')!=sha(raw):
+            if ref.get('source_sha256')!=self.cache[(sid,'source_sha256')]:
                 raise ValueError('source hash binding mismatch')
-            lines=raw.decode('utf-8').splitlines()
+            if sid=='source-2':
+                from four_source_audit import docx_paragraphs
+                if (sid,'paragraphs') not in self.cache: self.cache[(sid,'paragraphs')]=docx_paragraphs(raw)
+                paragraphs=self.cache[(sid,'paragraphs')]; number=ref['paragraph']
+                if not 1<=number<=len(paragraphs): raise ValueError('source paragraph does not resolve')
+                text=paragraphs[number-1]
+                if sha(text.encode())!=ref['excerpt_sha256'] or node['id']!=f'{sid}:P{number}':
+                    raise ValueError('source paragraph identity/content mismatch')
+                return {'text':text,**ref}
+            if (sid,'lines') not in self.cache: self.cache[(sid,'lines')]=raw.decode('utf-8').splitlines()
+            lines=self.cache[(sid,'lines')]
             start,end=ref['start_line'],ref['end_line']
             if not 1<=start<=end<=len(lines):
                 raise ValueError('source range does not resolve')
@@ -150,7 +161,7 @@ class Resolver:
             raise ValueError('definition identity/version mismatch')
         if kind=='risk_context_variant' and node['id']!=value['risk_context_variant_id']:
             raise ValueError('variant identity mismatch')
-        if kind=='normalized_runtime_record' and node['id']!=value.get('risk_id',value.get('source_unit_id')):
+        if kind=='normalized_runtime_record' and node['id']!=value.get('risk_id',value.get('source_unit_id',value.get('semantic_unit_id'))):
             raise ValueError('normalized runtime identity mismatch')
         return value
 

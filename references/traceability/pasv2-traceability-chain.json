@@ -1,85 +1,171 @@
 {
-  "schema_version": "pasv2-traceability-chain-v1",
+  "schema_version": "pasv2-catalogue-sentinels-v2",
   "chains": [
     {
-      "chain_id": "PASV2-CHAIN-SENTINEL-A",
-      "source_document": "source-1-five-dimension-risk-catalogue",
-      "source_item": "4.1.21 Serialization Failure",
-      "normalized_runtime_record": "semantic-review-ledger.jsonl::4.1.21",
-      "risk_definition": "RDEF-C6FBAB16C16C9972@1.1.0",
-      "risk_assessment": "concern-runtime-evidence.json::RAS-001",
-      "control": "FS-004",
-      "requirement": "MP-REQ-semantic-normalization-sentinel-a",
-      "task_packet": "PASV2 bounded remediation task",
-      "implementation": "PREOS/scripts/semantic-risk-validator.py",
-      "test": "PREOS/tests/test_pasv2_bounded_remediation.py::test_semantic_sentinels_are_corrected_without_raw_overwrite",
-      "evidence": "semantic-review-ledger.jsonl::SRV-S1-0021",
-      "gate": "PREOS_MODEL2_CROSSWALK_APPROVAL remains HUMAN_REVIEW",
-      "release": "NOT_APPLICABLE",
-      "incident": "NOT_APPLICABLE",
-      "learning": "PASV2 independent audit finding AUD-023",
-      "applicability": {
-        "release": "NOT_APPLICABLE",
-        "incident": "NOT_APPLICABLE"
-      },
-      "links": [
+      "trace_id": "TRACE-S1-4.1.21",
+      "source_document": "source-1",
+      "source_item": "4.1.21",
+      "nodes": [
         {
-          "from": "source_document",
-          "to": "source_item"
+          "id": "source-1:L910-910",
+          "type": "source_item",
+          "ref": {
+            "source_id": "source-1",
+            "source_sha256": "cfb5a9e7323ffcd9e27b5d0da73b8d896c989550b27fd6ba38678a17d1ab6a4b",
+            "excerpt_sha256": "53e9ef7c251db0b8beef656cd2335661d23ba9d80842b69ef39b98f089771a89",
+            "start_line": 910,
+            "end_line": 910
+          }
         },
         {
-          "from": "source_item",
-          "to": "normalized_runtime_record"
+          "id": "4.1.21",
+          "type": "normalized_runtime_record",
+          "ref": {
+            "root": "PREOS",
+            "path": "references/risks/model2/risk-corpus.jsonl",
+            "format": "jsonl",
+            "key": "risk_id",
+            "value": "4.1.21",
+            "record_sha256": "9d0e930c411f17afff329bff5509c111656284c0a50d097b7c10a63eee372be9"
+          }
         },
         {
-          "from": "normalized_runtime_record",
-          "to": "risk_definition"
+          "id": "RCV-S1-4-1-21",
+          "type": "risk_context_variant",
+          "ref": {
+            "root": "PREOS",
+            "path": "references/risks/model2/risk-context-variants.jsonl",
+            "format": "jsonl",
+            "key": "risk_context_variant_id",
+            "value": "RCV-S1-4-1-21",
+            "record_sha256": "57596405d9d9f2fee288da67d97f7cedc09dc8a3dea0edb6feaa1e4e18dac7b3"
+          }
         },
         {
-          "from": "risk_definition",
-          "to": "risk_assessment"
+          "id": "RDEF-C6FBAB16C16C9972@1.1.0",
+          "type": "risk_definition",
+          "ref": {
+            "root": "PREOS",
+            "path": "references/risks/model2/normalized-risk-definitions.jsonl",
+            "format": "jsonl",
+            "key": "risk_definition_id",
+            "value": "RDEF-C6FBAB16C16C9972",
+            "record_sha256": "184ca5ea058d98ea8da7163b97960f558dcad99d97131c638f185446f4aef8ca"
+          }
         },
         {
-          "from": "risk_assessment",
-          "to": "control"
-        },
-        {
-          "from": "control",
-          "to": "requirement"
-        },
-        {
-          "from": "requirement",
-          "to": "task_packet"
-        },
-        {
-          "from": "task_packet",
-          "to": "implementation"
-        },
-        {
-          "from": "implementation",
-          "to": "test"
-        },
-        {
-          "from": "test",
-          "to": "evidence"
-        },
-        {
-          "from": "evidence",
-          "to": "gate"
-        },
-        {
-          "from": "gate",
-          "to": "release"
-        },
-        {
-          "from": "release",
-          "to": "incident"
-        },
-        {
-          "from": "incident",
-          "to": "learning"
+          "id": "SRV-S1-0021",
+          "type": "semantic_review",
+          "ref": {
+            "root": "PREOS",
+            "path": "references/risks/model2/semantic-review-ledger.jsonl",
+            "format": "jsonl",
+            "key": "semantic_review_id",
+            "value": "SRV-S1-0021",
+            "record_sha256": "dd6b954ff6b100392cace7b828625426326acd51b93e0cab073fd0a44a377a7c"
+          }
         }
-      ]
+      ],
+      "terminal_disposition": "CORRECTED",
+      "unbound_project_links": {
+        "risk_assessment": "REQUIRES_PROJECT_CONTEXT",
+        "risk_economics": "REQUIRES_PROJECT_CONTEXT",
+        "risk_evolution": "REQUIRES_PROJECT_CONTEXT",
+        "risk_evidence": "REQUIRES_PROJECT_CONTEXT",
+        "risk_acceptance": "REQUIRES_PROJECT_CONTEXT",
+        "control": "REQUIRES_PROJECT_CONTEXT",
+        "requirement": "REQUIRES_PROJECT_CONTEXT",
+        "task_packet": "REQUIRES_PROJECT_CONTEXT",
+        "implementation": "REQUIRES_PROJECT_CONTEXT",
+        "test_execution": "REQUIRES_PROJECT_CONTEXT",
+        "gate": "REQUIRES_PROJECT_CONTEXT",
+        "release": "REQUIRES_PROJECT_CONTEXT",
+        "incident": "REQUIRES_PROJECT_CONTEXT",
+        "learning": "REQUIRES_PROJECT_CONTEXT"
+      }
+    },
+    {
+      "trace_id": "TRACE-S1-5.6.17",
+      "source_document": "source-1",
+      "source_item": "5.6.17",
+      "nodes": [
+        {
+          "id": "source-1:L71219-71219",
+          "type": "source_item",
+          "ref": {
+            "source_id": "source-1",
+            "source_sha256": "cfb5a9e7323ffcd9e27b5d0da73b8d896c989550b27fd6ba38678a17d1ab6a4b",
+            "excerpt_sha256": "e99de6d02e0526aa7faa6cf37fe97196e4b21830c7bed0be06d7a4b3a53e7261",
+            "start_line": 71219,
+            "end_line": 71219
+          }
+        },
+        {
+          "id": "5.6.17",
+          "type": "normalized_runtime_record",
+          "ref": {
+            "root": "PREOS",
+            "path": "references/risks/model2/risk-corpus.jsonl",
+            "format": "jsonl",
+            "key": "risk_id",
+            "value": "5.6.17",
+            "record_sha256": "caa1d3856cec613f1a828a647d8038dbd6f6d859c0510dc39e6968f19d137d0d"
+          }
+        },
+        {
+          "id": "RCV-S1-5-6-17",
+          "type": "risk_context_variant",
+          "ref": {
+            "root": "PREOS",
+            "path": "references/risks/model2/risk-context-variants.jsonl",
+            "format": "jsonl",
+            "key": "risk_context_variant_id",
+            "value": "RCV-S1-5-6-17",
+            "record_sha256": "9cd7ff4a3072fec1d42f645a663ae6991874606c62a13dae565ef3724b9b6796"
+          }
+        },
+        {
+          "id": "RDEF-B6F0949C3150FED6@1.1.0",
+          "type": "risk_definition",
+          "ref": {
+            "root": "PREOS",
+            "path": "references/risks/model2/normalized-risk-definitions.jsonl",
+            "format": "jsonl",
+            "key": "risk_definition_id",
+            "value": "RDEF-B6F0949C3150FED6",
+            "record_sha256": "e9ad6f152888d1c1a545cf917519f2f92f56fcb2e50cafb8cd31770f61811d65"
+          }
+        },
+        {
+          "id": "SRV-S1-1653",
+          "type": "semantic_review",
+          "ref": {
+            "root": "PREOS",
+            "path": "references/risks/model2/semantic-review-ledger.jsonl",
+            "format": "jsonl",
+            "key": "semantic_review_id",
+            "value": "SRV-S1-1653",
+            "record_sha256": "a49124cfb03cd8f6d845794902644e0bfeabe505682d872beeebb1972ee0acef"
+          }
+        }
+      ],
+      "terminal_disposition": "CORRECTED",
+      "unbound_project_links": {
+        "risk_assessment": "REQUIRES_PROJECT_CONTEXT",
+        "risk_economics": "REQUIRES_PROJECT_CONTEXT",
+        "risk_evolution": "REQUIRES_PROJECT_CONTEXT",
+        "risk_evidence": "REQUIRES_PROJECT_CONTEXT",
+        "risk_acceptance": "REQUIRES_PROJECT_CONTEXT",
+        "control": "REQUIRES_PROJECT_CONTEXT",
+        "requirement": "REQUIRES_PROJECT_CONTEXT",
+        "task_packet": "REQUIRES_PROJECT_CONTEXT",
+        "implementation": "REQUIRES_PROJECT_CONTEXT",
+        "test_execution": "REQUIRES_PROJECT_CONTEXT",
+        "gate": "REQUIRES_PROJECT_CONTEXT",
+        "release": "REQUIRES_PROJECT_CONTEXT",
+        "incident": "REQUIRES_PROJECT_CONTEXT",
+        "learning": "REQUIRES_PROJECT_CONTEXT"
+      }
     }
   ]
 }

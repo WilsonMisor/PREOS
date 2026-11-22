@@ -31,6 +31,32 @@ class ControlEvidenceTests(unittest.TestCase):
         self.assertEqual(receipt['returncode'],0)
         self.assertIn('Ran 1 test',receipt['stderr'])
 
+    def test_recapture_cannot_overwrite_retained_execution_history(self):
+        previous=(self.repo/'evidence.json').read_bytes()
+        artifact=Path(self.record['artifact_location']).read_bytes()
+        with self.assertRaisesRegex(ValueError,'immutable'):
+            ca.capture_control_evidence(self.repo,'test_operation.PortTests.test_input','test_operation.py',['operation.py'],['NDC-11'],self.repo/'evidence.json')
+        self.assertEqual((self.repo/'evidence.json').read_bytes(),previous)
+        self.assertEqual(Path(self.record['artifact_location']).read_bytes(),artifact)
+
+    def test_invalidation_keeps_hash_verified_previous_version(self):
+        import hashlib
+        script=Path(__file__).resolve().parents[1]/'scripts/invalidate-stale-evidence.py'
+        previous=(self.repo/'evidence.json').read_bytes()
+        self.source.write_text('changed implementation')
+        subprocess.run([sys.executable,str(script),str(self.repo/'evidence.json'),'--repo',str(self.repo)],check=True,capture_output=True)
+        invalidated=json.loads((self.repo/'evidence.json').read_text())
+        self.assertEqual(invalidated['validity'],'STALE')
+        self.assertEqual(Path(invalidated['previous_version']['path']).read_bytes(),previous)
+        self.assertEqual(invalidated['previous_version']['sha256'],hashlib.sha256(previous).hexdigest())
+
+    def test_artifact_binding_detects_replacement_in_recovery(self):
+        from runtime_state import evidence_binding_reasons,git_snapshot,file_binding
+        record=copy.deepcopy(self.record)
+        record['bindings']['artifact']=file_binding(Path(record['artifact_location']),self.repo)
+        Path(record['artifact_location']).write_text('altered evidence')
+        self.assertIn('artifact changed',evidence_binding_reasons(record,git_snapshot(self.repo),self.repo))
+
     def test_changed_implementation_and_test_invalidate_evidence(self):
         self.source.write_text('def valid_port(value): return True\n')
         self.assertIn('source changed',self.evaluate())
@@ -59,6 +85,20 @@ class ControlEvidenceTests(unittest.TestCase):
     def test_unknown_required_assurance_never_promotes_to_green(self):
         result=ca.evidence_gate_engine({'production_intent':False,'required_assurance_states':['UNKNOWN'],'readiness_score':100},repo=self.repo)
         self.assertEqual(result['gate_state'],'RED')
+
+    def test_expiry_and_unknown_validity_block_real_execution_evidence(self):
+        record=copy.deepcopy(self.record);record['valid_until']='2000-01-01T00:00:00Z'
+        self.assertIn('validity period expired',self.evaluate(record))
+        record=copy.deepcopy(self.record);record['validity']='UNKNOWN'
+        self.assertIn('evidence is not current',self.evaluate(record))
+
+    def test_recovery_does_not_treat_unknown_evidence_as_current(self):
+        from runtime_state import stale_evidence,git_snapshot
+        from datetime import datetime,timezone
+        record=copy.deepcopy(self.record);record['validity']='UNKNOWN'
+        index={'schema_version':'1.2','project_id':'fixture','updated_at':datetime.now(timezone.utc).isoformat(),'evidence':[record]}
+        (self.repo/'evidence-index.json').write_text(json.dumps(index))
+        self.assertEqual(stale_evidence(self.repo,git_snapshot(self.repo),{},self.repo),[record['evidence_id']])
 
 
 if __name__ == '__main__':

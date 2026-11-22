@@ -4,21 +4,67 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "risk_assessment_id": { "type": "string", "minLength": 1 },
-    "risk_definition_id": { "type": "string", "minLength": 1 },
-    "definition_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
-    "source_risk_id": { "type": "string" },
-    "project_contract_id": { "type": "string" },
-    "project_id": { "type": "string" },
-    "release_id": { "type": "string" },
-    "change_id": { "type": "string" },
-    "scope_id": { "type": "string" },
-    "applicability": { "type": "string", "minLength": 1 },
-    "trigger_conditions": { "type": "string", "minLength": 1 },
-    "likelihood": { "type": "string", "minLength": 1 },
-    "severity": { "type": "string", "minLength": 1 },
-    "blast_radius": { "type": "string", "minLength": 1 },
-    "detectability": { "type": "string", "minLength": 1 }
+    "risk_assessment_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "risk_definition_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "definition_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "source_risk_id": {
+      "type": "string"
+    },
+    "project_contract_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "release_id": {
+      "type": "string"
+    },
+    "change_id": {
+      "type": "string"
+    },
+    "scope_id": {
+      "type": "string"
+    },
+    "applicability": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trigger_conditions": {
+      "type": "string",
+      "minLength": 1
+    },
+    "likelihood": {
+      "type": "string",
+      "minLength": 1
+    },
+    "severity": {
+      "type": "string",
+      "minLength": 1
+    },
+    "blast_radius": {
+      "type": "string",
+      "minLength": 1
+    },
+    "detectability": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_projection": {
+      "type": "object",
+      "description": "Unreviewed source input only; cannot establish applicability, evidence, gate state or human authority."
+    },
+    "context": {
+      "type": "object"
+    }
   },
   "required": [
     "risk_assessment_id",

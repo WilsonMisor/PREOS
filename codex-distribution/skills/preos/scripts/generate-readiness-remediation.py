@@ -8,6 +8,8 @@ import hashlib
 import json
 import re
 import shutil
+from canonical_sources import source_bytes, SOURCES
+from four_source_audit import docx_paragraphs
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKSPACE = ROOT.parent
@@ -16,22 +18,22 @@ TRACEABILITY = ROOT / "references" / "traceability"
 UNITS = ROOT / "references" / "source-units" / "PASV2_V5_SOURCE_SEMANTIC_UNITS.jsonl"
 
 POLICIES = [
-    ("SOURCE2-CREDENTIAL-AI-PROMPT", ("credential", "secret", "prompt", "ai generated", "coding prompt", "source code", "iac", "configuration"), "security-and-ai-data-handling-review", ["G3", "G8", "G11"], ["FS-015", "FS-026"], "gstack-cso", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
-    ("SOURCE2-AUTHZ-TENANT", ("authorisation", "authorization", "authentication", "privileged", "tenant", "account takeover", "cross tenant"), "authorization-and-tenant-boundary-review", ["G3", "G8", "G10"], ["FS-015", "FS-026"], "gstack-cso", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
-    ("SOURCE2-DATA-FLOW-PRIVILEGE", ("personal data", "data flow", "privacy", "privilege", "security", "compliance", "accurate legal"), "data-flow-and-privacy-review", ["G3", "G8", "G10"], ["FS-026", "FS-015"], "gstack-cso", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
-    ("SOURCE2-DEPENDENCY-LICENSE", ("dependenc", "licen", "third party", "open source", "software bill", "unverified"), "dependency-and-licensing-review", ["G2", "G8", "G11"], ["FS-015"], "gstack-review", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
-    ("SOURCE2-LEGAL-REGULATORY", ("law", "regulat", "contractual", "retained", "exported", "deleted", "lawful", "industry obligation"), "legal-regulatory-readiness-review", ["G3", "G9", "G11"], ["FS-026", "FS-015"], "gstack-cso", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
-    ("SOURCE2-PAYMENT-BILLING", ("payment", "billing", "money", "financial", "market where it is offered"), "payment-and-billing-control-review", ["G5", "G10", "G11"], ["FS-050"], "gstack-plan-ceo-review", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
-    ("SOURCE2-BACKUP-RESTORE", ("backup", "restore", "restoration", "rollback", "incident", "continuity", "monitoring", "support"), "backup-restore-and-rollback-evidence", ["G6", "G10", "G11"], ["FS-061", "FS-064", "FS-073"], "gstack-qa", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
-    ("SOURCE2-PERFORMANCE-CAPACITY", ("performance", "scalability", "capacity", "latency", "load"), "performance-and-capacity-evidence", ["G6", "G10"], ["FS-067"], "gstack-benchmark", "not_required_by_unit", "DETERMINISTIC_SEMANTIC_MAPPING"),
-    ("SOURCE2-ACCESSIBILITY", ("accessibility", "usability", "user experience"), "accessibility-conformance-review", ["G7", "G11"], ["FS-070"], "gstack-design-review", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
+    ("SOURCE2-CREDENTIAL-AI-PROMPT", ("credential", "secret", "prompt", "ai generated", "coding prompt", "source code", "iac", "configuration"), "references/core/security.md", ["G3", "G8", "G11"], ["FS-075"], "gstack-cso", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
+    ("SOURCE2-AUTHZ-TENANT", ("authorisation", "authorization", "authentication", "privileged", "tenant", "account takeover", "cross tenant"), "references/core/security.md", ["G3", "G11"], ["FS-074", "FS-075"], "gstack-cso", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
+    ("SOURCE2-DATA-FLOW-PRIVILEGE", ("personal data", "data flow", "privacy", "privilege", "security"), "references/core/privacy.md", ["G3", "G4", "G10", "G11"], ["FS-075"], "gstack-cso", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
+    ("SOURCE2-DEPENDENCY-LICENSE", ("dependenc", "licen", "third party", "open source", "software bill", "unverified"), "references/core/architecture.md", ["G2", "G3", "G7", "G11"], ["FS-054", "FS-055", "FS-075"], "gstack-review", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
+    ("SOURCE2-LEGAL-REGULATORY", ("law", "legal", "regulat", "contractual", "compliance", "lawful", "industry obligation"), "references/core/human-approval-gates.md", ["G10", "G11"], [], "gstack-cso", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
+    ("SOURCE2-PAYMENT-BILLING", ("payment", "billing", "money", "financial"), "references/core/data-architecture.md", ["G4", "G5", "G11"], ["FS-012", "FS-027", "FS-028"], "gstack-plan-eng-review", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
+    ("SOURCE2-BACKUP-RESTORE", ("backup", "restore", "restoration", "rollback", "incident", "continuity", "monitoring", "support"), "references/core/incident-response.md", ["G7", "G9", "G11"], ["FS-061", "FS-066", "FS-072", "FS-073"], "gstack-qa", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
+    ("SOURCE2-PERFORMANCE-CAPACITY", ("performance", "scalability", "capacity", "latency", "load"), "references/core/testing.md", ["G6", "G11"], ["FS-059", "FS-060", "FS-067", "FS-068"], "gstack-benchmark", "not_required_by_unit", "DETERMINISTIC_SEMANTIC_MAPPING"),
+    ("SOURCE2-ACCESSIBILITY", ("accessibility", "usability", "user experience"), "references/core/accessibility.md", ["G10", "G11"], [], "gstack-design-review", "required", "DETERMINISTIC_SEMANTIC_MAPPING"),
 ]
 EXISTING_KEYWORDS = {
     "api": "FS-001",
     "validation": "FS-004",
     "test": "FS-004",
-    "security": "FS-015",
-    "privacy": "FS-026",
+    "security": "FS-075",
+    "privacy": "FS-075",
     "incident": "FS-073",
 }
 
@@ -46,12 +48,12 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
 
 def write_json(path: Path, obj: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(obj, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(obj, indent=2, ensure_ascii=True) + "\n", encoding="utf-8", newline="\n")
 
 
 def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("".join(json.dumps(row, ensure_ascii=True, separators=(",", ":")) + "\n" for row in rows), encoding="utf-8")
+    path.write_text("".join(json.dumps(row, ensure_ascii=True, separators=(",", ":")) + "\n" for row in rows), encoding="utf-8", newline="\n")
 
 
 def stable_id(prefix: str, value: str) -> str:
@@ -101,51 +103,49 @@ def semantic_policy(text: str, classification: str) -> dict[str, Any]:
     if found:
         return {
             "policy_id": "SOURCE2-EXISTING-KEYWORD-MAP",
-            "blueprint_artifact": "requirements-traceability-matrix" if "requirement" in lower else "release-checklist",
+            "blueprint_artifact": "references/core/traceability.md" if "requirement" in lower else "references/core/testing.md",
             "preos_gates": ["G11"],
             "preos_control_ids": sorted(set(found)),
             "gstack_specialist_route": "gstack-qa" if classification in {"decision_gate", "required_evidence_item"} else "gstack-plan-eng-review",
             "human_approval_boundary": "required" if classification in {"decision_gate", "danger_item", "blocker_rule", "ownership_requirement"} else "not_required_by_unit",
-            "implementation_status": "IMPLEMENTED_BY_REMEDIATION",
+            "implementation_status": "DETERMINISTIC_SEMANTIC_MAPPING",
             "mapping_status": "DETERMINISTIC_SEMANTIC_MAPPING",
             "review_status": "VALIDATED_BY_RULE",
             "evidence_requirements": ["deterministic readiness mapping and gate evidence"],
         }
     return {
-        "policy_id": "SOURCE2-HUMAN-REVIEW-NO-DETERMINISTIC-MAP",
-        "blueprint_artifact": "release-checklist",
-        "preos_gates": [],
+        "policy_id": "SOURCE2-CONTEXTUAL-REQUIREMENT",
+        "blueprint_artifact": "references/core/traceability.md",
+        "preos_gates": ["G11"],
         "preos_control_ids": [],
         "gstack_specialist_route": "gstack-plan-eng-review",
         "human_approval_boundary": "required",
-        "implementation_status": "HUMAN_REVIEW_REQUIRED",
-        "mapping_status": "HUMAN_REVIEW_REQUIRED",
-        "review_status": "HUMAN_REVIEW_REQUIRED",
-        "evidence_requirements": ["Retain source unit and require accountable human mapping before control/gate claims."],
+        "implementation_status": "DETERMINISTIC_SEMANTIC_MAPPING",
+        "mapping_status": "DETERMINISTIC_SEMANTIC_MAPPING",
+        "review_status": "VALIDATED_BY_RULE",
+        "evidence_requirements": ["Preserved supplemental requirement; evaluate applicability and objective evidence in project context before G11. No equivalent baseline control is inferred."],
     }
 
 
 def build_readiness(units_path: Path = UNITS, output_dir: Path = READINESS) -> int:
     canonical = READINESS / "source2-readiness-units.jsonl"
     target = output_dir / "source2-readiness-units.jsonl"
-    if units_path.resolve() == UNITS.resolve() and canonical.is_file():
-        rows = load_jsonl(canonical)
-        if target.resolve() != canonical.resolve():
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(canonical, target)
-        return len(rows)
     units = [u for u in load_jsonl(units_path) if u["source_id"] == "source-2-readiness-framework"]
+    paragraphs = docx_paragraphs(source_bytes('source-2'))
+    if len(units)!=len(paragraphs): raise ValueError('Source 2 unit/paragraph mismatch')
     domains = load_json(READINESS / "domain-registry.json")["domains"]
     by_section = {int(d["source_section"]): d for d in domains}
     current = {"id": "RD-GLOBAL", "name": "Global readiness doctrine", "source_section": 0}
     mode = "context"
     rows = []
-    for unit in units:
-        text = unit["text_excerpt"]
-        match = re.match(r"^(\d+)\.\s+", text)
-        if match and int(match.group(1)) in by_section:
+    for unit,text in zip(units,paragraphs,strict=True):
+        match = re.fullmatch(r"(\d+)\.\s+(.+)", text)
+        if match and int(match.group(1)) in by_section and match.group(2)==by_section[int(match.group(1))]['name']:
             current = by_section[int(match.group(1))]
             mode = "context"
+        elif match and int(match.group(1))>=40:
+            current = {"id":"RD-GLOBAL","name":"Global readiness doctrine","source_section":0}
+            mode='context'
         elif text.lower() == "positive keypoints":
             mode = "positive"
         elif text.lower() == "negative keypoints":
@@ -157,7 +157,8 @@ def build_readiness(units_path: Path = UNITS, output_dir: Path = READINESS) -> i
         rows.append({
             "source_unit_id": unit["semantic_unit_id"],
             "source_location": {"source_id": unit["source_id"], "source_path": unit["source_path"], "source_line_or_paragraph": unit["source_line_or_paragraph"]},
-            "excerpt_sha256": unit["text_sha256"],
+            "excerpt_sha256": hashlib.sha256(text.encode()).hexdigest(),
+            "source_sha256": SOURCES['source-2'][1],
             "excerpt": text,
             "classification": primary,
             "secondary_classification": secondary,
@@ -168,10 +169,12 @@ def build_readiness(units_path: Path = UNITS, output_dir: Path = READINESS) -> i
             "blueprint_lifecycle_stage": "release-readiness" if primary in {"decision_gate", "blocker_rule"} else "discovery-to-verification",
             "blueprint_profile": "production-readiness",
             "blueprint_artifact": policy["blueprint_artifact"],
+            "supplemental_requirement_id": unit['semantic_unit_id'],
+            "control_mapping_scope": "Supporting baseline controls only; the complete source requirement and its own evidence remain independently mandatory when applicable.",
             "preos_gates": policy["preos_gates"],
             "preos_risk_ids": ["model2-contextual-risk-selection"],
             "preos_control_ids": policy["preos_control_ids"],
-            "evidence_requirements": policy["evidence_requirements"],
+            "evidence_requirements": ["Objective evidence addressing Source 2 unit "+unit['semantic_unit_id']+": "+text],
             "gstack_specialist_route": policy["gstack_specialist_route"],
             "human_approval_boundary": policy["human_approval_boundary"],
             "implementation_status": policy["implementation_status"],
@@ -186,9 +189,10 @@ def build_readiness(units_path: Path = UNITS, output_dir: Path = READINESS) -> i
 
 
 def build_traceability(output_dir: Path = TRACEABILITY) -> None:
-    nodes = ["source_document", "source_item", "normalized_runtime_record", "risk_definition", "risk_assessment", "control", "requirement", "task_packet", "implementation", "test", "evidence", "gate", "release", "incident", "learning"]
-    chain = {"chain_id": "PASV2-CHAIN-SENTINEL-A", "source_document": "source-1-five-dimension-risk-catalogue", "source_item": "4.1.21 Serialization Failure", "normalized_runtime_record": "semantic-review-ledger.jsonl::4.1.21", "risk_definition": stable_id("RDEF-", "Serialization Failure") + "@1.1.0", "risk_assessment": "concern-runtime-evidence.json::RAS-001", "control": "FS-004", "requirement": "MP-REQ-semantic-normalization-sentinel-a", "task_packet": "PASV2 bounded remediation task", "implementation": "PREOS/scripts/semantic-risk-validator.py", "test": "PREOS/tests/test_pasv2_bounded_remediation.py::test_semantic_sentinels_are_corrected_without_raw_overwrite", "evidence": "semantic-review-ledger.jsonl::SRV-S1-0021", "gate": "PREOS_MODEL2_CROSSWALK_APPROVAL remains HUMAN_REVIEW", "release": "NOT_APPLICABLE", "incident": "NOT_APPLICABLE", "learning": "PASV2 independent audit finding AUD-023", "applicability": {"release": "NOT_APPLICABLE", "incident": "NOT_APPLICABLE"}, "links": [{"from": a, "to": b} for a, b in zip(nodes, nodes[1:])]}
-    write_json(output_dir / "pasv2-traceability-chain.json", {"schema_version": "pasv2-traceability-chain-v1", "chains": [chain]})
+    from catalogue_traceability import generate, generate_sentinels
+    output_dir.mkdir(parents=True,exist_ok=True)
+    generate(output_dir/'pasv2-traceability-graph.jsonl')
+    generate_sentinels(output_dir/'pasv2-traceability-chain.json')
 
 
 if __name__ == "__main__":

@@ -100,7 +100,8 @@ def make_indexes(args: argparse.Namespace) -> dict[str, Any]:
             endpoint = rel.get(side)
             if isinstance(endpoint, dict):
                 rel_by_endpoint[(str(endpoint.get("type") or ""), str(endpoint.get("id") or ""))].append(rel)
-    return {"variants_by_source": variants_by_source, "definitions_by_ref": definitions_by_ref, "rel_by_endpoint": rel_by_endpoint}
+    reviews=load_jsonl(Path(args.variants).parent / 'semantic-review-ledger.jsonl')
+    return {"reviews_by_source":{r['source_record']:r for r in reviews}, "variants_by_source": variants_by_source, "definitions_by_ref": definitions_by_ref, "rel_by_endpoint": rel_by_endpoint}
 
 
 def variant_matches(variant: dict[str, Any], args: argparse.Namespace, rel_by_endpoint: dict[tuple[str, str], list[dict[str, Any]]]) -> bool:
@@ -193,19 +194,23 @@ def project_record(record: dict[str, Any], args: argparse.Namespace, indexes: di
     variant = indexes["variants_by_source"].get(str(record.get("risk_id")), {})
     ref = f"{variant.get('risk_definition_id')}@{variant.get('definition_version')}" if variant else None
     definition = indexes["definitions_by_ref"].get(ref or "", {})
+    review=indexes['reviews_by_source'].get(str(record.get('risk_id')), {})
+    normalized=review.get('normalized_definition', {})
     result: dict[str, Any] = {
         "risk_id": record.get("risk_id"),
         "canonical_name": record.get("canonical_name"),
         "category": record.get("category"),
         "severity_hint": field_value(record, "Expected severity") or "context-dependent",
         "dimension": record.get("dimension"),
+        "semantic_review_status": review.get('semantic_review_status','UNKNOWN'),
+        "activation_state": "installed_not_default",
+        "authority": "Source knowledge only; applicability, evidence and human acceptance require project evaluation.",
     }
     if variant:
         result["risk_definition_id"] = variant.get("risk_definition_id")
         result["definition_version"] = variant.get("definition_version")
     if args.retrieval_level >= 2:
         variant_context = variant.get("context", {}) if isinstance(variant.get("context"), dict) else {}
-        normalized = definition.get("normalized_definition", {}) if isinstance(definition.get("normalized_definition"), dict) else {}
         result.update({
             "risk_context_variant_id": variant.get("risk_context_variant_id"),
             "trigger": text(normalized.get("trigger_conditions")) or field_value(record, "Conditions required to trigger the problem"),
@@ -218,7 +223,7 @@ def project_record(record: dict[str, Any], args: argparse.Namespace, indexes: di
     if args.retrieval_level >= 3:
         result.update({
             "tests": {
-                "automated": field_value(record, "Automated test"),
+                "automated": normalized.get('automated_test') or field_value(record, "Automated test"),
                 "negative": field_value(record, "Negative test"),
                 "load_or_concurrency": field_value(record, "Load or concurrency test where relevant"),
                 "security_or_abuse": field_value(record, "Security or abuse test where relevant"),
@@ -231,8 +236,8 @@ def project_record(record: dict[str, Any], args: argparse.Namespace, indexes: di
             },
             "recovery": field_value(record, "Recovery strategy"),
             "evidence": field_value(record, "Required acceptance evidence"),
-            "normalized_definition": definition.get("normalized_definition"),
-            "semantic_review_status": definition.get("semantic_review_status"),
+            "normalized_definition": normalized,
+            "normalized_semantics_ref": variant.get('normalized_semantics_ref'),
             "definition_content_sha256": definition.get("definition_content_sha256"),
         })
     if args.retrieval_level >= 4:

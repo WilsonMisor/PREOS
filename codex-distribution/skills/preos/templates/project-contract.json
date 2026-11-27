@@ -1,0 +1,36 @@
+{
+  "project_id": "PROJECT-ID",
+  "generated_at": "ISO-8601",
+  "source_hashes": [],
+  "classification": {
+    "profiles": [],
+    "production_assurance": "standard"
+  },
+  "maturity_stage": 1,
+  "threat_stage": "UNKNOWN",
+  "authority": {
+    "production_release_authority": "ROLE GAP",
+    "risk_acceptance_authority": "ROLE GAP"
+  },
+  "roles": [],
+  "vendors": [],
+  "assumptions": [],
+  "unknowns": [],
+  "risk_corpus": {
+    "version": "legacy-v1",
+    "activation_allowed": false,
+    "crosswalk": "references/risks/migration/legacy-to-model2-crosswalk.json",
+    "semantic_review": {
+      "status": "HUMAN_REVIEW_REQUIRED",
+      "unresolved_count": 1130,
+      "reviewed_at": null,
+      "reviewer": null
+    },
+    "approval_gate": {
+      "gate_id": "PREOS_MODEL2_CROSSWALK_APPROVAL",
+      "status": "OPEN"
+    },
+    "human_approval_record": null,
+    "source_version_hashes": []
+  }
+}

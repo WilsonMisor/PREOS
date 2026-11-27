@@ -1,0 +1,42 @@
+{
+  "schema_version": "four-source-preservation-v1",
+  "source_count": 4,
+  "sources": [
+    {
+      "source_id": "source-1",
+      "original_name": "five_dimension_software_risk_master_catalogue_40_field_edition_updated_with_app_legal_platform_risks.md",
+      "sha256": "cfb5a9e7323ffcd9e27b5d0da73b8d896c989550b27fd6ba38678a17d1ab6a4b",
+      "bytes": 25916641,
+      "preserved_path": "source-1.gz",
+      "encoding": "gzip",
+      "preserved_sha256": "eb1e05ace3481b100e5effa00ce2b6053aca2f0393f33a34b203de15c114d857"
+    },
+    {
+      "source_id": "source-2",
+      "original_name": "AI_Assisted_and_Vibe_Coded_Software_Production_Readiness_Framework.docx",
+      "sha256": "cb97fb8240db22a05566dc72b67e7d8eb02b6106df0f5d9719d9b833330b5009",
+      "bytes": 71557,
+      "preserved_path": "source-2.gz",
+      "encoding": "gzip",
+      "preserved_sha256": "70eae96f2754cbbae4ac51e7151c4010fc047230ca3528cb1b3ac4c511413a07"
+    },
+    {
+      "source_id": "source-3",
+      "original_name": "production-risk-economics-and-evolution-operating-system-for-vibe-coding.md",
+      "sha256": "f4bbbd8c98f7e2a7fd7144979c8765562158abbd8e680fef3940a651c070d36e",
+      "bytes": 47809,
+      "preserved_path": "source-3.gz",
+      "encoding": "gzip",
+      "preserved_sha256": "78ea40a5f7fb51fc1250ab0fd4cff671130522e1e22d93f3a0910fde8d1ac6f5"
+    },
+    {
+      "source_id": "source-4",
+      "original_name": "production_risk_economics_evolution_master_prompt.txt",
+      "sha256": "94608e09d6f3a80cef6961a3cf3a97cb63a66a009930b212caec0794248eed34",
+      "bytes": 41598,
+      "preserved_path": "source-4.gz",
+      "encoding": "gzip",
+      "preserved_sha256": "646c2e17d0cf738b70997e593d3fee661861f08a2d0e27db1dc73aebb3c48231"
+    }
+  ]
+}

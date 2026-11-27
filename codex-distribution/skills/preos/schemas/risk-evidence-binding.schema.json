@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PREOS risk-evidence-binding.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "risk_evidence_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "risk_definition_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "definition_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "risk_assessment_id": {
+      "type": "string"
+    },
+    "source_risk_id": {
+      "type": "string"
+    },
+    "project_contract_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "automated_test": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observability": {
+      "type": "string",
+      "minLength": 1
+    },
+    "alert": {
+      "type": "string",
+      "minLength": 1
+    },
+    "acceptance_evidence": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validity": {
+      "type": "string",
+      "enum": [
+        "CURRENT",
+        "STALE",
+        "EXPIRED",
+        "UNKNOWN"
+      ]
+    },
+    "bindings": {
+      "type": "object"
+    },
+    "replacement_evidence_id": {
+      "type": "string"
+    },
+    "source_projection": {
+      "type": "object",
+      "description": "Unreviewed source input only; cannot establish applicability, evidence, gate state or human authority."
+    }
+  },
+  "required": [
+    "risk_evidence_id",
+    "risk_definition_id",
+    "definition_version",
+    "automated_test",
+    "observability",
+    "alert",
+    "acceptance_evidence",
+    "validity",
+    "bindings"
+  ]
+}

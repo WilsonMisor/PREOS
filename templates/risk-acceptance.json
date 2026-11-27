@@ -1,12 +1,29 @@
 {
   "acceptance_id": "RA-0001",
-  "risk_ids": [],
-  "authority": "",
-  "reason": "",
-  "scope": "",
+  "risk_ids": [
+    "RDEF-example@1.0.0"
+  ],
+  "risk_definition_id": "RDEF-example",
+  "definition_version": "1.0.0",
+  "risk_assessment_id": "RAS-0001",
+  "project_id": "PROJECT-ID",
+  "scope_id": "scope-id",
+  "scope_hash": "sha256-or-stable-scope-fingerprint",
+  "current_scope_hash": "sha256-or-stable-scope-fingerprint",
+  "current_authority": false,
+  "authority": "Accountable Human Role",
+  "reason": "Bounded temporary risk acceptance rationale",
+  "scope": "Exact affected product, release, user population, environment, and expiry boundary",
   "approved_at": "ISO-8601",
   "expires_at": "ISO-8601",
-  "review_trigger": "",
+  "review_trigger": "definition, assessment, scope, control, release, incident, or evidence change",
+  "status": "ACTIVE",
+  "revoked_at": "",
+  "revoked_by": "",
+  "revocation_reason": "",
+  "replacement_acceptance_id": "",
   "compensating_controls": [],
-  "evidence_ids": []
+  "evidence_ids": [],
+  "approval_id": "REPLACE-WITH-DURABLE-PREOS-APPROVAL-ID",
+  "residual_risk": "Describe the remaining exposure explicitly accepted by the accountable human."
 }

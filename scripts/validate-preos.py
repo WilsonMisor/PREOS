@@ -10,7 +10,7 @@ import sys
 from preos_common import source_package_bytes
 
 ROOT = Path(__file__).resolve().parents[1]
-checks = ["validate-source-package.py", "validate-baseline.py", "validate-risk-catalogue.py", "validate-readiness.py", "validate-integration.py"]
+checks = ["validate-source-package.py", "validate-baseline.py", "validate-risk-catalogue.py", "validate-readiness.py", "validate-integration.py", "validate-risk-model2.py", "validate-traceability-chain.py"]
 for script in checks:
     r = subprocess.run([sys.executable, str(ROOT / "scripts" / script)], cwd=ROOT)
     if r.returncode:
@@ -33,6 +33,18 @@ remediation_paths = [
     "scripts/state_machine.py",
     "scripts/schema_validation.py",
     "scripts/capture-evidence.py",
+    "scripts/semantic-risk-validator.py",
+    "scripts/validate-risk-relationships.py",
+    "scripts/validate-risk-concerns.py",
+    "scripts/validate-traceability-chain.py",
+    "references/risks/model2/normalized-risk-definitions.jsonl",
+    "references/risks/model2/semantic-review-ledger.jsonl",
+    "references/risks/model2/risk-context-variants.jsonl",
+    "references/risks/model2/risk-relationships.jsonl",
+    "references/risks/model2/risk-relationship-types.json",
+    "references/risks/model2/concern-runtime-evidence.json",
+    "references/readiness/source2-readiness-units.jsonl",
+    "references/traceability/pasv2-traceability-chain.json",
     "tests/test_applicability_semantics.py",
     "tests/test_master_plan_runtime_contract.py",
 ]
@@ -109,8 +121,8 @@ for token in ["source_hashes", "configuration_files", "schema_files", "dependenc
     if token not in evidence_capture:
         raise SystemExit(f"evidence capture missing freshness binding: {token}")
 evidence_validate = (ROOT / "scripts/validate-evidence.py").read_text(encoding="utf-8")
-if "--require-complete-bindings" not in evidence_validate:
-    raise SystemExit("strict evidence-binding validation mode is missing")
+if "--require-complete-bindings" not in evidence_validate or "--evaluate-current-state" not in evidence_validate:
+    raise SystemExit("strict evidence-binding validation/current-state comparison mode is missing")
 
 rec = (ROOT / "RECOMMENDATION-COVERAGE.md").read_text(encoding="utf-8")
 for n in range(1, 39):

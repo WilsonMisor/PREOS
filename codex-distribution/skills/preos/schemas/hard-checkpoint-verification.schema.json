@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PREOS Hard Checkpoint Verification Manifest",
+  "type": "object",
+  "required": ["schema_version", "checks", "evidence_ids", "traceability", "rollback_point"],
+  "properties": {
+    "schema_version": {"enum": ["1.0"]},
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "command_or_test"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "status": {"enum": ["PASS", "NOT_APPLICABLE"]},
+          "command_or_test": {"type": "string", "minLength": 1},
+          "evidence_id": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "evidence_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "traceability": {"enum": ["UPDATED", "UNCHANGED_NOT_APPLICABLE"]},
+    "rollback_point": {"type": "string", "minLength": 1},
+    "notes": {"type": ["string", "null"]}
+  }
+}

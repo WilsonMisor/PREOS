@@ -21,7 +21,9 @@ PREOS is an assurance system, not an autonomous risk authority. AI may analyze, 
 4. Use Blueprint AI Task Packets as the canonical implementation unit; PREOS extends them rather than inventing a competing work object.
 5. Persist project state under `.ai-product-delivery/preos/`, never `.gstack/preos/`.
 6. Persist resumable PREOS runtime state under `PREOS_STATE_ROOT`, never `GSTACK_STATE_ROOT`.
-7. Do not ask all 1,300 readiness questions blindly. Select by Project Contract, active profiles, task, changed components and current risks.
-8. Never load all 1,130 atomic risks into model context when a selected subset suffices.
+7. Do not ask all 1,300 legacy readiness questions blindly. Select by Project Contract, active profiles, task, changed components and current risks.
+8. Never load all 1,130 legacy atomic risks into model context when a selected subset suffices.
 9. Every GREEN claim must have current evidence.
 10. Every accepted risk must name human authority, reason, scope, expiration and review trigger.
+
+PAS v2 corpus counts come from validated manifests. Model 2 remains installed but non-default pending PREOS_MODEL2_CROSSWALK_APPROVAL. Use bounded source_semantics.py and readiness_assurance.py selectors for the preserved doctrine and readiness units.

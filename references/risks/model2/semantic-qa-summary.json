@@ -1,0 +1,29 @@
+{
+  "schema_version": "pasv2-semantic-qa-summary-v1",
+  "source_ledger": "PREOS/references/risks/model2/semantic-review-ledger.jsonl",
+  "total_review_records": 4337,
+  "outcome_counts": {
+    "HUMAN_REVIEW_REQUIRED": 4335,
+    "CORRECTED": 2
+  },
+  "corrected_count": 2,
+  "accepted_count": 0,
+  "human_review_required_count": 4335,
+  "rules_evaluated": [
+    "SEM-DATABASE-CACHE",
+    "SEM-DRUG-SAFETY-CONTROL",
+    "SEM-OWNER-TEST-SUITABILITY",
+    "SEM-PERFORMANCE-AUTHORIZATION",
+    "SEM-SENTINEL-A",
+    "SEM-SENTINEL-B",
+    "SEM-SERIALIZATION-CONCURRENCY",
+    "SEM-TEMPLATE-AUTOMATED-TEST",
+    "SEM-TEMPLATE-FAILURE-MECHANISM",
+    "SEM-TEMPLATE-PREVENTION-STRATEGY",
+    "SEM-TEMPLATE-ROOT-CAUSE"
+  ],
+  "deterministic_acceptance_policy": "ACCEPTED requires explicit deterministic_acceptance_basis; unresolved corpus rows are HUMAN_REVIEW_REQUIRED.",
+  "raw_source_policy": "Raw Source 1 records remain preserved.",
+  "human_review_file": "PREOS/references/risks/model2/semantic-human-review-required.jsonl",
+  "validator": "PREOS/scripts/semantic-risk-validator.py"
+}

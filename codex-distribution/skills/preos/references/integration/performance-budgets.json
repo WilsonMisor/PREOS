@@ -1,0 +1,17 @@
+{
+  "schema_version": "pasv2-performance-v1",
+  "workload": "Cold canonical graph query, 50-risk high-assurance selection, normalized context, serialized selected output, byte-exact source validation, and executable engine CI suite.",
+  "instrumentation": "Wall clock perf_counter with tracemalloc enabled for the in-process workload. CI is a separate Python process. Peak allocation is not process RSS.",
+  "rationale": "Budgets allow Windows cold disk and allocation instrumentation overhead while bounding context output and rejecting order-of-magnitude regressions. They are versioned independently of observed results.",
+  "maximums": {
+    "catalogue_query_ms": 12000,
+    "selection_time_ms": 8000,
+    "context_generation_ms": 3000,
+    "memory_peak_bytes": 201326592,
+    "generated_context_size_bytes": 262144,
+    "compression_serialization_ms": 5000,
+    "compressed_context_size_bytes": 65536,
+    "validation_time_ms": 12000,
+    "ci_validation_duration_seconds": 120
+  }
+}

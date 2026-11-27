@@ -6,6 +6,7 @@
     "project_id",
     "generated_at",
     "source_hashes",
+    "risk_corpus",
     "classification",
     "maturity_stage",
     "authority",
@@ -72,6 +73,152 @@
     },
     "unknowns": {
       "type": "array"
+    },
+    "risk_corpus": {
+      "type": "object",
+      "required": [
+        "version",
+        "activation_allowed",
+        "crosswalk",
+        "semantic_review",
+        "approval_gate",
+        "human_approval_record",
+        "source_version_hashes"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "enum": [
+            "legacy-v1",
+            "model2"
+          ]
+        },
+        "activation_allowed": {
+          "type": "boolean"
+        },
+        "crosswalk": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "semantic_review": {
+          "type": "object",
+          "required": [
+            "status",
+            "unresolved_count",
+            "reviewed_at",
+            "reviewer"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "HUMAN_REVIEW_REQUIRED",
+                "COMPLETE"
+              ]
+            },
+            "unresolved_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "reviewed_at": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "reviewer": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "approval_gate": {
+          "type": "object",
+          "required": [
+            "gate_id",
+            "status"
+          ],
+          "properties": {
+            "gate_id": {
+              "type": "string",
+              "enum": [
+                "PREOS_MODEL2_CROSSWALK_APPROVAL"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "OPEN",
+                "APPROVED"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "human_approval_record": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "required": [
+            "approval_id",
+            "approved_by",
+            "approved_at",
+            "authority_role",
+            "scope"
+          ],
+          "properties": {
+            "approval_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "approved_by": {
+              "type": "string",
+              "minLength": 1
+            },
+            "approved_at": {
+              "type": "string",
+              "minLength": 1
+            },
+            "authority_role": {
+              "type": "string",
+              "minLength": 1
+            },
+            "scope": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        "source_version_hashes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "artifact",
+              "sha256"
+            ],
+            "properties": {
+              "artifact": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
     }
   }
 }

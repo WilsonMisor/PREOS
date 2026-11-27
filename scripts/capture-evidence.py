@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 from pathlib import Path
 
 from runtime_state import (
@@ -40,6 +41,8 @@ def main() -> None:
     ap.add_argument("--risk-id", action="append", default=[])
     ap.add_argument("--control-id", action="append", default=[])
     args = ap.parse_args()
+    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', args.evidence_id):
+        raise SystemExit('evidence_id must be a safe record identifier')
 
     repo = Path(args.repo).resolve(); root = production_root(args.project_id)
     artifact = Path(args.artifact)
@@ -48,6 +51,7 @@ def main() -> None:
     if not artifact.is_file(): raise SystemExit(f"evidence artifact does not exist: {artifact}")
     git = git_snapshot(repo)
     bindings = {
+        "artifact": file_binding(artifact, repo),
         "git_head": git["head"],
         "source_hashes": file_bindings(_paths(args.source), repo),
         "configuration_files": file_bindings(_paths(args.config), repo),
@@ -74,7 +78,7 @@ def main() -> None:
             "source changes", "Project Contract changes", "Task Packet changes",
             "code/commit changes", "environment changes", "configuration changes",
             "schema changes", "dependency versions change", "test definition changes",
-            "validity period expires",
+            "validity period expires", "evidence artifact changes",
         ],
         "revalidation_trigger": "any bound input changes",
         "required_human_approval": None,

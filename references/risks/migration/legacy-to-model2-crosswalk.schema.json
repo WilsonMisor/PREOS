@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PREOS Risk Corpus v1 to v2 Crosswalk",
+  "type": "object",
+  "required": [
+    "v1_risk_id",
+    "disposition",
+    "v2_risk_ids",
+    "review_status"
+  ],
+  "properties": {
+    "v1_risk_id": {
+      "type": "string"
+    },
+    "v1_name": {
+      "type": "string"
+    },
+    "disposition": {
+      "enum": [
+        "PRESERVED_EXACT",
+        "PRESERVED_RENAMED",
+        "PRESERVED_CONTEXTUAL",
+        "SPLIT",
+        "MERGED_WITH_PROVENANCE",
+        "UNRESOLVED"
+      ]
+    },
+    "v2_risk_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "review_status": {
+      "enum": [
+        "AUTO_HIGH_CONFIDENCE",
+        "HUMAN_REVIEW_REQUIRED",
+        "APPROVED"
+      ]
+    }
+  }
+}

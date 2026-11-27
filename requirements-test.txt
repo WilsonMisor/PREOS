@@ -1,0 +1,2 @@
+# Independent Draft 2020-12 validation oracle; runtime remains dependency-free.
+jsonschema==4.26.0

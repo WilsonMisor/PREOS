@@ -22,6 +22,7 @@ The repository directly preserves and validates the source package:
 - 1,130 atomic risk records across 52 production domains, stored as deterministic gzip streams for bounded repository size and exact decompression.
 - 1,300 production-readiness questions.
 - Atomic risk JSON schema.
+- Model 2 risk migration contract, unresolved legacy crosswalk scaffold, and R0-R17 readiness mapping for compatibility-gated adoption.
 - Production risk/economics/evolution operating-system document.
 - Virtual team ownership and decision-authority matrix.
 - Original Codex + gstack PREOS architecture proposal.
@@ -63,3 +64,8 @@ python -m unittest discover -s tests -p 'test_*.py'
 ```
 
 CI runs the same integrity and semantic checks on pushes and pull requests.
+
+## Production Assurance Suite v2
+
+This repository now materializes the four-source Production Assurance Suite v2 intake as PREOS model2 artifacts. The Source 1 five-dimension corpus is installed under references/risks/model2/risk-corpus.jsonl with 4,337 records and exact dimension counts. Concern separation is enforced through references/risks/model2/concern-separation-crosswalk.json and the separated risk schemas. Source 4 production-assurance semantics are tracked in references/integration/source4-production-assurance-crosswalk.json. legacy-v1 remains the Project Contract default until PREOS_MODEL2_CROSSWALK_APPROVAL is recorded by a qualified human.
+

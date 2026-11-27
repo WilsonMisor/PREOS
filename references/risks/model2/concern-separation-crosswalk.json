@@ -1,0 +1,738 @@
+{
+  "version": "pasv2-linked-crosswalk-v2",
+  "policy": "Source defaults are provenance only. Context, fresh evidence and explicit human acceptance must be supplied separately. Owner text is not approval authority.",
+  "sources": {
+    "source-1": {
+      "validation": {
+        "fields": 40,
+        "concerns": 6,
+        "information_loss": 0
+      },
+      "fields": [
+        {
+          "source_field_number": 1,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "source_records",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 2,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "canonical_name",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 3,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.aliases",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 4,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "category",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 5,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "source_projection.applicability",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 6,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "source_projection.applicability_rationale",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 7,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.affected_components",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 8,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.trigger_conditions",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 9,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.root_cause",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 10,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.failure_mechanism",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 11,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.default_consequences.customer",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 12,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.default_consequences.business",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 13,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.default_consequences.security",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 14,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.default_consequences.data_integrity",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 15,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.default_consequences.availability",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 16,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.default_consequences.performance",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 17,
+          "concern": "risk_economics",
+          "schema": "risk-economics.schema.json",
+          "destination": "source_projection.financial_consequences",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 18,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.default_consequences.privacy",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 19,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "source_projection.likelihood",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 20,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "source_projection.severity",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 21,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "source_projection.blast_radius",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 22,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "source_projection.detectability",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 23,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "source_projection.existing_protections",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 24,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "source_projection.protection_weaknesses",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 25,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.control_patterns.prevention",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 26,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.monitoring_patterns.detection",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 27,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.control_patterns.mitigation",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 28,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.recovery_patterns",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 29,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.testing_patterns.automated",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 30,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.testing_patterns.load_concurrency",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 31,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.testing_patterns.negative",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 32,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.testing_patterns.chaos",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 33,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.testing_patterns.security",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 34,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.monitoring_patterns.observability",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 35,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.monitoring_patterns.alerts",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 36,
+          "concern": "risk_evidence",
+          "schema": "risk-evidence-binding.schema.json",
+          "destination": "source_projection.required_acceptance_evidence",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 37,
+          "concern": "risk_acceptance",
+          "schema": "risk-acceptance.schema.json",
+          "destination": "source_projection.residual_risk_instruction",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 38,
+          "concern": "risk_evolution",
+          "schema": "risk-evolution.schema.json",
+          "destination": "source_projection.regression_protection",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 39,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.owner_role_pattern",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 40,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "source_projection.source_status",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        }
+      ]
+    },
+    "source-4": {
+      "validation": {
+        "fields": 37,
+        "concerns": 6,
+        "information_loss": 0
+      },
+      "fields": [
+        {
+          "source_field_number": 1,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "source_records",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 2,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "category",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 3,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "context.feature",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 4,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "context.actor",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 5,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.preconditions",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 6,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.failure_mechanism",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 7,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.trigger_conditions",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 8,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.root_cause",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 9,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.business_invariant",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 10,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.expected_correct_behaviour",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 11,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "source_projection.severity",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 12,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "source_projection.likelihood",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 13,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "source_projection.blast_radius",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 14,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.default_consequences.customer",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 15,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.default_consequences.security",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 16,
+          "concern": "risk_economics",
+          "schema": "risk-economics.schema.json",
+          "destination": "source_projection.financial_impact",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 17,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.default_consequences.privacy",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 18,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.default_consequences.legal",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 19,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.default_consequences.operations",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 20,
+          "concern": "risk_economics",
+          "schema": "risk-economics.schema.json",
+          "destination": "source_projection.cost_impact",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 21,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "source_projection.source_status",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 22,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.control_patterns.prevention",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 23,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.control_patterns.implementation",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 24,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.testing_patterns.required",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 25,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.testing_patterns.failure",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 26,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.monitoring_patterns",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 27,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.recovery_patterns",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 28,
+          "concern": "risk_definition",
+          "schema": "risk-definition.schema.json",
+          "destination": "normalized_definition.reconciliation",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 29,
+          "concern": "risk_economics",
+          "schema": "risk-economics.schema.json",
+          "destination": "source_projection.cost_now",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 30,
+          "concern": "risk_economics",
+          "schema": "risk-economics.schema.json",
+          "destination": "source_projection.cost_at_scale",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 31,
+          "concern": "risk_economics",
+          "schema": "risk-economics.schema.json",
+          "destination": "source_projection.complexity_tax",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 32,
+          "concern": "risk_evolution",
+          "schema": "risk-evolution.schema.json",
+          "destination": "source_projection.maturity_stage",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 33,
+          "concern": "risk_evolution",
+          "schema": "risk-evolution.schema.json",
+          "destination": "source_projection.deferral_status",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 34,
+          "concern": "risk_evolution",
+          "schema": "risk-evolution.schema.json",
+          "destination": "source_projection.activation_trigger",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 35,
+          "concern": "risk_acceptance",
+          "schema": "risk-acceptance.schema.json",
+          "destination": "source_projection.proposed_owner_not_approval",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 36,
+          "concern": "risk_evidence",
+          "schema": "risk-evidence-binding.schema.json",
+          "destination": "source_projection.evidence_not_verified",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        },
+        {
+          "source_field_number": 37,
+          "concern": "risk_assessment",
+          "schema": "risk-assessment.schema.json",
+          "destination": "source_projection.gate_result_not_verified",
+          "rule": "retain exact source value as unreviewed projection; no implicit applicability, evidence validity or authority",
+          "cardinality": "one-to-one lossless projection"
+        }
+      ]
+    }
+  },
+  "activation_state": "installed_not_default",
+  "zero_loss": true,
+  "field_numbers_accounted": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40
+  ],
+  "concerns": {
+    "risk_definition": [
+      1,
+      2,
+      3,
+      4,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      39
+    ],
+    "risk_assessment": [
+      5,
+      6,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      40
+    ],
+    "risk_economics": [
+      17
+    ],
+    "risk_evolution": [
+      38
+    ],
+    "risk_evidence": [
+      36
+    ],
+    "risk_acceptance": [
+      37
+    ]
+  }
+}

@@ -1,18 +1,47 @@
 #!/usr/bin/env python3
-from preos_common import load_json,PROTECTED_AUTHORITY_WORDS
-import argparse,datetime,sys,re
-ap=argparse.ArgumentParser(); ap.add_argument('acceptance',nargs='+')
-a=ap.parse_args(); errs=[]; now=datetime.datetime.now(datetime.timezone.utc)
-for p in a.acceptance:
-    r=load_json(p)
-    for k in ['acceptance_id','risk_ids','authority','reason','scope','approved_at','expires_at','review_trigger']:
-        if not r.get(k): errs.append(f'{p}: missing {k}')
-    auth=str(r.get('authority','')).upper()
-    if any(re.search(rf'\\b{re.escape(w)}\\b',auth) for w in PROTECTED_AUTHORITY_WORDS): errs.append(f'{p}: AI/tool cannot accept risk')
-    try:
-        exp=datetime.datetime.fromisoformat(str(r.get('expires_at')).replace('Z','+00:00'))
-        if exp<=now: errs.append(f'{p}: risk acceptance expired')
-    except Exception: errs.append(f'{p}: invalid expires_at')
-if errs:
-    print('\n'.join('FAIL '+e for e in errs)); sys.exit(1)
-print(f'PASS risk acceptance: {len(a.acceptance)} record(s) have bounded human authority')
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+from preos_common import load_json
+from risk_concern_runtime import RiskConcernError, validate_acceptance_record, verify_acceptance_authority
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Validate PREOS risk acceptance records with revocation and freshness semantics.")
+    parser.add_argument("acceptance", nargs="+")
+    parser.add_argument('--approval-root', type=Path, help='Trusted PREOS production state directory containing approval-state.json')
+    parser.add_argument("--allow-noncurrent", action="store_true", help="Allow expired/revoked/superseded archival records after structural authority validation")
+    args = parser.parse_args()
+    errors: list[str] = []
+    current = 0
+    for path_text in args.acceptance:
+        path = Path(path_text)
+        try:
+            record = load_json(path)
+            risk_ids = record.get("risk_ids")
+            if not isinstance(risk_ids, list) or not risk_ids:
+                raise RiskConcernError("acceptance missing risk_ids")
+            expected_ref = f"{record.get('risk_definition_id')}@{record.get('definition_version')}"
+            if record.get("risk_definition_id") and record.get("definition_version") and expected_ref not in risk_ids:
+                raise RiskConcernError(f"risk_ids must include stable definition reference {expected_ref}")
+            is_current = validate_acceptance_record(record)
+            if is_current and not args.allow_noncurrent:
+                verify_acceptance_authority(record,args.approval_root)
+                current += 1
+            elif not args.allow_noncurrent:
+                raise RiskConcernError("record is not current acceptance authority")
+        except Exception as exc:
+            errors.append(f"{path}: {exc}")
+    if errors:
+        print("\n".join("FAIL " + error for error in errors))
+        raise SystemExit(1)
+    if args.allow_noncurrent:
+        print(f"PASS risk acceptance: {len(args.acceptance)} archival/structural record(s); no human approval inferred")
+    else:
+        print(f"PASS risk acceptance: {current} current record(s) have bounded human authority")
+
+
+if __name__ == "__main__":
+    main()

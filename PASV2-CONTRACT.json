@@ -1,0 +1,16 @@
+{
+  "schema_version": "pasv2-component-contract-v1",
+  "compatibility_version": "pasv2-implementation-first-v1",
+  "component": "preos",
+  "interfaces": [
+    "scripts/assurance_engines.py::risk_generation_engine",
+    "scripts/control_assurance.py::evidence_gate_engine",
+    "scripts/candidate_workflow.py::promote",
+    "scripts/production_feedback.py::record_learning"
+  ],
+  "authority_boundary": {
+    "PREOS_MODEL2_CROSSWALK_APPROVAL": "OPEN",
+    "GSTACK_WINDOWS_BROAD_SUITE_BACKLOG_DISPOSITION": "OPEN",
+    "PRODUCTION_RELEASE_AUTHORITY": "OPEN"
+  }
+}

@@ -1,0 +1,248 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PREOS Atomic Risk Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "check_id",
+    "domain",
+    "feature",
+    "actor",
+    "preconditions",
+    "failure_scenario",
+    "trigger",
+    "root_mechanism",
+    "business_invariant",
+    "expected_correct_behaviour",
+    "severity",
+    "likelihood",
+    "blast_radius",
+    "customer_impact",
+    "security_impact",
+    "financial_impact",
+    "privacy_impact",
+    "legal_or_contractual_exposure",
+    "operational_impact",
+    "cost_impact",
+    "current_status",
+    "prevention",
+    "implementation_pattern",
+    "required_test",
+    "failure_test",
+    "monitoring",
+    "recovery",
+    "reconciliation",
+    "cost_now",
+    "cost_at_scale",
+    "complexity_tax",
+    "production_maturity_stage",
+    "deferral_status",
+    "activation_trigger",
+    "accountable_owner_roles",
+    "implementation_owner_roles",
+    "reviewer_approver_roles",
+    "escalation_owner_roles",
+    "role_gap",
+    "evidence",
+    "gate_result",
+    "source_category",
+    "source_reference",
+    "detection_confidence",
+    "control_dependencies",
+    "evidence_freshness_requirement",
+    "evidence_invalidation_trigger",
+    "risk_acceptance_authority",
+    "risk_acceptance_expiration",
+    "change_impact_relationship",
+    "related_architecture_decision",
+    "related_deferred_complexity_decision",
+    "related_incident_ids",
+    "regression_test_id",
+    "review_trigger"
+  ],
+  "properties": {
+    "check_id": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "feature": {
+      "type": "string"
+    },
+    "actor": {
+      "type": "string"
+    },
+    "preconditions": {
+      "type": "string"
+    },
+    "failure_scenario": {
+      "type": "string"
+    },
+    "trigger": {
+      "type": "string"
+    },
+    "root_mechanism": {
+      "type": "string"
+    },
+    "business_invariant": {
+      "type": "string"
+    },
+    "expected_correct_behaviour": {
+      "type": "string"
+    },
+    "severity": {
+      "type": "string"
+    },
+    "likelihood": {
+      "type": "string"
+    },
+    "blast_radius": {
+      "type": "string"
+    },
+    "customer_impact": {
+      "type": "string"
+    },
+    "security_impact": {
+      "type": "string"
+    },
+    "financial_impact": {
+      "type": "string"
+    },
+    "privacy_impact": {
+      "type": "string"
+    },
+    "legal_or_contractual_exposure": {
+      "type": "string"
+    },
+    "operational_impact": {
+      "type": "string"
+    },
+    "cost_impact": {
+      "type": "string"
+    },
+    "current_status": {
+      "type": "string"
+    },
+    "prevention": {
+      "type": "string"
+    },
+    "implementation_pattern": {
+      "type": "string"
+    },
+    "required_test": {
+      "type": "string"
+    },
+    "failure_test": {
+      "type": "string"
+    },
+    "monitoring": {
+      "type": "string"
+    },
+    "recovery": {
+      "type": "string"
+    },
+    "reconciliation": {
+      "type": "string"
+    },
+    "cost_now": {
+      "type": "string"
+    },
+    "cost_at_scale": {
+      "type": "string"
+    },
+    "complexity_tax": {
+      "type": "string"
+    },
+    "production_maturity_stage": {
+      "type": "string"
+    },
+    "deferral_status": {
+      "type": "string"
+    },
+    "activation_trigger": {
+      "type": "string"
+    },
+    "accountable_owner_roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "implementation_owner_roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reviewer_approver_roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "escalation_owner_roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "role_gap": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "string"
+    },
+    "gate_result": {
+      "type": "string"
+    },
+    "source_category": {
+      "type": "string"
+    },
+    "source_reference": {
+      "type": "string"
+    },
+    "detection_confidence": {
+      "type": "string"
+    },
+    "control_dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_freshness_requirement": {
+      "type": "string"
+    },
+    "evidence_invalidation_trigger": {
+      "type": "string"
+    },
+    "risk_acceptance_authority": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "risk_acceptance_expiration": {
+      "type": "string"
+    },
+    "change_impact_relationship": {
+      "type": "string"
+    },
+    "related_architecture_decision": {
+      "type": "string"
+    },
+    "related_deferred_complexity_decision": {
+      "type": "string"
+    },
+    "related_incident_ids": {
+      "type": "string"
+    },
+    "regression_test_id": {
+      "type": "string"
+    },
+    "review_trigger": {
+      "type": "string"
+    }
+  }
+}

@@ -16,16 +16,46 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         python-version: ['3.13']
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: PREOS
     steps:
       - name: Preserve repository bytes
+        working-directory: .
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
       - uses: actions/checkout@v4
+        with:
+          path: PREOS
+          fetch-depth: 0
+      - name: Check out compatible Blueprint
+        uses: actions/checkout@v4
+        with:
+          repository: WilsonMisor/wed_dev_skill
+          ref: pasv2/final-residual-remediation
+          path: wed_dev_skill
+          fetch-depth: 0
+      - name: Check out compatible specialist workforce
+        uses: actions/checkout@v4
+        with:
+          repository: WilsonMisor/gstack
+          ref: pasv2/final-residual-remediation
+          path: gstack
+          fetch-depth: 0
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.13
+      - name: Materialize specialist distribution before suite tests
+        working-directory: gstack
+        shell: bash
+        run: |
+          bun install --frozen-lockfile
+          python scripts/build_codex_distribution.py
       - name: Validate PREOS integrity and semantics
         run: python scripts/validate-preos.py
       - name: Validate Codex distribution freshness
@@ -35,7 +65,7 @@ jobs:
           python -m pip install -r requirements-test.txt
           python -m unittest discover -s tests -p 'test_*.py'
         env:
-          PYTHONPATH: ${{ github.workspace }}/scripts
+          PYTHONPATH: ${{ github.workspace }}/PREOS/scripts
 
   validate:
     name: validate

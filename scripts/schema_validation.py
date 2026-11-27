@@ -60,15 +60,15 @@ def validate_instance(instance: Any, schema: dict, *, root_schema: dict | None =
                 failures.append(str(exc))
         if matches != 1:
             raise SchemaValidationError(f"{path}: oneOf matched {matches} schemas")
-        return
     if "anyOf" in schema:
         for option in schema["anyOf"]:
             try:
                 validate_instance(instance, option, root_schema=root, path=path)
-                return
+                break
             except SchemaValidationError:
                 pass
-        raise SchemaValidationError(f"{path}: anyOf matched no schema")
+        else:
+            raise SchemaValidationError(f"{path}: anyOf matched no schema")
 
     if "enum" in schema and instance not in schema["enum"]:
         raise SchemaValidationError(f"{path}: {instance!r} is not in enum {schema['enum']!r}")

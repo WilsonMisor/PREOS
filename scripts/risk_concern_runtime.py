@@ -8,12 +8,48 @@ from pathlib import Path
 import re
 from typing import Any
 
+from schema_validation import load_schema, validate_instance
+
+SCHEMA_ROOT = Path(__file__).resolve().parents[1] / "schemas"
+CONCERN_SCHEMAS = {
+    "definitions": "risk-definition.schema.json",
+    "assessments": "risk-assessment.schema.json",
+    "economics": "risk-economics.schema.json",
+    "evolutions": "risk-evolution.schema.json",
+    "evidence_bindings": "risk-evidence-binding.schema.json",
+    "acceptances": "risk-acceptance.schema.json",
+}
+
 PROTECTED_AUTHORITY_WORDS = {"AI", "CODEX", "GSTACK", "LLM", "AGENT", "PREOS"}
 ACCEPTANCE_STATUSES = {"ACTIVE", "EXPIRED", "REVOKED", "SUPERSEDED"}
 
 
 class RiskConcernError(ValueError):
     pass
+
+
+def validate_concern_record(record: Any, collection: str, *, path: str = "$") -> None:
+    """Schema validity is mandatory, and supplies no human approval."""
+    try:
+        schema = load_schema(SCHEMA_ROOT / CONCERN_SCHEMAS[collection])
+        validate_instance(record, schema, root_schema=schema, path=path)
+    except (OSError, ValueError) as exc:
+        raise RiskConcernError(f"{collection} schema invalid: {exc}") from exc
+
+
+def validate_concern_schemas(data: Any) -> dict[str, int]:
+    """Validate every supplied record before running any lifecycle checks."""
+    if not isinstance(data, dict):
+        raise RiskConcernError("concern runtime must be an object")
+    counts = {}
+    for collection in CONCERN_SCHEMAS:
+        records = data.get(collection, [])
+        if not isinstance(records, list):
+            raise RiskConcernError(f"{collection} must be an array")
+        for index, record in enumerate(records):
+            validate_concern_record(record, collection, path=f"{collection}[{index}]")
+        counts[collection] = len(records)
+    return counts
 
 
 def parse_time(value: str) -> datetime:
@@ -68,8 +104,9 @@ def validate_acceptance_record(record: dict[str, Any], *, now: datetime | None =
     Authority consumers must call verify_acceptance_authority with the trusted
     PREOS approval store. A caller-supplied current_authority flag is not proof.
     """
+    validate_concern_record(record, "acceptances")
     now = now or datetime.now(timezone.utc)
-    for field in ("acceptance_id", "risk_definition_id", "definition_version", "authority", "reason", "scope", "approved_at", "expires_at", "review_trigger", "status"):
+    for field in ("acceptance_id", "risk_definition_id", "definition_version", "authority", "reason", "scope", "residual_risk", "approved_at", "expires_at", "review_trigger", "status"):
         if not record.get(field):
             raise RiskConcernError(f"acceptance missing {field}")
     status = str(record["status"]).upper()
@@ -137,6 +174,7 @@ def verify_acceptance_authority(record: dict[str, Any], approval_root: Path | No
 
 
 def validate_concern_runtime(data: dict[str, Any], *, approval_root: Path | None = None) -> dict[str, int]:
+    schema_counts = validate_concern_schemas(data)
     definitions_raw = data.get("definitions", [])
     if not isinstance(definitions_raw, list):
         raise RiskConcernError("definitions must be an array")
@@ -145,7 +183,7 @@ def validate_concern_runtime(data: dict[str, Any], *, approval_root: Path | None
         if not isinstance(item, dict):
             raise RiskConcernError("definition is not an object")
         key = definition_key(item)
-        forbidden={'assurance_state','current_status','release_id','project_id','acceptance','risk_acceptance','evidence_freshness','existing_controls'}
+        forbidden={'assurance_state','current_status','release_id','project_id','project_contract_id','acceptance','risk_acceptance','evidence_freshness','existing_controls'}
         if forbidden.intersection(item) or forbidden.intersection(item.get('normalized_definition',{})):
             raise RiskConcernError('RiskDefinition contains mutable assessment/authority state')
         if key in definitions:
@@ -235,6 +273,7 @@ def validate_concern_runtime(data: dict[str, Any], *, approval_root: Path | None
     }
     independent_definitions = len(definitions - linked_definition_keys)
     return {
+        "schema_valid_records": sum(schema_counts.values()),
         "definitions": len(definitions),
         "independent_definitions": independent_definitions,
         "assessments": len(assessments),

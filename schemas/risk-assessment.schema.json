@@ -20,19 +20,34 @@
       "type": "string"
     },
     "project_contract_id": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Explicit governed assessment scope binding."
     },
     "project_id": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Explicit governed assessment scope binding."
     },
     "release_id": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Explicit governed assessment scope binding."
     },
     "change_id": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Explicit governed assessment scope binding."
     },
     "scope_id": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Explicit governed assessment scope binding."
     },
     "applicability": {
       "type": "string",
@@ -64,6 +79,36 @@
     },
     "context": {
       "type": "object"
+    },
+    "application_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Explicit governed assessment scope binding."
+    },
+    "feature_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Explicit governed assessment scope binding."
+    },
+    "task_packet_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Explicit governed assessment scope binding."
+    },
+    "branch": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Explicit governed assessment scope binding."
+    },
+    "environment": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Explicit governed assessment scope binding."
     }
   },
   "required": [
@@ -77,5 +122,57 @@
     "severity",
     "blast_radius",
     "detectability"
+  ],
+  "anyOf": [
+    {
+      "required": [
+        "project_contract_id"
+      ]
+    },
+    {
+      "required": [
+        "project_id"
+      ]
+    },
+    {
+      "required": [
+        "application_id"
+      ]
+    },
+    {
+      "required": [
+        "feature_id"
+      ]
+    },
+    {
+      "required": [
+        "task_packet_id"
+      ]
+    },
+    {
+      "required": [
+        "branch"
+      ]
+    },
+    {
+      "required": [
+        "environment"
+      ]
+    },
+    {
+      "required": [
+        "release_id"
+      ]
+    },
+    {
+      "required": [
+        "change_id"
+      ]
+    },
+    {
+      "required": [
+        "scope_id"
+      ]
+    }
   ]
 }

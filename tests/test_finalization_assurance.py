@@ -75,12 +75,12 @@ class FinalizationAssuranceTests(unittest.TestCase):
 
     def test_assessment_cannot_overwrite_definition_or_source_truth(self):
         self.data['assessments'][0]['normalized_definition']={'canonical_name':'fabricated'}
-        with self.assertRaisesRegex(RiskConcernError,'cannot overwrite'): validate_concern_runtime(self.data)
+        with self.assertRaisesRegex(RiskConcernError,'schema invalid'): validate_concern_runtime(self.data)
 
     def test_definition_rejects_source_default_status_contamination(self):
         for field in ['assurance_state','release_id','risk_acceptance','evidence_freshness']:
             data=copy.deepcopy(self.data);data['definitions'][0][field]='FAIL'
-            with self.assertRaisesRegex(RiskConcernError,'mutable'):validate_concern_runtime(data)
+            with self.assertRaisesRegex(RiskConcernError,'schema invalid'):validate_concern_runtime(data)
 
     def test_structurally_valid_acceptance_is_not_human_approval(self):
         record=copy.deepcopy(self.data['acceptances'][0])

@@ -4,7 +4,13 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "readiness_requirement_ids": {"type":"array","items":{"type":"string"},"uniqueItems":true},
+    "readiness_requirement_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
     "acceptance_id": {
       "type": "string",
       "minLength": 1
@@ -133,6 +139,8 @@
     "approved_at",
     "expires_at",
     "review_trigger",
-    "status"
+    "status",
+    "residual_risk",
+    "compensating_controls"
   ]
 }

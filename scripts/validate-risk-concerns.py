@@ -23,6 +23,7 @@ def main() -> None:
         raise SystemExit(f"FAIL risk concern linkage: {exc}")
     print(
         "PASS risk concern linkage: "
+        f"{result['schema_valid_records']} schema-valid record(s), "
         f"{result['definitions']} RiskDefinition version(s), "
         f"{result['assessments']} assessment(s), "
         f"{result['independent_definitions']} independent definition(s), "

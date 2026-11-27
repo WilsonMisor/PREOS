@@ -5,18 +5,93 @@
       "risk_definition_id": "RDEF-412EAB735AC9F0D1",
       "definition_version": "1.0.0",
       "canonical_name": "API Contract Ambiguity",
-      "definition_content_sha256": "historical-definition-v1"
+      "canonical_key": "api contract ambiguity",
+      "normalized_definition": {
+        "canonical_name": "API Contract Ambiguity",
+        "category": "API architecture, contracts, requests, and responses",
+        "dimension": "universal",
+        "root_cause": "Insufficient design constraint, validation, isolation, capacity control or lifecycle management for this failure mode.",
+        "failure_mechanism": "The affected component enters an unsafe, inconsistent, overloaded or unavailable state and propagates impact to callers or dependent components.",
+        "trigger_conditions": "Real traffic, real data, concurrency, dependency degradation, malicious input, deployment change or long term operation exposes the weakness.",
+        "prevention_strategy": "Define explicit limits, safe defaults, isolation, validation, idempotency, capacity margins and architecture specific controls before release.",
+        "automated_test": "Create a deterministic automated regression that forces the named condition and asserts safe behavior.",
+        "owner": "API Platform and Application Engineering"
+      },
+      "semantic_review_status": "HUMAN_REVIEW_REQUIRED",
+      "source_records": [
+        "4.1.1"
+      ],
+      "source_locations": [
+        {
+          "source_record": "4.1.1",
+          "source_heading_name": "4.1.1 API Contract Ambiguity",
+          "source_line_start": 50,
+          "source_record_sha256": "8a0023563e64a8e8977146c5735b0c511e39951cd7a3f9052437b43975654b27"
+        }
+      ],
+      "transformation_version": "pasv2-remediation-normalization-v2",
+      "definition_content_sha256": "63dee0268705209c59642936c0dde37fc5ef38eeedffefb8a82e9499749d8f9e"
     },
     {
       "risk_definition_id": "RDEF-412EAB735AC9F0D1",
       "definition_version": "1.1.0",
       "canonical_name": "API Contract Ambiguity",
-      "definition_content_sha256": "current-definition-v2"
+      "canonical_key": "api contract ambiguity",
+      "normalized_definition": {
+        "canonical_name": "API Contract Ambiguity",
+        "category": "API architecture, contracts, requests, and responses",
+        "dimension": "universal",
+        "root_cause": "Insufficient design constraint, validation, isolation, capacity control or lifecycle management for this failure mode.",
+        "failure_mechanism": "The affected component enters an unsafe, inconsistent, overloaded or unavailable state and propagates impact to callers or dependent components.",
+        "trigger_conditions": "Real traffic, real data, concurrency, dependency degradation, malicious input, deployment change or long term operation exposes the weakness.",
+        "prevention_strategy": "Define explicit limits, safe defaults, isolation, validation, idempotency, capacity margins and architecture specific controls before release. Synthetic version example: require consumer contract tests.",
+        "automated_test": "Create a deterministic automated regression that forces the named condition and asserts safe behavior.",
+        "owner": "API Platform and Application Engineering"
+      },
+      "semantic_review_status": "HUMAN_REVIEW_REQUIRED",
+      "source_records": [
+        "4.1.1"
+      ],
+      "source_locations": [
+        {
+          "source_record": "4.1.1",
+          "source_heading_name": "4.1.1 API Contract Ambiguity",
+          "source_line_start": 50,
+          "source_record_sha256": "8a0023563e64a8e8977146c5735b0c511e39951cd7a3f9052437b43975654b27"
+        }
+      ],
+      "transformation_version": "synthetic-concern-history-v2",
+      "definition_content_sha256": "fba586662ab745ba65cfde52a7992f97fab8cf87909e55bcd54bea205150b80c"
     },
     {
       "risk_definition_id": "RDEF-8F5DC09A56DA1C52",
       "definition_version": "1.0.0",
       "canonical_name": "Zombie Request Problem",
+      "canonical_key": "zombie request problem",
+      "normalized_definition": {
+        "canonical_name": "Zombie Request Problem",
+        "category": "Retry, timeout, and dependency protection problems",
+        "dimension": "universal",
+        "root_cause": "Insufficient design constraint, validation, isolation, capacity control or lifecycle management for this failure mode.",
+        "failure_mechanism": "The affected component enters an unsafe, inconsistent, overloaded or unavailable state and propagates impact to callers or dependent components.",
+        "trigger_conditions": "Real traffic, real data, concurrency, dependency degradation, malicious input, deployment change or long term operation exposes the weakness.",
+        "prevention_strategy": "Define explicit limits, safe defaults, isolation, validation, idempotency, capacity margins and architecture specific controls before release.",
+        "automated_test": "Create a deterministic automated regression that forces the named condition and asserts safe behavior.",
+        "owner": "Reliability Engineering"
+      },
+      "semantic_review_status": "HUMAN_REVIEW_REQUIRED",
+      "source_records": [
+        "4.8.23"
+      ],
+      "source_locations": [
+        {
+          "source_record": "4.8.23",
+          "source_heading_name": "4.8.23 Zombie Request Problem",
+          "source_line_start": 14304,
+          "source_record_sha256": "6c5cf98e8879b3ba66c7364b5d7bc65cca401f7b275e582996d8d11cf44720fa"
+        }
+      ],
+      "transformation_version": "pasv2-remediation-normalization-v2",
       "definition_content_sha256": "8ee9486d4406fba7ba2d4c68d422819127160596f8888a761a646cf0f3658239"
     }
   ],
@@ -31,7 +106,11 @@
       "source_risk_id": "4.1.1",
       "likelihood": "Medium",
       "severity": "Medium",
-      "scope_id": "scope-api"
+      "scope_id": "scope-api",
+      "applicability": "Applies to this illustrative API release",
+      "trigger_conditions": "A consumer uses an undocumented response field",
+      "blast_radius": "Consumers of the assessed API release",
+      "detectability": "Consumer contract tests before deployment"
     },
     {
       "risk_assessment_id": "RAS-002",
@@ -43,7 +122,11 @@
       "source_risk_id": "4.1.1",
       "likelihood": "High",
       "severity": "High",
-      "scope_id": "scope-api"
+      "scope_id": "scope-api",
+      "applicability": "Applies to this illustrative API release",
+      "trigger_conditions": "A consumer uses an undocumented response field",
+      "blast_radius": "Consumers of the assessed API release",
+      "detectability": "Consumer contract tests before deployment"
     },
     {
       "risk_assessment_id": "RAS-003",
@@ -55,7 +138,11 @@
       "source_risk_id": "4.1.1",
       "likelihood": "Low",
       "severity": "Medium",
-      "scope_id": "scope-api-v2"
+      "scope_id": "scope-api-v2",
+      "applicability": "Applies to this illustrative API release",
+      "trigger_conditions": "A consumer uses an undocumented response field",
+      "blast_radius": "Consumers of the assessed API release",
+      "detectability": "Consumer contract tests before deployment"
     }
   ],
   "economics": [
@@ -72,7 +159,11 @@
       "complexity_tax": "low",
       "cost_assumptions": [
         "first estimate"
-      ]
+      ],
+      "business_consequence": "Consumer integration delays",
+      "financial_consequence": "Synthetic incident cost estimate in unit_economics",
+      "performance_consequence": "Retries increase API traffic",
+      "availability_consequence": "Affected integrations can fail until contract rollback"
     },
     {
       "risk_economics_id": "REC-002",
@@ -87,7 +178,11 @@
       "complexity_tax": "medium",
       "cost_assumptions": [
         "refreshed estimate"
-      ]
+      ],
+      "business_consequence": "Consumer integration delays",
+      "financial_consequence": "Synthetic incident cost estimate in unit_economics",
+      "performance_consequence": "Retries increase API traffic",
+      "availability_consequence": "Affected integrations can fail until contract rollback"
     }
   ],
   "evolutions": [
@@ -103,7 +198,11 @@
       "migration_path": "contract-test-first",
       "review_conditions": [
         "release change"
-      ]
+      ],
+      "prevention_strategy": "Version and test consumer contracts",
+      "mitigation_strategy": "Stage schema changes behind compatibility checks",
+      "recovery_strategy": "Roll back to the prior contract version",
+      "regression_protection": "Retain the failing consumer contract as a regression test"
     },
     {
       "risk_evolution_id": "REV-002",
@@ -117,7 +216,11 @@
       "migration_path": "schema registry",
       "review_conditions": [
         "consumer onboarding"
-      ]
+      ],
+      "prevention_strategy": "Version and test consumer contracts",
+      "mitigation_strategy": "Stage schema changes behind compatibility checks",
+      "recovery_strategy": "Roll back to the prior contract version",
+      "regression_protection": "Retain the failing consumer contract as a regression test"
     }
   ],
   "evidence_bindings": [
@@ -131,7 +234,11 @@
       "bindings": {
         "git_head": "old"
       },
-      "replacement_evidence_id": "REB-002"
+      "replacement_evidence_id": "REB-002",
+      "automated_test": "Synthetic consumer contract test receipt",
+      "observability": "Synthetic response schema mismatch counter",
+      "alert": "Synthetic alert on consumer contract mismatch",
+      "acceptance_evidence": "Illustrative evidence only; not human acceptance authority"
     },
     {
       "risk_evidence_id": "REB-002",
@@ -142,7 +249,11 @@
       "validity": "CURRENT",
       "bindings": {
         "git_head": "current"
-      }
+      },
+      "automated_test": "Synthetic consumer contract test receipt",
+      "observability": "Synthetic response schema mismatch counter",
+      "alert": "Synthetic alert on consumer contract mismatch",
+      "acceptance_evidence": "Illustrative evidence only; not human acceptance authority"
     }
   ],
   "acceptances": [
@@ -162,7 +273,12 @@
       "expires_at": "2027-09-14T00:00:00Z",
       "review_trigger": "definition or scope change",
       "status": "ACTIVE",
-      "current_authority": true
+      "current_authority": false,
+      "risk_ids": [
+        "RDEF-412EAB735AC9F0D1@1.0.0"
+      ],
+      "residual_risk": "Synthetic bounded consumer integration exposure",
+      "compensating_controls": []
     },
     {
       "acceptance_id": "RAC-002",
@@ -178,7 +294,12 @@
       "expires_at": "2025-06-01T00:00:00Z",
       "review_trigger": "time bound",
       "status": "EXPIRED",
-      "current_authority": false
+      "current_authority": false,
+      "risk_ids": [
+        "RDEF-412EAB735AC9F0D1@1.0.0"
+      ],
+      "residual_risk": "Synthetic bounded consumer integration exposure",
+      "compensating_controls": []
     },
     {
       "acceptance_id": "RAC-003",
@@ -198,7 +319,13 @@
       "revoked_by": "Chief Risk Owner",
       "revocation_reason": "risk definition changed",
       "replacement_acceptance_id": "RAC-001",
-      "current_authority": false
+      "current_authority": false,
+      "risk_ids": [
+        "RDEF-412EAB735AC9F0D1@1.0.0"
+      ],
+      "residual_risk": "Synthetic bounded consumer integration exposure",
+      "compensating_controls": []
     }
-  ]
+  ],
+  "fixture_notice": "Synthetic lifecycle examples only; no project approval or production authority. Definition 1.1.0 is not a normalized corpus revision."
 }
